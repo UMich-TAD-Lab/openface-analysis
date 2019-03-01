@@ -146,11 +146,6 @@ rm(cort11bc)
 rm(cort12bc)
 ```
 
-### Growth Curve Modeling (GCM)
-
-This will done in a totally different .rmd file, but it'll look something like this:
-mod1 <- lm(cortisol~time+time^2+sex+AU1+AU1*time+AU1*time*time^2)
-
 ## Writing it back out
 
 ```{r}
