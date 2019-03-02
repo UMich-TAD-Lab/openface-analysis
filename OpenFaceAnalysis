@@ -184,7 +184,7 @@ base <- lme(cortvalue ~ 0 +
             # which makes sense
             corr = corCAR1(), # specifies CAR1 structure
             #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(base) 
@@ -214,11 +214,10 @@ anger <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               angerC + angerC*timebeforepeak + angerC*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               angerC + angerC*timebeforepeak + angerC*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(anger)
@@ -240,11 +239,10 @@ fear <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               fearC + fearC*timebeforepeak + fearC*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               fearC + fearC*timebeforepeak + fearC*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(fear)
@@ -266,11 +264,10 @@ happiness <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               happinessC + happinessC*timebeforepeak + happinessC*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               happinessC + happinessC*timebeforepeak + happinessC*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(happiness)
@@ -292,11 +289,10 @@ sadness <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               sadnessC + sadnessC*timebeforepeak + sadnessC*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               sadnessC + sadnessC*timebeforepeak + sadnessC*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(sadness)
@@ -318,11 +314,10 @@ pain <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               painC + painC*timebeforepeak + painC*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               painC + painC*timebeforepeak + painC*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(pain)
@@ -346,8 +341,8 @@ ctq <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               ctqsumC + ctqsumC*timebeforepeak + ctqsumC*timeafterpeak,
-            random = ~ (timebeforepeak + timeafterpeak) - 1 | id, 
+               ctqsumC + ctqsumC*timebeforepeak + ctqsumC*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corAR1(), #specifies AR1 structure
             data = cp_long)
 summary(ctq)
@@ -369,11 +364,10 @@ ThreatZSum <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               ThreatZSum + ThreatZSum*timebeforepeak + ThreatZSum*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               ThreatZSum + ThreatZSum*timebeforepeak + ThreatZSum*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(ThreatZSum)
@@ -395,11 +389,10 @@ ThreatComp <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               ThreatComp + ThreatComp*timebeforepeak + ThreatComp*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               ThreatComp + ThreatComp*timebeforepeak + ThreatComp*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(ThreatComp)
@@ -421,11 +414,10 @@ DepZSum <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               DepZSum + DepZSum*timebeforepeak + DepZSum*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               DepZSum + DepZSum*timebeforepeak + DepZSum*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(DepZSum)
@@ -447,11 +439,10 @@ DepComp <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               DepComp + DepComp*timebeforepeak + DepComp*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id, 
+               DepComp + DepComp*timebeforepeak + DepComp*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(DepComp)
@@ -473,11 +464,10 @@ ThreatCompc <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(ThreatCompc)
@@ -499,11 +489,10 @@ DepCompc <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               DepCompc + DepCompc*timebeforepeak + DepCompc*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               DepCompc + DepCompc*timebeforepeak + DepCompc*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(DepCompc)
@@ -525,11 +514,10 @@ ThreatDepInt <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-               ThreatDepInt + ThreatDepInt*timebeforepeak + ThreatDepInt*timeafterpeak,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+               ThreatDepInt + ThreatDepInt*timebeforepeak + ThreatDepInt*timeafterpeak, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(ThreatDepInt)
@@ -557,11 +545,10 @@ mod <- lme(cortvalue ~ 0 +
               baseline + # Fixed effect
               angerC + ctqsumC + # Fixed effect
               angerC*timebeforepeak + angerC*timeafterpeak + # Interactions
-              angerC*ctqsumC, #Interactions
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              angerC*ctqsumC, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -589,12 +576,10 @@ mod <- lme(cortvalue ~ 0 +
               baseline + # Fixed effect
               angerC + ThreatCompc + # Fixed effect
               angerC*timebeforepeak + angerC*timeafterpeak + # Interactions
-              angerC*ThreatCompc, #Interactions
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,  
-
+              angerC*ThreatCompc, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -622,11 +607,10 @@ mod <- lme(cortvalue ~ 0 +
               baseline + # Fixed effect
               fearC + ctqsumC + # Fixed effect
               fearC*timebeforepeak + fearC*timeafterpeak + # Interactions
-              fearC*ctqsumC, #Interactions
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              fearC*ctqsumC, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -654,11 +638,10 @@ mod <- lme(cortvalue ~ 0 +
               baseline + # Fixed effect
               fearC + ThreatCompc + # Fixed effect
               fearC*timebeforepeak + fearC*timeafterpeak + # Interactions
-              fearC*ThreatCompc, #Interactions
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              fearC*ThreatCompc, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -686,11 +669,10 @@ mod <- lme(cortvalue ~ 0 +
               baseline + # Fixed effect
               happinessC + ctqsumC + # Fixed effect
               happinessC*timebeforepeak + happinessC*timeafterpeak + # Interactions
-              happinessC*ctqsumC, #Interactions
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              happinessC*ctqsumC, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -718,11 +700,10 @@ mod <- lme(cortvalue ~ 0 +
               baseline + # Fixed effect
               happinessC + ThreatCompc + # Fixed effect
               happinessC*timebeforepeak + happinessC*timeafterpeak + # Interactions
-              happinessC*ThreatCompc, #Interactions
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              happinessC*ThreatCompc, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -750,12 +731,10 @@ mod <- lme(cortvalue ~ 0 +
               baseline + # Fixed effect
               sadnessC + ctqsumC + # Fixed effect
               sadnessC*timebeforepeak + sadnessC*timeafterpeak + # Interactions
-              sadnessC*ctqsumC, #Interactions
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,  
-
+              sadnessC*ctqsumC, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts  
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -781,13 +760,12 @@ mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-              sadnessC + ThreatCompc + # Fixed effect
+              sadnessC + ThreatCompc + # Fixed effects
               sadnessC*timebeforepeak + sadnessC*timeafterpeak + # Interactions
-              sadnessC*ThreatCompc, #Interactions
-            random = ~ 0 + timebeforepeak + timeafterpeak | id, 
+              sadnessC*ThreatCompc, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -813,13 +791,12 @@ mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-              painC + ctqsumC +
+              painC + ctqsumC + # Fixed effects
               painC*timebeforepeak + painC*timeafterpeak + # Interactions
-              painC*ctqsumC,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              painC*ctqsumC, # Interaction
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -846,11 +823,10 @@ mod <- lme(cortvalue ~ 0 +
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
               painC + painC*timebeforepeak + painC*timeafterpeak + # Interactions
-              painC*ThreatCompc,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              painC*ThreatCompc, # Interaction
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -877,12 +853,11 @@ rm(mod)
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
-              baseline + ThreatCompc +
-              AU05_r*timebeforepeak + AU05_r*timeafterpeak + AU05_r*ThreatCompc,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              baseline + ThreatCompc + # Fixed effects
+              AU05_r*timebeforepeak + AU05_r*timeafterpeak + AU05_r*ThreatCompc, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -905,12 +880,11 @@ rm(mod)
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
-              baseline + ctqsumC +
-              AU05_r*timebeforepeak + AU05_r*timeafterpeak + AU05_r*ctqsumC,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              baseline + ctqsumC + # Fixed effects
+              AU05_r*timebeforepeak + AU05_r*timeafterpeak + AU05_r*ctqsumC, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -933,12 +907,11 @@ rm(mod)
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
-              baseline + ThreatCompc +
-              AU09_r*timebeforepeak + AU09_r*timeafterpeak + AU09_r*ThreatCompc,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,
+              baseline + ThreatCompc + # Fixed effects
+              AU09_r*timebeforepeak + AU09_r*timeafterpeak + AU09_r*ThreatCompc, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -963,10 +936,9 @@ mod <- lme(cortvalue ~ 0 +
               timeafterpeak + # Fixed effect
               baseline + ctqsumC +
               AU09_r*timebeforepeak + AU09_r*timeafterpeak + AU09_r*ctqsumC,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id, 
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -989,12 +961,11 @@ rm(mod)
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
-              baseline + ThreatCompc +
+              baseline + ThreatCompc + # Fixed effects
               AU14_r*timebeforepeak + AU14_r*timeafterpeak + AU14_r*ThreatCompc,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id, 
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -1017,12 +988,11 @@ rm(mod)
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
-              baseline + ctqsumC +
-              AU14_r*timebeforepeak + AU14_r*timeafterpeak + AU14_r*ctqsumC,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id,  
+              baseline + ctqsumC + # Fixed effects
+              AU14_r*timebeforepeak + AU14_r*timeafterpeak + AU14_r*ctqsumC, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts  
             corr = corCAR1(), # specifies CAR1 structure
-            #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model,
+            control = ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
