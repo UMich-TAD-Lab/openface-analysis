@@ -192,7 +192,7 @@ print(summary(base)$tTable[,])
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -226,7 +226,7 @@ summary(anger)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Anger", "Anger * TimeBeforePeak", "Anger * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Anger", "Anger * TimeBeforePeak", "Anger * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -252,7 +252,7 @@ summary(fear)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Fear", "Fear * TimeBeforePeak", "Fear * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Fear", "Fear * TimeBeforePeak", "Fear * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -278,7 +278,7 @@ summary(happiness)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Happiness", "Happiness * TimeBeforePeak", "Happiness * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Happiness", "Happiness * TimeBeforePeak", "Happiness * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -304,7 +304,7 @@ summary(sadness)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Sadness", "Sadness * TimeBeforePeak", "Sadness * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Sadness", "Sadness * TimeBeforePeak", "Sadness * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -330,7 +330,7 @@ summary(pain)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Pain", "Pain * TimeBeforePeak", "Pain * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Pain", "Pain * TimeBeforePeak", "Pain * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -355,7 +355,7 @@ summary(ctq)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ", "CTQ * TimeBeforePeak", "CTQ * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ", "CTQ * TimeBeforePeak", "CTQ * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -381,7 +381,7 @@ summary(ThreatZSum)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatZSum", "ThreatZSum * TimeBeforePeak", "ThreatZSum * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatZSum", "ThreatZSum * TimeBeforePeak", "ThreatZSum * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -407,7 +407,7 @@ summary(ThreatComp)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatComp", "ThreatComp * TimeBeforePeak", "ThreatComp * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatComp", "ThreatComp * TimeBeforePeak", "ThreatComp * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -433,7 +433,7 @@ summary(DepZSum)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "DepZSum", "DepZSum * TimeBeforePeak", "DepZSum * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "DepZSum", "DepZSum * TimeBeforePeak", "DepZSum * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -459,7 +459,7 @@ summary(DepComp)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "DepComp", "DepComp * TimeBeforePeak", "DepComp * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "DepComp", "DepComp * TimeBeforePeak", "DepComp * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -485,7 +485,7 @@ summary(ThreatCompc)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -511,7 +511,7 @@ summary(DepCompc)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "DepCompc", "DepCompc * TimeBeforePeak", "DepCompc * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "DepCompc", "DepCompc * TimeBeforePeak", "DepCompc * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -537,7 +537,7 @@ summary(ThreatDepInt)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatDepInt", "ThreatDepInt * TimeBeforePeak", "ThreatDepInt * TimeAfterPeak")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatDepInt", "ThreatDepInt * TimeBeforePeak", "ThreatDepInt * TimeAfterPeak")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -569,7 +569,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Anger", "CTQ Total",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Anger", "CTQ Total",
             "Anger * TimeBeforePeak", "Anger * TimeAfterPeak",
             "Anger * CTQ Total")
 
@@ -602,7 +602,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Anger", "ThreatCompc",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Anger", "ThreatCompc",
             "Anger * TimeBeforePeak", "Anger * TimeAfterPeak",
             "Anger * ThreatCompc")
 
@@ -634,7 +634,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Fear", "CTQ Total",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Fear", "CTQ Total",
             "Fear * TimeBeforePeak", "Fear * TimeAfterPeak",
             "Fear * CTQ Total")
 
@@ -666,7 +666,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Fear", "ThreatCompc",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Fear", "ThreatCompc",
             "Fear * TimeBeforePeak", "Fear * TimeAfterPeak",
             "Fear * ThreatCompc")
 
@@ -698,7 +698,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Happiness", "CTQ Total",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Happiness", "CTQ Total",
             "Happiness * TimeBeforePeak", "Happiness * TimeAfterPeak",
             "Happiness * CTQ Total")
 
@@ -730,7 +730,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Happiness", "ThreatCompc",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Happiness", "ThreatCompc",
             "Happiness * TimeBeforePeak", "Happiness * TimeAfterPeak",
             "Happiness * ThreatCompc")
 
@@ -763,7 +763,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Sadness", "CTQ Total",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Sadness", "CTQ Total",
             "Sadness * TimeBeforePeak", "Sadness * TimeAfterPeak",
             "Sadness * CTQ Total")
 
@@ -795,7 +795,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Sadness", "ThreatCompc",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Sadness", "ThreatCompc",
             "Sadness * TimeBeforePeak", "Sadness * TimeAfterPeak",
             "Sadness * ThreatCompc")
 
@@ -827,7 +827,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Pain", "ThreatCompc",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Pain", "ThreatCompc",
             "Pain * TimeBeforePeak", "Pain * TimeAfterPeak",
             "Pain * ThreatCompc")
 
@@ -858,7 +858,7 @@ summary(mod)$tTable[,]
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "Pain", "ThreatCompc",
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Pain", "ThreatCompc",
             "Pain * TimeBeforePeak", "Pain * TimeAfterPeak",
             "Pain * ThreatCompc")
 
@@ -890,7 +890,7 @@ summary(mod)
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU5", "TimeBeforePeak * AU5", "TimeAfterPeak * AU5", "ThreatCompc * AU5")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU5", "TimeBeforePeak * AU5", "TimeAfterPeak * AU5", "ThreatCompc * AU5")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -918,7 +918,7 @@ summary(mod)
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU5", "TimeBeforePeak * AU5", "TimeAfterPeak * AU5", "CTQ Total * AU5")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU5", "TimeBeforePeak * AU5", "TimeAfterPeak * AU5", "CTQ Total * AU5")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -946,7 +946,7 @@ summary(mod)
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU9", "TimeBeforePeak * AU09", "TimeAfterPeak * AU09", "ThreatCompc * AU09")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU9", "TimeBeforePeak * AU09", "TimeAfterPeak * AU09", "ThreatCompc * AU09")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -974,7 +974,7 @@ summary(mod)
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU9", "TimeBeforePeak * AU09", "TimeAfterPeak * AU09", "CTQ Total * AU09")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU9", "TimeBeforePeak * AU09", "TimeAfterPeak * AU09", "CTQ Total * AU09")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -1002,7 +1002,7 @@ summary(mod)
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU14", "TimeBeforePeak * AU14", "TimeAfterPeak * AU14", "ThreatCompc * AU14")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU14", "TimeBeforePeak * AU14", "TimeAfterPeak * AU14", "ThreatCompc * AU14")
 
 colorder <- c("est", "df", "se", "p")
 
@@ -1030,7 +1030,7 @@ summary(mod)
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU14", "TimeBeforePeak * AU14", "TimeAfterPeak * AU14", "CTQ Total * AU14")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU14", "TimeBeforePeak * AU14", "TimeAfterPeak * AU14", "CTQ Total * AU14")
 
 colorder <- c("est", "df", "se", "p")
 
