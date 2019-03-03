@@ -319,6 +319,8 @@ So, in conclusion, the data HATES random intercepts. Just really despises them. 
 
 ## 4: Optimization?
 
+### Plus Zero
+
 ```{r 0 + Optimized, error=TRUE, results='hide', echo=FALSE}
 ctrl <- lmeControl(opt='optim')
 
@@ -333,7 +335,6 @@ mod1 <- lme(cortvalue ~ 0 +
             control = ctrl, # optimizes model
             data = cp_long)
 summary(mod1) 
-#mod1 is not significant.
 
 mod2 <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
@@ -346,7 +347,6 @@ mod2 <- lme(cortvalue ~ 0 +
             control = ctrl, # optimizes model
             data = cp_long)
 summary(mod2) 
-#mod2 is not significant.
 
 mod3 <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
@@ -364,14 +364,14 @@ summary(mod3)
 ```{r echo=FALSE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "Optimized Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod1, title = "0 + Optimized Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
-tab_model(mod2, title = "Optimized Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod2, title = "0 + Optimized Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
-tab_model(mod3, title = "Optimized Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod3, title = "0 + Optimized Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
-```{r Not optimized, error=TRUE, results='hide', echo=FALSE}
+```{r 0 + Not optimized, error=TRUE, results='hide', echo=FALSE}
 mod1 <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -418,3 +418,123 @@ tab_model(mod2, title = "Not Optimized 0 + Random Slopes", dv.labels = "Cortisol
 
 tab_model(mod3, title = "Not Optimized 0 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
+
+### Plus 1
+
+```{r 1 + Optimized, error=TRUE, results='hide', echo=FALSE}
+ctrl <- lmeControl(opt='optim')
+
+mod1 <- lme(cortvalue ~ 1 +
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            random = ~ 1 | id,  # Random intercepts (not slopes)
+            corr = corCAR1(), # specifies CAR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            data = cp_long)
+summary(mod1) 
+
+mod2 <- lme(cortvalue ~ 1 +
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            random = ~ 1 + timebeforepeak + timeafterpeak | id,  # Random slopes (not intercepts)
+            corr = corCAR1(), # specifies CAR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            data = cp_long)
+summary(mod2) 
+
+mod3 <- lme(cortvalue ~ 1 +
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            random = ~ 1 + timebeforepeak + timeafterpeak | id,  # Random intercepts and slopes
+            corr = corCAR1(), # specifies CAR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            data = cp_long)
+summary(mod3) 
+```
+
+```{r echo=FALSE}
+colorder <- c("est", "se", "p")
+
+tab_model(mod1, title = "Optimized Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+tab_model(mod2, title = "Optimized Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+tab_model(mod3, title = "Optimized Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+```{r 1 + Not optimized, error=TRUE, results='hide', echo=FALSE}
+mod1 <- lme(cortvalue ~ 1 + 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            random = ~ 1 | id,  # Random intercepts (not slopes)
+            corr = corCAR1(), # specifies CAR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            data = cp_long)
+summary(mod1)
+#Significant!
+
+mod2 <- lme(cortvalue ~ 1 + 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            random = ~ 1 +  timebeforepeak + timeafterpeak | id,  # Random slopes (not intercepts)
+            corr = corCAR1(), # specifies CAR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            data = cp_long)
+summary(mod2)
+
+mod3 <- lme(cortvalue ~ 1 + 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            random = ~ 1 + timebeforepeak + timeafterpeak | id,  # Random intercepts and slopes
+            corr = corCAR1(), # specifies CAR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            data = cp_long)
+summary(mod3) 
+```
+
+```{r echo=FALSE}
+colorder <- c("est", "se", "p")
+
+tab_model(mod1, title = "Not Optimized 1 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+#Significant!
+
+tab_model(mod2, title = "Not Optimized 1 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+tab_model(mod3, title = "Not Optimized 1 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+## Conclusion
+
+There are ONLY two models that find ThreatCompc significant (if you count 0.053 as the threshold of significance):
+
+* mod1
+    * ThreatCompc, p = 0.053
+    * Random intercept model
+    * Random effect: ID
+    * Not optimized
+* mod2
+    * TimeBeforePeak X ThreatCompc
+        * p = 0.008 if optimized
+        * p = 0.042 if not optimized
+    * Random slope model
+    * Random effects: TimeBeforePeak, TimeAfterPeak
+
+I cannot find a model that if significant in anyway to ThreatCompc that involves having random slopes AND random intercepts. I have no idea what this means.
