@@ -6,7 +6,8 @@ output:
   html_document:
     toc: true
     toc_float: true
-    toc_depth: 3
+    toc_depth: 4
+    collapse: subsection
     theme: united
     highlight: tango
   pdf_document: default
@@ -58,6 +59,7 @@ library(pander)
 library(coefplot)
 library(ggiraphExtra)
 library(languageR)
+library(aod)
 ```
 
 ```{r Load in data, include=FALSE}
@@ -121,16 +123,16 @@ Cortisol = \beta_0
 
 The variable "gender" is a binary variable of 0 = male and 1 = female.
 
-## Correlation Matrix: Emotion
+## Correlation Matrix: Emotion and Trauma
 
 ```{r results='asis', warning=FALSE, message=FALSE, echo=FALSE}
-corr_vars <- data.frame(cp_long$angerC, cp_long$fearC, cp_long$happinessC, cp_long$sadnessC, cp_long$painC, cp_long$ctqsumC, cp_long$emosumC, cp_long$ThreatZSum, cp_long$DepZSum, cp_long$ThreatCompc, cp_long$DepCompc, cp_long$ThreatDepInt)
+corr_vars <- data.frame(cp_long$angerC, cp_long$fearC, cp_long$happinessC, cp_long$sadnessC, cp_long$painC, cp_long$ctqsumC, cp_long$emosumC, cp_long$ThreatZSum, cp_long$DepZSum, cp_long$ThreatCompc, cp_long$DepCompc, cp_long$ThreatDepInt, cp_long$Responder)
 
 names(corr_vars) <- gsub(pattern = "cp_long._*", replacement = "", x = names(corr_vars))
 
 corr_data <- stats::cor(corr_vars)
 
-labels <- c("Anger", "Fear", "Happiness", "Sadness", "Pain", "CTQ Total", "CTQ Emo", "ThreatZSum", "DepZSum", "ThreapCompc", "DepCompc", "ThreatDepInt")
+labels <- c("Anger", "Fear", "Happiness", "Sadness", "Pain", "CTQ Total", "CTQ Emo", "ThreatZSum", "DepZSum", "ThreapCompc", "DepCompc", "ThreatDepInt", "Responder")
 
 set_theme(axis.title.size = 0, geom.label.size = 4.5, axis.textsize.x = 1, axis.textsize.y = 1, axis.angle.x = 90)
 
@@ -141,22 +143,22 @@ rm(corr_data)
 rm(labels)
 ```
 
-## Correlation Matrix: AUs
+## Correlation Matrix: AUs and Trauma
 
 ```{r results='asis', warning=FALSE, message=FALSE, echo=FALSE}
 #cp_long <- merge(cp_long, cp_full_temp, by="id")
 
-corr_vars <- data.frame(cp_long$AU01_r, cp_long$AU02_r, cp_long$AU04_r, cp_long$AU05_r, cp_long$AU06_r, cp_long$AU07_r, cp_long$AU09_r, cp_long$AU10_r, cp_long$AU12_r, cp_long$AU14_r, cp_long$AU15_r, cp_long$AU17_r, cp_long$AU20_r, cp_long$AU23_r, cp_long$AU25_r, cp_long$AU26_r, cp_long$ctqsumC,cp_long$ThreatCompc, cp_long$DepCompc)
+corr_vars <- data.frame(cp_long$AU01_r, cp_long$AU02_r, cp_long$AU04_r, cp_long$AU05_r, cp_long$AU06_r, cp_long$AU07_r, cp_long$AU09_r, cp_long$AU10_r, cp_long$AU12_r, cp_long$AU14_r, cp_long$AU15_r, cp_long$AU17_r, cp_long$AU20_r, cp_long$AU23_r, cp_long$AU25_r, cp_long$AU26_r, cp_long$ctqsumC,cp_long$ThreatCompc, cp_long$DepCompc, cp_long$Responder)
 
 names(corr_vars) <- gsub(pattern = "cp_long._*", replacement = "", x = names(corr_vars))
 
 corr_data <- stats::cor(corr_vars)
 
-labels <- c("AU01_r", "AU02_r", "AU04_r", "AU05_r", "AU06_r", "AU07_r", "AU09_r", "AU10_r", "AU12_r", "AU14_r", "AU15_r", "AU17_r", "AU20_r", "AU23_r", "AU25_r", "AU26_r", "CTQ Total", "ThreapCompc", "DepCompc")
+labels <- c("AU01_r", "AU02_r", "AU04_r", "AU05_r", "AU06_r", "AU07_r", "AU09_r", "AU10_r", "AU12_r", "AU14_r", "AU15_r", "AU17_r", "AU20_r", "AU23_r", "AU25_r", "AU26_r", "CTQ Total", "ThreapCompc", "DepCompc", "Responder")
 
 set_theme(axis.title.size = 0, geom.label.size = 4.5, axis.textsize.x = 1, axis.textsize.y = 1, axis.angle.x = 90)
 
-sjp.corr(corr_data, corr.method=c("spearman"),title="Correlation Matrix", na.deletion = "pairwise", sort.corr=FALSE, show.values=TRUE, decimals=1, axis.labels = labels)
+sjp.corr(corr_data, corr.method=c("spearman"),title="Correlation Matrix", na.deletion = "pairwise", sort.corr=FALSE, show.values=TRUE, decimals=2, axis.labels = labels)
 
 rm(corr_vars)
 rm(corr_data)
@@ -184,7 +186,7 @@ base <- lme(cortvalue ~ 0 +
             # which makes sense
             corr = corCAR1(), # specifies CAR1 structure
             #corCAR1 allows us to have unequally spaced time observations
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(base) 
@@ -194,7 +196,7 @@ print(summary(base)$tTable[,])
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(base, title = "Base Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
@@ -209,7 +211,7 @@ tab_model(base, title = "Base Model Summary Output", pred.labels = labels, dv.la
 
 ### Anger
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 anger <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -217,7 +219,7 @@ anger <- lme(cortvalue ~ 0 +
                angerC + angerC*timebeforepeak + angerC*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(anger)
@@ -227,14 +229,14 @@ summary(anger)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Anger", "Anger * TimeBeforePeak", "Anger * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(anger, title = "Anger Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### Fear
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 fear <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -242,7 +244,7 @@ fear <- lme(cortvalue ~ 0 +
                fearC + fearC*timebeforepeak + fearC*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(fear)
@@ -252,14 +254,14 @@ summary(fear)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Fear", "Fear * TimeBeforePeak", "Fear * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(fear, title = "Fear Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### Happiness
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 happiness <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -267,7 +269,7 @@ happiness <- lme(cortvalue ~ 0 +
                happinessC + happinessC*timebeforepeak + happinessC*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(happiness)
@@ -277,14 +279,14 @@ summary(happiness)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Happiness", "Happiness * TimeBeforePeak", "Happiness * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(happiness, title = "Happy Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### Sadness
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 sadness <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -292,7 +294,7 @@ sadness <- lme(cortvalue ~ 0 +
                sadnessC + sadnessC*timebeforepeak + sadnessC*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(sadness)
@@ -302,14 +304,14 @@ summary(sadness)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Sadness", "Sadness * TimeBeforePeak", "Sadness * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(sadness, title = "Sad Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### Pain
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 pain <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -317,7 +319,7 @@ pain <- lme(cortvalue ~ 0 +
                painC + painC*timebeforepeak + painC*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(pain)
@@ -327,7 +329,7 @@ summary(pain)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Pain", "Pain * TimeBeforePeak", "Pain * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(pain, title = "Pain Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
@@ -336,7 +338,7 @@ tab_model(pain, title = "Pain Model Summary Output", pred.labels = labels, dv.la
 
 ### CTQ Total Sum
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 ctq <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -344,6 +346,7 @@ ctq <- lme(cortvalue ~ 0 +
                ctqsumC + ctqsumC*timebeforepeak + ctqsumC*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corAR1(), #specifies AR1 structure
+            method = "REML", # specifies REML fit
             data = cp_long)
 summary(ctq)
 summary(ctq)$tTable[,]
@@ -352,14 +355,14 @@ summary(ctq)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ", "CTQ * TimeBeforePeak", "CTQ * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(ctq, title = "CTQ Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### ThreatZSum
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 ThreatZSum <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -367,7 +370,7 @@ ThreatZSum <- lme(cortvalue ~ 0 +
                ThreatZSum + ThreatZSum*timebeforepeak + ThreatZSum*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(ThreatZSum)
@@ -377,14 +380,14 @@ summary(ThreatZSum)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatZSum", "ThreatZSum * TimeBeforePeak", "ThreatZSum * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(ThreatZSum, title = "ThreatZSum Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### ThreatComp
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 ThreatComp <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -392,7 +395,7 @@ ThreatComp <- lme(cortvalue ~ 0 +
                ThreatComp + ThreatComp*timebeforepeak + ThreatComp*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(ThreatComp)
@@ -402,14 +405,14 @@ summary(ThreatComp)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatComp", "ThreatComp * TimeBeforePeak", "ThreatComp * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(ThreatComp, title = "ThreatComp Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### DepZSum
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 DepZSum <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -417,7 +420,7 @@ DepZSum <- lme(cortvalue ~ 0 +
                DepZSum + DepZSum*timebeforepeak + DepZSum*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(DepZSum)
@@ -427,14 +430,14 @@ summary(DepZSum)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "DepZSum", "DepZSum * TimeBeforePeak", "DepZSum * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(DepZSum, title = "DepZSum Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### DepComp
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 DepComp <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -442,7 +445,7 @@ DepComp <- lme(cortvalue ~ 0 +
                DepComp + DepComp*timebeforepeak + DepComp*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(DepComp)
@@ -452,14 +455,14 @@ summary(DepComp)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "DepComp", "DepComp * TimeBeforePeak", "DepComp * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(DepComp, title = "DepComp Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### ThreatCompc
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 ThreatCompc <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -467,7 +470,7 @@ ThreatCompc <- lme(cortvalue ~ 0 +
                ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(ThreatCompc)
@@ -477,14 +480,14 @@ summary(ThreatCompc)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(ThreatCompc, title = "ThreatCompc Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### DepCompc
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 DepCompc <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -492,7 +495,7 @@ DepCompc <- lme(cortvalue ~ 0 +
                DepCompc + DepCompc*timebeforepeak + DepCompc*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(DepCompc)
@@ -502,14 +505,14 @@ summary(DepCompc)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "DepCompc", "DepCompc * TimeBeforePeak", "DepCompc * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(DepCompc, title = "DepCompc Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
 ### ThreatDepInt
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 ThreatDepInt <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -517,7 +520,7 @@ ThreatDepInt <- lme(cortvalue ~ 0 +
                ThreatDepInt + ThreatDepInt*timebeforepeak + ThreatDepInt*timeafterpeak, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(ThreatDepInt)
@@ -527,7 +530,7 @@ summary(ThreatDepInt)$tTable[,]
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatDepInt", "ThreatDepInt * TimeBeforePeak", "ThreatDepInt * TimeAfterPeak")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(ThreatDepInt, title = "ThreatDepInt Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
@@ -538,7 +541,7 @@ Please note that not everything below is meaningful. I just didn't want to delet
 
 ### Anger X CTQ Total
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -548,7 +551,7 @@ mod <- lme(cortvalue ~ 0 +
               angerC*ctqsumC, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -560,7 +563,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Anger", "CTQ Total",
             "Anger * TimeBeforePeak", "Anger * TimeAfterPeak",
             "Anger * CTQ Total")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Anger X CTQ Total Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -569,7 +572,7 @@ rm(mod)
 
 ### Anger X ThreatCompc
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -579,7 +582,7 @@ mod <- lme(cortvalue ~ 0 +
               angerC*ThreatCompc, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -591,7 +594,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Anger", "ThreatCompc
             "Anger * TimeBeforePeak", "Anger * TimeAfterPeak",
             "Anger * ThreatCompc")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Anger X ThreatCompc Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -600,7 +603,7 @@ rm(mod)
 
 ### Fear X CTQ Total
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -610,7 +613,7 @@ mod <- lme(cortvalue ~ 0 +
               fearC*ctqsumC, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -622,7 +625,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Fear", "CTQ Total",
             "Fear * TimeBeforePeak", "Fear * TimeAfterPeak",
             "Fear * CTQ Total")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Fear X CTQ Total Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -631,7 +634,7 @@ rm(mod)
 
 ### Fear X ThreatCompc
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -641,7 +644,7 @@ mod <- lme(cortvalue ~ 0 +
               fearC*ThreatCompc, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -653,7 +656,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Fear", "ThreatCompc"
             "Fear * TimeBeforePeak", "Fear * TimeAfterPeak",
             "Fear * ThreatCompc")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Fear X ThreatCompc Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -662,7 +665,7 @@ rm(mod)
 
 ### Happiness X CTQ Total
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -672,7 +675,7 @@ mod <- lme(cortvalue ~ 0 +
               happinessC*ctqsumC, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -684,7 +687,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Happiness", "CTQ Tot
             "Happiness * TimeBeforePeak", "Happiness * TimeAfterPeak",
             "Happiness * CTQ Total")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Happiness X CTQ Total Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -693,7 +696,7 @@ rm(mod)
 
 ### Happiness X ThreatCompc
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -703,7 +706,7 @@ mod <- lme(cortvalue ~ 0 +
               happinessC*ThreatCompc, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -715,7 +718,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Happiness", "ThreatC
             "Happiness * TimeBeforePeak", "Happiness * TimeAfterPeak",
             "Happiness * ThreatCompc")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Anger X ThreatCompc Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -724,7 +727,7 @@ rm(mod)
 
 ### Sadness X CTQ Total
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -734,7 +737,7 @@ mod <- lme(cortvalue ~ 0 +
               sadnessC*ctqsumC, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts  
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -746,7 +749,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Sadness", "CTQ Total
             "Sadness * TimeBeforePeak", "Sadness * TimeAfterPeak",
             "Sadness * CTQ Total")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Sadness X CTQ Total Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -755,7 +758,7 @@ rm(mod)
 
 ### Sadness X ThreatCompc
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -765,7 +768,7 @@ mod <- lme(cortvalue ~ 0 +
               sadnessC*ThreatCompc, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -777,7 +780,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Sadness", "ThreatCom
             "Sadness * TimeBeforePeak", "Sadness * TimeAfterPeak",
             "Sadness * ThreatCompc")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Sadness X ThreatCompc Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -786,7 +789,7 @@ rm(mod)
 
 ### Pain X CTQ Total
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -796,7 +799,7 @@ mod <- lme(cortvalue ~ 0 +
               painC*ctqsumC, # Interaction
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -808,7 +811,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Pain", "ThreatCompc"
             "Pain * TimeBeforePeak", "Pain * TimeAfterPeak",
             "Pain * ThreatCompc")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Pain X CTQ Total Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -817,7 +820,7 @@ rm(mod)
 
 ### Pain X ThreatCompc
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -826,7 +829,7 @@ mod <- lme(cortvalue ~ 0 +
               painC*ThreatCompc, # Interaction
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod)
@@ -838,7 +841,7 @@ labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "Pain", "ThreatCompc"
             "Pain * TimeBeforePeak", "Pain * TimeAfterPeak",
             "Pain * ThreatCompc")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "Pain X ThreatCompc Model Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
@@ -847,36 +850,52 @@ rm(mod)
 
 ## Action Unit Models
 
-### AU5 Model X ThreatCompc
+### Base AU Model
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
-mod <- lme(cortvalue ~ 0 +
-              timebeforepeak + # Fixed effect
-              timeafterpeak + # Fixed effect
-              baseline + ThreatCompc + # Fixed effects
-              AU05_r*timebeforepeak + AU05_r*timeafterpeak + AU05_r*ThreatCompc, # Interactions
-            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
+Please note that the hideous model below had to be optimized in order for it to work. I don't intend on using it by itself, I just want it to point me in the right direction.
+
+```{r include=TRUE, echo=FALSE, results='hide'}
+mod <- lme(cortvalue ~ 
+              0 + 
+              timebeforepeak +  #Fixed effect
+              timeafterpeak +  #Fixed effect
+              baseline +
+              AU01_r*timebeforepeak + AU01_r*timeafterpeak + AU01_r*ThreatCompc +   
+              AU02_r*timebeforepeak + AU02_r*timeafterpeak + AU02_r*ThreatCompc + 
+              AU04_r*timebeforepeak + AU04_r*timeafterpeak + AU04_r*ThreatCompc +  
+              AU05_r*timebeforepeak + AU05_r*timeafterpeak + AU05_r*ThreatCompc +
+              AU06_r*timebeforepeak + AU06_r*timeafterpeak + AU06_r*ThreatCompc + 
+              AU07_r*timebeforepeak + AU07_r*timeafterpeak + AU07_r*ThreatCompc +   
+              AU09_r*timebeforepeak + AU09_r*timeafterpeak + AU09_r*ThreatCompc +
+              AU10_r*timebeforepeak + AU10_r*timeafterpeak + AU10_r*ThreatCompc +   
+              AU12_r*timebeforepeak + AU12_r*timeafterpeak + AU12_r*ThreatCompc + 
+              AU14_r*timebeforepeak + AU14_r*timeafterpeak + AU14_r*ThreatCompc +
+              AU15_r*timebeforepeak + AU15_r*timeafterpeak + AU15_r*ThreatCompc +
+              AU17_r*timebeforepeak + AU17_r*timeafterpeak + AU17_r*ThreatCompc +
+              AU20_r*timebeforepeak + AU20_r*timeafterpeak + AU20_r*ThreatCompc +
+              AU23_r*timebeforepeak + AU23_r*timeafterpeak + AU23_r*ThreatCompc +
+              AU25_r*timebeforepeak + AU25_r*timeafterpeak + AU25_r*ThreatCompc +
+              AU26_r*timebeforepeak + AU26_r*timeafterpeak + AU26_r*ThreatCompc,
+             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
-#print(summary(mod)$tTable[,])
+print(summary(mod)$tTable[,])
 ```
 
-```{r echo=FALSE, results = 'asis'}
-labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU5", "TimeBeforePeak * AU5", "TimeAfterPeak * AU5", "ThreatCompc * AU5")
-
+```{r include=TRUE, echo=FALSE, results = 'asis'}
 colorder <- c("est", "df", "se", "p")
 
-tab_model(mod, title = "AU05 Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod, title = "Everything but the Kitchen Sink Summary Output", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
 rm(mod)
 ```
 
 ### AU5 Model X CTQ Total
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -884,7 +903,7 @@ mod <- lme(cortvalue ~ 0 +
               AU05_r*timebeforepeak + AU05_r*timeafterpeak + AU05_r*ctqsumC, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -894,24 +913,36 @@ summary(mod)
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU5", "TimeBeforePeak * AU5", "TimeAfterPeak * AU5", "CTQ Total * AU5")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "AU05 Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
 rm(mod)
 ```
 
-### AU9 Model X ThreatCompc
+```{r include=FALSE, echo=FALSE, results = 'asis'}
+#AU5 X ThreatCompc had to be optimized so I removed it entirely
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+#labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU5", "TimeBeforePeak * AU5", "TimeAfterPeak * AU5", "ThreatCompc * AU5")
+
+#colorder <- c("est", "se", "p")
+
+#tab_model(mod, title = "AU05 Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+#rm(mod)
+```
+
+### AU6 Model X CTQ Total
+
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
-              baseline + ThreatCompc + # Fixed effects
-              AU09_r*timebeforepeak + AU09_r*timeafterpeak + AU09_r*ThreatCompc, # Interactions
+              baseline + ctqsumC + # Fixed effects
+              AU06_r*timebeforepeak + AU06_r*timeafterpeak + AU06_r*ctqsumC, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -919,18 +950,45 @@ summary(mod)
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU9", "TimeBeforePeak * AU09", "TimeAfterPeak * AU09", "ThreatCompc * AU09")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU6", "TimeBeforePeak * AU6", "TimeAfterPeak * AU6", "CTQ Total * AU6")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
-tab_model(mod, title = "AU09 X ThreatCompc Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod, title = "AU06 Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+rm(mod)
+```
+
+### AU6 Model X ThreatCompc
+
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+mod <- lme(cortvalue ~ 0 +
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + ThreatCompc + # Fixed effects
+              AU06_r*timebeforepeak + AU06_r*timeafterpeak + AU06_r*ThreatCompc, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
+            corr = corCAR1(), # specifies CAR1 structure
+            control =  ctrl, # optimizes model
+            method = "REML", # specifies REML fit
+            data = cp_long)
+summary(mod) 
+#print(summary(mod)$tTable[,])
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU6", "TimeBeforePeak * AU6", "TimeAfterPeak * AU6", "ThreatCompc * AU6")
+
+colorder <- c("est", "se", "p")
+
+tab_model(mod, title = "AU06 Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
 rm(mod)
 ```
 
 ### AU9 Model X CTQ Total
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -938,7 +996,7 @@ mod <- lme(cortvalue ~ 0 +
               AU09_r*timebeforepeak + AU09_r*timeafterpeak + AU09_r*ctqsumC,
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -948,24 +1006,24 @@ summary(mod)
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU9", "TimeBeforePeak * AU09", "TimeAfterPeak * AU09", "CTQ Total * AU09")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "AU09 X CTQ Total Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
 rm(mod)
 ```
 
-### AU14 Model X ThreatCompc
+### AU9 Model X ThreatCompc
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + ThreatCompc + # Fixed effects
-              AU14_r*timebeforepeak + AU14_r*timeafterpeak + AU14_r*ThreatCompc,
-            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
+              AU09_r*timebeforepeak + AU09_r*timeafterpeak + AU09_r*ThreatCompc, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -973,18 +1031,18 @@ summary(mod)
 ```
 
 ```{r echo=FALSE, results = 'asis'}
-labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU14", "TimeBeforePeak * AU14", "TimeAfterPeak * AU14", "ThreatCompc * AU14")
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU9", "TimeBeforePeak * AU09", "TimeAfterPeak * AU09", "ThreatCompc * AU09")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
-tab_model(mod, title = "AU14 X ThreatCompc Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod, title = "AU09 X ThreatCompc Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
 rm(mod)
 ```
 
 ### AU14 Model X CTQ Total
 
-```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 mod <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -992,7 +1050,7 @@ mod <- lme(cortvalue ~ 0 +
               AU14_r*timebeforepeak + AU14_r*timeafterpeak + AU14_r*ctqsumC, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts  
             corr = corCAR1(), # specifies CAR1 structure
-            control = ctrl, # optimizes model
+            control =  ctrl, # optimizes model
             method = "REML", # specifies REML fit
             data = cp_long)
 summary(mod) 
@@ -1002,9 +1060,409 @@ summary(mod)
 ```{r echo=FALSE, results = 'asis'}
 labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU14", "TimeBeforePeak * AU14", "TimeAfterPeak * AU14", "CTQ Total * AU14")
 
-colorder <- c("est", "df", "se", "p")
+colorder <- c("est", "se", "p")
 
 tab_model(mod, title = "AU14 X CTQ Total Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 
 rm(mod)
+```
+
+### AU14 Model X ThreatCompc
+
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+mod <- lme(cortvalue ~ 0 +
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + ThreatCompc + # Fixed effects
+              AU14_r*timebeforepeak + AU14_r*timeafterpeak + AU14_r*ThreatCompc,
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
+            corr = corCAR1(), # specifies CAR1 structure
+            control =  ctrl, # optimizes model
+            method = "REML", # specifies REML fit
+            data = cp_long)
+summary(mod) 
+#print(summary(mod)$tTable[,])
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU14", "TimeBeforePeak * AU14", "TimeAfterPeak * AU14", "ThreatCompc * AU14")
+
+colorder <- c("est", "se", "p")
+
+tab_model(mod, title = "AU14 X ThreatCompc Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+rm(mod)
+```
+
+### AU15 Model X ThreatCompc
+
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+mod <- lme(cortvalue ~ 0 +
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + ThreatCompc + # Fixed effects
+              AU15_r*timebeforepeak + AU15_r*timeafterpeak + AU15_r*ThreatCompc,
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
+            corr = corCAR1(), # specifies CAR1 structure
+            control =  ctrl, # optimizes model
+            method = "REML", # specifies REML fit
+            data = cp_long)
+summary(mod) 
+#print(summary(mod)$tTable[,])
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU15", "TimeBeforePeak * AU15", "TimeAfterPeak * AU15", "ThreatCompc * AU15")
+
+colorder <- c("est", "se", "p")
+
+tab_model(mod, title = "AU15 X ThreatCompc Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+rm(mod)
+```
+
+### AU20 Model X CTQ Total
+
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+mod <- lme(cortvalue ~ 0 +
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + ctqsumC + # Fixed effects
+              AU20_r*timebeforepeak + AU20_r*timeafterpeak + AU20_r*ctqsumC, # Interactions
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts  
+            corr = corCAR1(), # specifies CAR1 structure
+            control =  ctrl, # optimizes model
+            method = "REML", # specifies REML fit
+            data = cp_long)
+summary(mod) 
+#print(summary(mod)$tTable[,])
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU20", "TimeBeforePeak * AU20", "TimeAfterPeak * AU20", "CTQ Total * AU20")
+
+colorder <- c("est", "se", "p")
+
+tab_model(mod, title = "AU20 X CTQ Total Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+rm(mod)
+```
+
+### AU20 Model X ThreatCompc
+
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+mod <- lme(cortvalue ~ 0 +
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + ThreatCompc + # Fixed effects
+              AU20_r*timebeforepeak + AU20_r*timeafterpeak + AU20_r*ThreatCompc,
+            random = ~ 0 + timebeforepeak + timeafterpeak | id, # Random slopes but not intercepts 
+            corr = corCAR1(), # specifies CAR1 structure
+            control =  ctrl, # optimizes model
+            method = "REML", # specifies REML fit
+            data = cp_long)
+summary(mod) 
+#print(summary(mod)$tTable[,])
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU20", "TimeBeforePeak * AU20", "TimeAfterPeak * AU20", "ThreatCompc * AU20")
+
+colorder <- c("est", "se", "p")
+
+tab_model(mod, title = "AU20 X ThreatCompc Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+rm(mod)
+```
+
+```{r include=FALSE, echo=FALSE, results = 'asis'}
+#AU25 X CTQ Total had to be optimized to get it to work so I removed it entirely
+
+#labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ Total", "AU25", "TimeBeforePeak * AU25", "TimeAfterPeak * AU25", "CTQ Total * AU25")
+
+#colorder <- c("est", "se", "p")
+
+#tab_model(mod, title = "AU25 X CTQ Total Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+#rm(mod)
+```
+
+```{r include=FALSE, echo=FALSE, results = 'asis'}
+#AU25 X ThreatCompc had to be optimized to get it to work so I removed it entirely
+
+#labels <- c("TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "AU25", "TimeBeforePeak * AU25", "TimeAfterPeak * AU25", "ThreatCompc * AU25")
+
+#colorder <- c("est", "se", "p")
+
+#tab_model(mod, title = "AU25 X ThreatCompc Summary Output", pred.labels = labels, dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+
+#rm(mod)
+```
+
+## Logistic Regression
+
+[Link to a guide on logistic regression.](https://stats.idre.ucla.edu/r/dae/logit-regression/)
+
+```{r include=FALSE}
+log1 <- glm(Responder ~ cortvalue, data=cp_long, family = "binomial")
+summary(log1)
+
+log2 <- glm(Responder ~ cortvalue + gender, data=cp_long, family = "binomial")
+summary(log2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "Cortisol", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("Cortisol", "Cortisol + Gender")
+
+tab_model(log1, log2, title = "Base Model Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+### Logistic Regression: Emotion
+
+#### Anger
+
+```{r include=FALSE}
+anger1 <- glm(Responder ~ anger, data=cp_long, family = "binomial")
+summary(anger1)
+
+anger2 <- glm(Responder ~ anger + gender, data=cp_long, family = "binomial")
+summary(anger2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "Anger", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("Anger", "Anger + Gender")
+
+tab_model(anger1, anger2, title = "Anger Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+#### Fear
+
+```{r include=FALSE}
+fear1 <- glm(Responder ~ fear, data=cp_long, family = "binomial")
+summary(fear1)
+
+fear2 <- glm(Responder ~ fear + gender, data=cp_long, family = "binomial")
+summary(fear2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "Fear", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("Fear", "Fear + Gender")
+
+tab_model(fear1, fear2, title = "Fear Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+#### Happiness
+
+```{r include=FALSE}
+happiness1 <- glm(Responder ~ happiness, data=cp_long, family = "binomial")
+summary(happiness1)
+
+happiness2 <- glm(Responder ~ happiness + gender, data=cp_long, family = "binomial")
+summary(happiness2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "Happiness", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("Happiness", "Happiness + Gender")
+
+tab_model(happiness1, happiness2, title = "Happiness Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+#### Sadness
+
+```{r include=FALSE}
+sadness1 <- glm(Responder ~ sadness, data=cp_long, family = "binomial")
+summary(sadness1)
+
+sadness2 <- glm(Responder ~ sadness + gender, data=cp_long, family = "binomial")
+summary(sadness2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "Sadness", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("Sadness", "Sadness + Gender")
+
+tab_model(sadness1, sadness2, title = "Sadness Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+#### Pain
+
+```{r include=FALSE}
+pain1 <- glm(Responder ~ pain, data=cp_long, family = "binomial")
+summary(pain1)
+
+pain2 <- glm(Responder ~ pain + gender, data=cp_long, family = "binomial")
+summary(pain2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "Pain", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("Pain", "Pain + Gender")
+
+tab_model(pain1, pain2, title = "Pain Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+### Logistic Regression: Trauma
+
+#### ThreatZSum
+
+```{r include=FALSE}
+ThreatZSum1 <- glm(Responder ~ ThreatZSum, data=cp_long, family = "binomial")
+summary(ThreatZSum1)
+
+ThreatZSum2 <- glm(Responder ~ ThreatZSum + gender, data=cp_long, family = "binomial")
+summary(ThreatZSum2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "ThreatZSum", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("ThreatZSum", "ThreatZSum + Gender")
+
+tab_model(ThreatZSum1, ThreatZSum2, title = "ThreatZSum Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+#### ThreatComp
+
+```{r include=FALSE}
+ThreatComp1 <- glm(Responder ~ ThreatComp, data=cp_long, family = "binomial")
+summary(ThreatComp1)
+
+ThreatComp2 <- glm(Responder ~ ThreatComp + gender, data=cp_long, family = "binomial")
+summary(ThreatComp2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "ThreatComp", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("ThreatComp", "ThreatComp + Gender")
+
+tab_model(ThreatComp1, ThreatComp2, title = "ThreatComp Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+#### ThreatCompc
+
+```{r include=FALSE}
+ThreatCompc1 <- glm(Responder ~ ThreatCompc, data=cp_long, family = "binomial")
+summary(ThreatCompc1)
+
+ThreatCompc2 <- glm(Responder ~ ThreatCompc + gender, data=cp_long, family = "binomial")
+summary(ThreatCompc2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "ThreatCompc", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("ThreatCompc", "ThreatCompc + Gender")
+
+tab_model(ThreatCompc1, ThreatCompc2, title = "ThreatCompc Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+#### ThreatDepInt
+
+```{r include=FALSE}
+ThreatDepInt1 <- glm(Responder ~ ThreatDepInt, data=cp_long, family = "binomial")
+summary(ThreatDepInt1)
+
+ThreatDepInt2 <- glm(Responder ~ ThreatDepInt + gender, data=cp_long, family = "binomial")
+summary(ThreatDepInt2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "ThreatDepInt", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("ThreatDepInt", "ThreatDepInt + Gender")
+
+tab_model(ThreatDepInt1, ThreatDepInt2, title = "ThreatDepInt Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+### Logistic Regression: AUs
+
+#### AU5
+
+```{r include=FALSE}
+AU5.1 <- glm(Responder ~ AU05_r, data=cp_long, family = "binomial")
+summary(AU5.1)
+
+AU5.2 <- glm(Responder ~ AU05_r + gender, data=cp_long, family = "binomial")
+summary(AU5.2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "AU5", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("AU5", "AU5 + Gender")
+
+tab_model(AU5.1, AU5.2, title = "AU5 Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+#### AU9
+
+```{r include=FALSE}
+AU9.1 <- glm(Responder ~ AU09_r, data=cp_long, family = "binomial")
+summary(AU9.1)
+
+AU9.2 <- glm(Responder ~ AU09_r + gender, data=cp_long, family = "binomial")
+summary(AU9.2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "AU9", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("AU9", "AU9 + Gender")
+
+tab_model(AU9.1, AU9.2, title = "AU9 Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+#### AU14
+
+```{r include=FALSE}
+AU14.1 <- glm(Responder ~ AU14_r, data=cp_long, family = "binomial")
+summary(AU14.1)
+
+AU14.2 <- glm(Responder ~ AU14_r + gender, data=cp_long, family = "binomial")
+summary(AU14.2)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "AU14", "Gender")
+
+colorder <- c("est", "se", "p")
+
+title <- c("AU14", "AU14 + Gender")
+
+tab_model(AU14.1, AU14.2, title = "AU14 Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
