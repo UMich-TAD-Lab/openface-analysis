@@ -61,8 +61,8 @@ library(aod)
 ```
 
 ```{r Load in data, include=FALSE}
-#cp_long <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_long.csv", header=TRUE, sep=",")
-cp_long <- read.csv(file="/Users/Julianna/Desktop/data/cp_long.csv", header=TRUE, sep=",")
+cp_long <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_long.csv", header=TRUE, sep=",")
+#cp_long <- read.csv(file="/Users/Julianna/Desktop/data/cp_long.csv", header=TRUE, sep=",")
 cp_long$X <- NULL
 cp_long$gender <- as.integer(cp_long$gender)
 cp_long$gendercat <- as.character(cp_long$gendercat)
@@ -96,7 +96,7 @@ Other packages include [glmmTMB](https://cran.r-project.org/web/packages/glmmTMB
 
 ## 2. Random intercepts, random slopes, or both?
 
-```{r Base models, results='hide', echo=FALSE}
+```{r Base models, results='hide', echo=TRUE}
 ctrl <- lmeControl(opt='optim')
 
 mod1 <- lme(cortvalue ~
@@ -136,11 +136,11 @@ summary(mod3)
 ```{r echo=FALSE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod1, title = "Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod2, title = "Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod2, title = "Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod3, title = "Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod3, title = "Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
 So... which model should I go with? Since I know for a fact that at least one of the threat variables from Tyler's ThreatDep dataset (e.g. ThreatCompc) is a significant predict of cortisol reactivity, then I should go with the model that mimics that. While this isn't the most scientific method, I want consistency with other researchers in the lab. I'm also going to optimize all the models so one doesn't have an unfair advantage. 
@@ -151,7 +151,7 @@ rm(mod2)
 rm(mod3)
 ```
 
-```{r Threat models, results='hide', echo=FALSE}
+```{r Threat models, results='hide', echo=TRUE}
 ctrl <- lmeControl(opt='optim')
 
 mod1 <- lme(cortvalue ~
@@ -194,11 +194,11 @@ summary(mod3)
 ```{r echo=FALSE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "Threat Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod1, title = "Threat Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod2, title = "Threat Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod2, title = "Threat Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod3, title = "Threat Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod3, title = "Threat Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
 ```{r include=FALSE, echo=FALSE}
@@ -213,7 +213,7 @@ None of them are significant. Which is why we'll move onto the next issue...
 
 I've added nothing to the beginning of every model, because if I don't, the values become very, very small, except baseline, which becomes very, very big (relative to everything else). I think adding 1 to every model also allows the intercept to vary randomly, so maybe the data depises random intercepts.
 
-```{r, results='hide', echo=FALSE}
+```{r, results='hide', echo=TRUE}
 ctrl <- lmeControl(opt='optim')
 
 mod1 <- lme(cortvalue ~ 1 + 
@@ -258,16 +258,16 @@ anova(mod1, mod2, mod3)
 ```{r echo=FALSE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "1 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod1, title = "1 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod2, title = "1 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod2, title = "1 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod3, title = "1 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod3, title = "1 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
 It seems like adding one is equivalent to adding nothing, so let's try adding zero.
 
-```{r, results='hide', echo=FALSE}
+```{r, results='hide', echo=TRUE}
 ctrl <- lmeControl(opt='optim')
 
 mod1 <- lme(cortvalue ~ 0 +
@@ -310,11 +310,11 @@ summary(mod3)
 ```{r echo=FALSE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "0 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod1, title = "0 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod2, title = "0 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod2, title = "0 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod3, title = "0 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod3, title = "0 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
 So, in conclusion, the data HATES random intercepts. Just really despises them. Nothing is significant when I let the intercepts vary. BUT when I don't let them vary, I get a significant result with ThreatCompc. 
@@ -323,7 +323,7 @@ So, in conclusion, the data HATES random intercepts. Just really despises them. 
 
 ### Plus Zero
 
-```{r 0 + Optimized, error=TRUE, results='hide', echo=FALSE}
+```{r 0 + Optimized, error=TRUE, results='hide', echo=TRUE}
 ctrl <- lmeControl(opt='optim')
 
 mod1 <- lme(cortvalue ~ 0 +
@@ -366,14 +366,14 @@ summary(mod3)
 ```{r echo=FALSE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "0 + Optimized Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod1, title = "0 + Optimized Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod2, title = "0 + Optimized Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod2, title = "0 + Optimized Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod3, title = "0 + Optimized Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod3, title = "0 + Optimized Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
-```{r 0 + Not optimized, error=TRUE, results='hide', echo=FALSE}
+```{r 0 + Not optimized, error=TRUE, results='hide', echo=TRUE}
 mod1 <- lme(cortvalue ~ 0 +
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -414,16 +414,16 @@ mod3 <- lme(cortvalue ~ 0 +
 ```{r echo=FALSE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "Not Optimized 0 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod1, title = "Not Optimized 0 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod2, title = "Not Optimized 0 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod2, title = "Not Optimized 0 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod3, title = "Not Optimized 0 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod3, title = "Not Optimized 0 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
 ### Plus 1
 
-```{r 1 + Optimized, error=TRUE, results='hide', echo=FALSE}
+```{r 1 + Optimized, error=TRUE, results='hide', echo=TRUE}
 ctrl <- lmeControl(opt='optim')
 
 mod1 <- lme(cortvalue ~ 1 +
@@ -466,14 +466,14 @@ summary(mod3)
 ```{r echo=FALSE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "Optimized Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod1, title = "Optimized Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod2, title = "Optimized Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod2, title = "Optimized Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod3, title = "Optimized Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod3, title = "Optimized Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
-```{r 1 + Not optimized, error=TRUE, results='hide', echo=FALSE}
+```{r 1 + Not optimized, error=TRUE, results='hide', echo=TRUE}
 mod1 <- lme(cortvalue ~ 1 + 
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -515,19 +515,19 @@ summary(mod3)
 ```{r echo=FALSE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "Not Optimized 1 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod1, title = "Not Optimized 1 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 #Significant!
 
-tab_model(mod2, title = "Not Optimized 1 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod2, title = "Not Optimized 1 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
-tab_model(mod3, title = "Not Optimized 1 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+tab_model(mod3, title = "Not Optimized 1 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
-## Trying lmer models
+## 5. Alternative: Use lme4!
 
-### lmer: just intercepts
+### lmer Intercepts
 
-```{r}
+```{r results='hide', echo=TRUE}
 lmer1 <- lmer(cortvalue ~ 
               #The 1 allows us to have a random/varying intercept for each subject
               timebeforepeak + # Fixed effect
@@ -540,9 +540,9 @@ summary(lmer1)
 #Significant
 ```
 
-### lmer: just slopes
+### lmer Slopes
 
-```{r}
+```{r results='hide', echo=TRUE}
 lmer2 <- lmer(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -554,9 +554,9 @@ summary(lmer2)
 #Not significant
 ```
 
-### lmer intercepts and slopes
+### lmer Intercepts and Slopes
 
-```{r}
+```{r results='hide', echo=TRUE}
 lmer3 <- lmer(cortvalue ~ 
             timebeforepeak + # Fixed effect
             timeafterpeak + # Fixed effect
@@ -566,6 +566,17 @@ lmer3 <- lmer(cortvalue ~
             data = cp_long)
 summary(lmer3)
 #Not significant
+```
+
+```{r echo=FALSE}
+colorder <- c("est", "se", "p")
+
+tab_model(lmer1, title = "Not Optimized 1 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.r2=TRUE, col.order=colorder)
+#Significant!
+
+tab_model(lmer2, title = "Not Optimized 1 + Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.r2=TRUE, col.order=colorder)
+
+tab_model(lmer3, title = "Not Optimized 1 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.r2=TRUE, col.order=colorder)
 ```
 
 ## Conclusion for the nlme models
