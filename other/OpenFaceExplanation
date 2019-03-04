@@ -251,6 +251,8 @@ mod3 <- lme(cortvalue ~ 1 +
             control = ctrl, # optimizes model
             data = cp_long)
 summary(mod3)
+
+anova(mod1, mod2, mod3)
 ```
 
 ```{r echo=FALSE}
@@ -406,7 +408,7 @@ mod3 <- lme(cortvalue ~ 0 +
             method = "REML", # specifies REML fit
             #control = ctrl, # optimizes model
             data = cp_long)
-summary(mod3) 
+#summary(mod3) #Unable to converge
 ```
 
 ```{r echo=FALSE}
@@ -521,20 +523,60 @@ tab_model(mod2, title = "Not Optimized 1 + Random Slopes", dv.labels = "Cortisol
 tab_model(mod3, title = "Not Optimized 1 + Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
-## Conclusion
+## Trying lmer models
 
-There are ONLY two models that find ThreatCompc significant (if you count 0.053 as the threshold of significance):
+### lmer: just intercepts
 
-* mod1
-    * ThreatCompc, p = 0.053
-    * Random intercept model
-    * Random effect: ID
-    * Not optimized
-* mod2
-    * TimeBeforePeak X ThreatCompc
-        * p = 0.008 if optimized
-        * p = 0.042 if not optimized
-    * Random slope model
-    * Random effects: TimeBeforePeak, TimeAfterPeak
+```{r}
+lmer1 <- lmer(cortvalue ~ 
+              #The 1 allows us to have a random/varying intercept for each subject
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + # Interactions
+            (1|timebeforepeak) + (1|timeafterpeak),
+            data = cp_long)
+summary(lmer1)
+#Significant
+```
 
-I cannot find a model that if significant in anyway to ThreatCompc that involves having random slopes AND random intercepts. I have no idea what this means.
+### lmer: just slopes
+
+```{r}
+lmer2 <- lmer(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + # Interactions
+            (timebeforepeak|id) + (timeafterpeak|id),
+            data = cp_long)
+summary(lmer2)
+#Not significant
+```
+
+### lmer intercepts and slopes
+
+```{r}
+lmer3 <- lmer(cortvalue ~ 
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + # Interactions
+            (1 + timebeforepeak|id) + (1 + timeafterpeak|id),
+            data = cp_long)
+summary(lmer3)
+#Not significant
+```
+
+## Conclusion for the nlme models
+
+There is only one nlme model that find ThreatCompc significant (if you count 0.053 as the threshold of significance):
+
+* ThreatCompc, p = 0.053
+* Random intercept model
+* Random effect: timebeforepeak, timeafterpeak
+* Not optimized
+
+The above equivalent's in lmer is also significant, and even more so, so it would almost make more sense to just use lmer, especially since it doesn't need to be optimized. Not using nlme means I lose the AR1/CAR1 aspect, but honestly it doesn't seem to make that much of a difference.
+
+I cannot find a model that if significant in anyway to ThreatCompc that involves having random slopes AND random intercepts. I have no idea what this means. Ugh but I NEED to make a significant model with both random intercepts and slopes ...
