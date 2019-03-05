@@ -431,10 +431,11 @@ rm(lmer3)
     * Not for now, at least. `nlme` is doing fine. However, the `lme4`'s random intercept model is promising and I might come back to that.
 
 It looks like the best model for me:
+
 * uses nlme
 * has random slopes
 * is optimized
-* uses a AR1 structure
+* uses an AR1 structure
 
 ```{r}
 bestmod <- lme(cortvalue ~
