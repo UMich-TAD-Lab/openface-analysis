@@ -91,9 +91,9 @@ This is a document I put together while writing [OpenFaceAnalysis](https://githu
 
 ## 1. Which R package to choose? 
 
-While there are many R packages that can conduct mixed modeling, the two most popular choices are the [lme4 package](https://cran.r-project.org/web/packages/lme4/lme4.pdf) with the lmer4 command and the [nlme package](https://cran.r-project.org/web/packages/nlme/nlme.pdf) with the lme command. Both are suitable alternatives to SAS' PROC MIXED command: [lme4 here](https://cran.r-project.org/web/packages/SASmixed/vignettes/Usinglmer.pdf), [nlme here](http://www.solutionmetrics.com.au/support/splus82win/lmeSAS.pdf). Ultimately, I decided to go with the nlme package. The main reason I went with nlme is because nlme allows me to specify a correlation structure (e.g. CAR1, AR1), while lme4 automatically [defaults to unstructured and is unable to be changed.](https://stats.stackexchange.com/questions/86958/variance-covariance-structure-for-random-effects-in-lme4) It is important to note that both packages allow me to have multiple crossed random effects, something I originally thought was impossible with nlme.
+While there are many R packages that can conduct mixed modeling, the two most popular choices are the [lme4 package](https://cran.r-project.org/web/packages/lme4/lme4.pdf) with the lmer command and the [nlme package](https://cran.r-project.org/web/packages/nlme/nlme.pdf) with the lme command. Both are suitable alternatives to SAS' PROC MIXED command: [lme4 here](https://cran.r-project.org/web/packages/SASmixed/vignettes/Usinglmer.pdf), [nlme here](http://www.solutionmetrics.com.au/support/splus82win/lmeSAS.pdf). Ultimately, I decided to go with the nlme package. The main reason I went with nlme is because nlme allows me to specify a correlation structure (e.g. CAR1, AR1), while lme4 automatically [defaults to unstructured and is unable to be changed.](https://stats.stackexchange.com/questions/86958/variance-covariance-structure-for-random-effects-in-lme4) It is important to note that both packages allow me to have multiple crossed random effects, something I originally thought was impossible with nlme.
 
-Other packages include [glmmTMB](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf) and [brms](https://cran.r-project.org/web/packages/brms/brms.pdf). However, glmmTMB seems to offer nothing more than what nlme can offer and brms is used for Bayesian regression modelling. While one day I hope to learn more about Bayesian modelling, brms is not the suitable option since Bayesian methods weren't used in Lopez-Duran 2014.
+Other packages include [glmmTMB](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf) and [brms](https://cran.r-project.org/web/packages/brms/brms.pdf). However, glmmTMB seems to offer nothing more than what nlme can offer and brms is used for Bayesian regression modelling, which wasn't used in Lopez-Duran 2014.
 
 ## 2. Random intercepts, random slopes, or both?
 
@@ -129,7 +129,7 @@ mod3 <- lme(cortvalue ~
             data = cp_long)
 ```
 
-```{r echo=FALSE , error=TRUE}
+```{r echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 
 tab_model(mod1, title = "Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
@@ -139,9 +139,9 @@ tab_model(mod2, title = "Random Slopes", dv.labels = "Cortisol", show.icc=FALSE,
 tab_model(mod3, title = "Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
-So... which model should I go with? Since I know for a fact that at least one of the threat variables from Tyler's ThreatDep dataset (e.g. ThreatCompc) is a significant predict of cortisol reactivity, then I should go with the model that mimics that. While this isn't the most scientific method, this should point me in the right direction when translating from SAS to R. 
+So which model should I go with? Since I know for a fact that at least one of the threat variables from Tyler's ThreatDep dataset (e.g. ThreatCompc) is a significant predict of cortisol reactivity, then I should go with the model that mimics that. While this isn't the most scientific method, this should point me in the right direction when translating from SAS to R. 
 
-```{r include=FALSE, echo=FALSE , error=TRUE}
+```{r include=FALSE, echo=FALSE, error=TRUE}
 rm(mod1)
 rm(mod2)
 rm(mod3)
@@ -184,10 +184,10 @@ mod3 <- lme(cortvalue ~
             data = cp_long)
 ```
 
-```{r echo=FALSE , error=TRUE}
+```{r echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 
-tab_model(mod1, title = "Threat Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder, CSS = list(css.table = 'background-color: #f4ebb7;'))
+tab_model(mod1, title = "Threat Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder, CSS = list(css.table = 'background-color: #fff8d3;'))
 
 tab_model(mod2, title = "Threat Random Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder,  CSS = list(
   css.table = 'background-color: #f4ebb7;'
@@ -197,7 +197,7 @@ tab_model(mod2, title = "Threat Random Slopes", dv.labels = "Cortisol", show.icc
 tab_model(mod3, title = "Threat Random Intercepts and Slopes", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 ```
 
-```{r include=FALSE, echo=FALSE , error=TRUE}
+```{r include=FALSE, echo=FALSE, error=TRUE}
 rm(mod1)
 rm(mod2)
 rm(mod3)
@@ -246,12 +246,12 @@ mod3 <- lme(cortvalue ~ 1 +
             data = cp_long)
 ```
 
-```{r echo=FALSE , error=TRUE}
+```{r echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 
 tab_model(mod1, title = "1 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder,
             CSS = list(
-  css.table = 'background-color: #f4ebb7;'
+  css.table = 'background-color: #fff8d3;'
  )
 )
 
@@ -301,7 +301,7 @@ mod3 <- lme(cortvalue ~ 0 +
             data = cp_long)
 ```
 
-```{r echo=FALSE , error=TRUE}
+```{r echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 
 tab_model(mod1, title = "0 + Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
@@ -356,7 +356,7 @@ mod3 <- lme(cortvalue ~ 0 +
             data = cp_long)
 ```
 
-```{r echo=FALSE , error=TRUE}
+```{r echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 
 tab_model(mod1, title = "0 + Optimized Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
@@ -407,7 +407,7 @@ mod3 <- lme(cortvalue ~ 0 +
             data = cp_long)
 ```
 
-```{r echo=FALSE , error=TRUE}
+```{r echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 
 tab_model(mod1, title = "Not Optimized + 0 Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
@@ -463,11 +463,11 @@ mod3 <- lme(cortvalue ~ 1 +
             data = cp_long)
 ```
 
-```{r echo=FALSE , error=TRUE}
+```{r echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 
 tab_model(mod1, title = "Optimized + 1 Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder,  CSS = list(
-  css.table = 'background-color: #f4ebb7;'
+  css.table = 'background-color: #fff8d3;'
  )
 )
 
@@ -517,11 +517,11 @@ mod3 <- lme(cortvalue ~ 1 +
             data = cp_long)
 ```
 
-```{r echo=FALSE , error=TRUE}
+```{r echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 
 tab_model(mod1, title = "Not Optimized + 1 Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder,  CSS = list(
-  css.table = 'background-color: #f4ebb7;'
+  css.table = 'background-color: #fff8d3;'
  )
 )
 
@@ -569,7 +569,7 @@ colorder <- c("est", "se", "p")
 tab_model(car1, title = "corCAR1 Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
 
 tab_model(ar1, title = "corAR1 Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder,  CSS = list(
-  css.table = 'background-color: #f4ebb7;'
+  css.table = 'background-color: #fff8d3;'
  )
 )
 
@@ -577,11 +577,12 @@ rm(car1)
 rm(ar1)
 ```
 
-## 6. Use lme4? 
+## 6. Use lme4?
 
-### lmer Intercepts
+The main reason I might want to use `lme4` is that for the random intercepts model, I think I can let the intercept vary using TimeBeforePeak and TimeAfterPeak. With `nlme`'s random intercept model, I can only specify one variable, which I chose to be id.
 
 ```{r results='hide', echo=TRUE, error=TRUE}
+# lmer intercepts
 lmer1 <- lmer(cortvalue ~ 
               #The 1 allows us to have a random/varying intercept for each subject
               timebeforepeak + # Fixed effect
@@ -590,11 +591,8 @@ lmer1 <- lmer(cortvalue ~
              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + # Interactions
             (1|timebeforepeak) + (1|timeafterpeak),
             data = cp_long)
-```
 
-### lmer Slopes
-
-```{r results='hide', echo=TRUE , error=TRUE}
+# lmer Slopes
 lmer2 <- lmer(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -602,11 +600,8 @@ lmer2 <- lmer(cortvalue ~
              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + # Interactions
             (timebeforepeak|id) + (timeafterpeak|id),
             data = cp_long)
-```
 
-### lmer Intercepts and Slopes
-
-```{r results='hide', echo=TRUE , error=TRUE}
+# lmer Intercepts and Slopes
 lmer3 <- lmer(cortvalue ~ 
             timebeforepeak + # Fixed effect
             timeafterpeak + # Fixed effect
@@ -616,7 +611,7 @@ lmer3 <- lmer(cortvalue ~
             data = cp_long)
 ```
 
-```{r echo=FALSE , error=TRUE}
+```{r echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 
 tab_model(lmer1, title = "lmer Random Intercepts", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.r2=TRUE, col.order=colorder,  CSS = list(
@@ -640,16 +635,16 @@ rm(lmer3)
 2. Random intercepts, slopes, or both?
     * As far as I can see, the data doesn't like it when intercepts _and_ slopes are allowed to randomly vary. For some of the weird combinations I tried out, the results for a Random Intercept model and a Random Intercept and Slope model are very similiar, [which I think means that there is not that much of a random intercept for that specific model.](https://stat.ethz.ch/pipermail/r-help/2012-June/315439.html)
 3. Should I add "+ 1" before every model?
-    * `+ 1` is equivalent to adding nothing (aka a normal model), so the question is really if I should add zero. I think the answer for that is no, since adding 0 (to my knowledge) suppresses the intercept's ability to vary randomly.
+    * `+ 1` is equivalent to adding nothing (aka a normal model), so the question is really if I should add zero. I think the answer for that is no, since adding 0 (to my knowledge) suppresses the intercept's ability to vary randomly and I can do that better in the `random` argument. 
 4. Optimization?
     * Yes, the only time it really affects things is when a model is unable to converge, then optimization repairs that.
 5. AR1 or CAR1?
     * I should use AR1. 
 6. Use lme4?
-    * Not for now, at least. `nlme` is doing fine. 
+    * Not for now, at least. `nlme` is doing fine. However, the `lme4`'s random intercept model is promising and I might come back to that.
 
 It looks like the best model for me:
-    * uses `nlme1
+    * uses `nlme1`
     * has random slopes
     * doesn't add anything to the beginning of the  model
     * is optimized
@@ -668,10 +663,9 @@ bestmod <- lme(cortvalue ~
             data = cp_long)
 ```
 
-```{r}
+```{r echo=FALSE, error=TRUE}
 tab_model(bestmod, title = "The Best Model", dv.labels = "Cortisol", show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder,  CSS = list(
   css.table = 'background-color: #f4ebb7;'
  )
 )
 ```
-
