@@ -12,5 +12,5 @@ Before running anything, make sure you put these files somewhere so they can be 
 5. OpenFaceReformat: This takes "cp_joined.csv" and turns it from a wide format into a long format. This file should be run directly after OpenFaceProgress and will generate a file called "cp_long.csv".
 6. OpenFaceAnalysis: This actually starts meaningful analysis in the form of mixed models. Utilizes the nlme() and lme4() packages. 
 
-## Notes to self: 
+## Notes to self
 - Need to add more demographic variables to OpenFaceProgress and OpenFaceReformat
