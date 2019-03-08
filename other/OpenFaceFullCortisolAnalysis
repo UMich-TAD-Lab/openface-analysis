@@ -1,0 +1,307 @@
+---
+title: "OpenFace Full Cortisol Analysis"
+author: "Julianna Calabrese"
+date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(mosaic)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(psych)
+library(nlme)
+library(plyr)
+library(Hmisc)
+library(data.table)
+library(MASS)
+library(car)
+library(rmarkdown)
+library(shiny)
+library(yaml)
+```
+
+## Read in data
+
+```{r}
+cortisol <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv", header=TRUE, sep=",")
+cortisol$X <- NULL
+```
+
+## OpenFaceProgress?
+
+You would add gender and other stuff here if you weren't feeling lazy right now. 
+
+## OpenFaceReformat
+
+## Making df
+
+```{r}
+df <- cortisol[c("id","cort4bc","cort5bc","cort6bc","cort7bc","cort8bc","cort9bc","cort10bc","cort11bc","cort12bc","s4time","s5time","s6time","s7time","s8time","s9time","s10time","s11time","s12time","cort_baseline_Win", "Responder")]
+
+df2 <- cortisol[c("cort4bc","cort5bc","cort6bc","cort7bc","cort8bc","cort9bc","cort10bc","cort11bc","cort12bc")]
+#This just includes (the Box-Cox-transformed) cortisol values
+
+df3 <- cortisol[c("s4time","s5time","s6time","s7time","s8time","s9time","s10time","s11time","s12time")]
+#This just includes the time values associated with the corresponding cortisol values
+
+df$peakname <- colnames(df2)[max.col(df2,ties.method="first")]
+df$peaktime <- colnames(df3)[max.col(df2,ties.method="first")]
+df$peaktimenum <- NA 
+df$peaktimenum <- ifelse(df$peaktime == "s4time", df$s4time, 
+    ifelse(df$peaktime == "s5time", df$s5time,
+    ifelse(df$peaktime == "s6time", df$s6time,
+    ifelse(df$peaktime == "s7time", df$s7time,
+    ifelse(df$peaktime == "s8time", df$s8time,
+    ifelse(df$peaktime == "s9time", df$s9time,
+    ifelse(df$peaktime == "s10time", df$s10time,
+    ifelse(df$peaktime == "s11time", df$s11time,
+    ifelse(df$peaktime == "s12time", df$s12time,NA)))))))))
+rm(df2)
+rm(df3)
+```
+
+## Making dfgather
+
+```{r warning=FALSE}
+dfgather <- gather(df, cortisol, cortvalue, cort4bc:cort12bc, factor_key=TRUE)
+
+dfgather$stime <- 0
+dfgather$stime[dfgather$cortisol == "cort4bc"] <- dfgather$s4time
+dfgather$stime[dfgather$cortisol == "cort5bc"] <- dfgather$s5time
+dfgather$stime[dfgather$cortisol == "cort6bc"] <- dfgather$s6time
+dfgather$stime[dfgather$cortisol == "cort7bc"] <- dfgather$s7time
+dfgather$stime[dfgather$cortisol == "cort8bc"] <- dfgather$s8time
+dfgather$stime[dfgather$cortisol == "cort9bc"] <- dfgather$s9time
+dfgather$stime[dfgather$cortisol == "cort10bc"] <- dfgather$s10time
+dfgather$stime[dfgather$cortisol == "cort11bc"] <- dfgather$s11time
+dfgather$stime[dfgather$cortisol == "cort12bc"] <- dfgather$s12time
+```
+
+```{r}
+dfgather$timenum <- 0
+dfgather$timenum[dfgather$cortisol == "cort4bc"] <- 4
+dfgather$timenum[dfgather$cortisol == "cort5bc"] <- 5
+dfgather$timenum[dfgather$cortisol == "cort6bc"] <- 6
+dfgather$timenum[dfgather$cortisol == "cort7bc"] <- 7
+dfgather$timenum[dfgather$cortisol == "cort8bc"] <- 8
+dfgather$timenum[dfgather$cortisol == "cort9bc"] <- 9
+dfgather$timenum[dfgather$cortisol == "cort10bc"] <- 10
+dfgather$timenum[dfgather$cortisol == "cort11bc"] <- 11
+dfgather$timenum[dfgather$cortisol == "cort12bc"] <- 12
+```
+
+```{r}
+dfgather$s4time <- NULL
+dfgather$s5time <- NULL
+dfgather$s6time <- NULL
+dfgather$s7time <- NULL
+dfgather$s8time <- NULL
+dfgather$s9time <- NULL
+dfgather$s10time <- NULL
+dfgather$s11time <- NULL
+dfgather$s12time <- NULL
+```
+
+## Creating cortisol_new
+
+```{r}
+cortisol_new <- dfgather
+rm(dfgather)
+rm(df)
+rm(cortisol)
+```
+
+## Pre-Analysis Cleaning
+
+```{r}
+cortisol_new$id <- as.factor(cortisol_new$id)
+cortisol_new$Responder <- as.factor(cortisol_new$Responder)
+```
+
+## Centering
+
+```{r}
+#hist(cortisol_new$peaktimenum, main = "Uncentered peaktimenum", col = 'gray')
+cortisol_new$peaktimenumC <- scale(cortisol_new$peaktimenum)
+#hist(cortisol_new$peaktimenumC, main = "Centered peaktimenum", col = rainbow(8))
+
+#hist(cortisol_new$cortvalue, main = "Uncentered cortvalue", col = 'gray')
+cortisol_new$cortvalueC <- scale(cortisol_new$cortvalue)
+#hist(cortisol_new$cortvalueC, main = "Centered cortvalue", col = rainbow(8))
+
+#hist(cortisol_new$cort_baseline_Win, main = "Uncentered cortisol baseline", col = 'gray')
+cortisol_new$cort_baseline_WinC <- scale(cortisol_new$cort_baseline_Win)
+#hist(cortisol_new$cort_baseline_WinC, main = "Centered cortvalue", col = rainbow(8))
+
+#hist(cortisol_new$stime, main = "Uncentered stime", col = 'gray')
+cortisol_new$stimeC <- scale(cortisol_new$stime)
+#hist(cortisol_new$stimeC, main = "Centered stime", col = rainbow(8))
+```
+
+## Pseudo-Centering
+
+```{r}
+#This is timenum's version of centering
+cortisol_new$timenumC <- 0
+cortisol_new$timenumC[cortisol_new$timenum==4] <- 1
+cortisol_new$timenumC[cortisol_new$timenum==5] <- 2
+cortisol_new$timenumC[cortisol_new$timenum==6] <- 3
+cortisol_new$timenumC[cortisol_new$timenum==7] <- 4
+cortisol_new$timenumC[cortisol_new$timenum==8] <- 5
+cortisol_new$timenumC[cortisol_new$timenum==9] <- 6
+cortisol_new$timenumC[cortisol_new$timenum==10] <- 7
+cortisol_new$timenumC[cortisol_new$timenum==11] <- 8
+cortisol_new$timenumC[cortisol_new$timenum==12] <- 9
+
+cortisol_new$timenum <- as.factor(cortisol_new$timenum)
+cortisol_new$timenumC <- as.factor(cortisol_new$timenumC)
+```
+
+```{r}
+#Creating a variable called peaknamenum that directly corresponds to peakname but is numeric (kind of)
+cortisol_new$peaknamenum <- 0
+cortisol_new$peaknamenum[cortisol_new$peakname=='cort4bc'] <- 1
+cortisol_new$peaknamenum[cortisol_new$peakname=='cort5bc'] <- 2
+cortisol_new$peaknamenum[cortisol_new$peakname=='cort6bc'] <- 3
+cortisol_new$peaknamenum[cortisol_new$peakname=='cort7bc'] <- 4
+cortisol_new$peaknamenum[cortisol_new$peakname=='cort8bc'] <- 5
+cortisol_new$peaknamenum[cortisol_new$peakname=='cort9bc'] <- 6
+cortisol_new$peaknamenum[cortisol_new$peakname=='cort10bc'] <- 7
+cortisol_new$peaknamenum[cortisol_new$peakname=='cort11bc'] <- 8
+cortisol_new$peaknamenum[cortisol_new$peakname=='cort12bc'] <- 9
+```
+
+## Landmark Registration
+
+### Creating variables: maxtime, timetopeak, timebeforepeak, timeafterpeak
+
+Do NOT use any kind of centered variables when making the below variables!
+
+```{r}
+cortisol_new$maxtime <- 0
+cortisol_new$maxtime <- ave(cortisol_new$stime, cortisol_new$id, FUN = max)
+#hist(cortisol_new$maxtime, main = "#histogram of maxtime", col=rainbow(8))
+```
+
+```{r}
+cortisol_new$timetopeak <- 0
+#peaktimenum - stime = minutes from peak
+#Multiplied by -1 so that times before peak are negative and times after peak are positive (for next step: creating TimeBeforePeak and TimeAfterPeak)
+cortisol_new$timetopeak <- (cortisol_new$peaktimenum - cortisol_new$stime) * -1
+#hist(cortisol_new$timetopeak, main = "#histogram of timetopeak", col=rainbow(8))
+```
+
+From Melissa's code:
+
+* Creating TimeBeforePeak and TimeAfterPeak (reactivity and recovery times, respectively):
+    + When Time2Pk is negative, TimeBeforePeak = minutes from peak at each sampling time
+    + When Time2Pk is positive, TimeBeforePeak = 0
+    + When Time2Pk is positive, TimeAfterPeak = minutes from peak at each sampling time
+    + When Time2Pk is negative, TimeAfterPeak = 0
+
+```{r}
+#timebeforepeak aka the reactivity slope
+cortisol_new$timebeforepeak <- 0
+cortisol_new$timebeforepeak <- ifelse(cortisol_new$timetopeak < 0, cortisol_new$timetopeak, 0)
+#If timetopeak < 0 (aka negative), then timebeforepeak = timetopeak
+#If timetopeak > 0 (aka positive), then timebeforepeak = 0
+#hist(cortisol_new$timebeforepeak, main = "#histogram of timebeforepeak",col=rainbow(8))
+
+#timeafterpeak aka the recovery slope
+cortisol_new$timeafterpeak <- 0
+cortisol_new$timeafterpeak <- ifelse(cortisol_new$timetopeak > 0, cortisol_new$timetopeak, 0)
+#If timetopeak > 0 (aka positive), then timeafterpeak = timetopeak
+#If timetopeak < 0 (aka negative), then timeafterpeak = 0
+#hist(cortisol_new$timeafterpeak, main = "#histogram of timeafterpeak",col=rainbow(8))
+```
+
+### Creating variables: maxgrouptime, timebeforegrouppeak, timeaftergrouppeak
+
+```{r}
+#Uhhhh... I'll do that later. I'm not 100% sure what I should use as the "group" anyway. 
+#Maybe I don't even need to do this step. 
+```
+
+## Creating variables: sampletime, which corresponds directly to minutes post-SECPT
+
+Sample 4: 0
+Sample 5: 3
+Sample 6: 15
+Sample 7: 25
+Sample 8: 30
+Sample 9: 35
+Sample 10: 40
+Sample 11: 45
+Sample 12: 60
+
+```{r Creating sampletime}
+cortisol_new$sampletime <- 0
+cortisol_new$sampletime[cortisol_new$cortisol=='cort4bc'] <- 0
+cortisol_new$sampletime[cortisol_new$cortisol=='cort5bc'] <- 3
+cortisol_new$sampletime[cortisol_new$cortisol=='cort6bc'] <- 15
+cortisol_new$sampletime[cortisol_new$cortisol=='cort7bc'] <- 25
+cortisol_new$sampletime[cortisol_new$cortisol=='cort8bc'] <- 30
+cortisol_new$sampletime[cortisol_new$cortisol=='cort9bc'] <- 35
+cortisol_new$sampletime[cortisol_new$cortisol=='cort10bc'] <- 40
+cortisol_new$sampletime[cortisol_new$cortisol=='cort11bc'] <- 45
+cortisol_new$sampletime[cortisol_new$cortisol=='cort12bc'] <- 60
+```
+
+```{r Creating samplepeaknamenum}
+cortisol_new$samplepeaknamenum <- 0
+cortisol_new$samplepeaknamenum[cortisol_new$peakname=='cort4bc'] <- 0
+cortisol_new$samplepeaknamenum[cortisol_new$peakname=='cort5bc'] <- 3
+cortisol_new$samplepeaknamenum[cortisol_new$peakname=='cort6bc'] <- 15
+cortisol_new$samplepeaknamenum[cortisol_new$peakname=='cort7bc'] <- 25
+cortisol_new$samplepeaknamenum[cortisol_new$peakname=='cort8bc'] <- 30
+cortisol_new$samplepeaknamenum[cortisol_new$peakname=='cort9bc'] <- 35
+cortisol_new$samplepeaknamenum[cortisol_new$peakname=='cort10bc'] <- 40
+cortisol_new$samplepeaknamenum[cortisol_new$peakname=='cort11bc'] <- 45
+cortisol_new$samplepeaknamenum[cortisol_new$peakname=='cort12bc'] <- 60
+```
+
+```{r Creating samplemaxtime}
+#cortisol_new$samplemaxtime <- 0
+#cortisol_new$samplemaxtime <- ave(cortisol_new$sampletime, cortisol_new$id, FUN = max)
+##hist(cortisol_new$samplemaxtime, main = "#histogram of maxtime", col=rainbow(8))
+```
+
+```{r Creating sampletimetopeak}
+cortisol_new$sampletimetopeak <- 0
+#peaktimenum - stime = minutes from peak
+#Multiplied by -1 so that times before peak are negative and times after peak are positive (for next step: creating TimeBeforePeak and TimeAfterPeak)
+cortisol_new$sampletimetopeak <- (cortisol_new$samplepeaknamenum - cortisol_new$sampletime) * -1
+#hist(cortisol_new$sampletimetopeak, main = "#histogram of sampletimetopeak", col=rainbow(8))
+```
+
+From Melissa's code:
+
+* Creating TimeBeforePeak and TimeAfterPeak (reactivity and recovery times, respectively):
+    + When Time2Pk is negative, TimeBeforePeak = minutes from peak at each sampling time
+    + When Time2Pk is positive, TimeBeforePeak = 0
+    + When Time2Pk is positive, TimeAfterPeak = minutes from peak at each sampling time
+    + When Time2Pk is negative, TimeAfterPeak = 0
+
+```{r Creating sampletimebeforepeak and sampletimeafterpeak}
+#sampletimebeforepeak aka the reactivity slope
+cortisol_new$sampletimebeforepeak <- 0
+cortisol_new$sampletimebeforepeak <- ifelse(cortisol_new$sampletimetopeak < 0, cortisol_new$sampletimetopeak, 0)
+#If sampletimetopeak < 0 (aka negative), then sampletimebeforepeak = sampletimetopeak
+#If sampletimetopeak > 0 (aka positive), then sampletimebeforepeak = 0
+#hist(cortisol_new$sampletimebeforepeak, main = "#histogram of sampletimebeforepeak",col=rainbow(8))
+
+#sampletimeafterpeak aka the recovery slope
+cortisol_new$sampletimeafterpeak <- 0
+cortisol_new$sampletimeafterpeak <- ifelse(cortisol_new$sampletimetopeak > 0, cortisol_new$sampletimetopeak, 0)
+#If sampletimetopeak > 0 (aka positive), then sampletimeafterpeak = sampletimetopeak
+#If sampletimetopeak < 0 (aka negative), then sampletimeafterpeak = 0
+#hist(cortisol_new$sampletimeafterpeak, main = "#histogram of sampletimeafterpeak",col=rainbow(8))
+```
+
+## Write it out
+
+```{r}
+write.csv(cortisol_new, file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv")
+```
