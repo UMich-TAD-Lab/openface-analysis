@@ -249,47 +249,58 @@ cp_long$femalenum <- NULL
 
 ```{r}
 hist(cp_long$pain, main = "Uncentered Pain",col='gray')
-cp_long$painC <- scale(cp_long$pain)
+#cp_long$painC <- scale(cp_long$pain)
+cp_long$painC <- cp_long$pain - mean(cp_long$pain)
 hist(cp_long$painC, main = "Centered Pain",col=rainbow(8))
 
 hist(cp_long$anger, main = "Uncentered Anger", col='gray')
-cp_long$angerC <- scale(cp_long$anger)
+#cp_long$angerC <- scale(cp_long$anger)
+cp_long$angerC <- cp_long$anger - mean(cp_long$anger)
 hist(cp_long$angerC, main = "Centered Anger", col=rainbow(8))
 
 hist(cp_long$fear, main = "Uncentered Fear", col='gray')
-cp_long$fearC <- scale(cp_long$fear)
+#cp_long$fearC <- scale(cp_long$fear)
+cp_long$fearC <- cp_long$fear - mean(cp_long$fear)
 hist(cp_long$fear, main = "Centered Fear", col=rainbow(8))
 
 hist(cp_long$happiness, main = "Uncentered Happiness", col = 'gray')
-cp_long$happinessC <- scale(cp_long$happiness)
+#cp_long$happinessC <- scale(cp_long$happiness)
+cp_long$happinessC <- cp_long$happiness - mean(cp_long$happiness)
 hist(cp_long$happinessC, main = "Centered Happiness", col = rainbow(8))
 
 hist(cp_long$sadness, main = "Uncentered Sadness", col = 'gray')
-cp_long$sadnessC <- scale(cp_long$sadness)
+#cp_long$sadnessC <- scale(cp_long$sadness)
+cp_long$sadnessC <- cp_long$sadness - mean(cp_long$sadness)
 hist(cp_long$sadnessC, main = "Centered Sadness", col = rainbow(8))
 
 hist(cp_long$peaktimenum, main = "Uncentered peaktimenum", col = 'gray')
-cp_long$peaktimenumC <- scale(cp_long$peaktimenum)
+#cp_long$peaktimenumC <- scale(cp_long$peaktimenum)
+cp_long$peaktimenumC <- cp_long$peaktimenum - mean(cp_long$peaktimenum)
 hist(cp_long$peaktimenumC, main = "Centered peaktimenum", col = rainbow(8))
 
 hist(cp_long$cortvalue, main = "Uncentered cortvalue", col = 'gray')
-cp_long$cortvalueC <- scale(cp_long$cortvalue)
+#cp_long$cortvalueC <- scale(cp_long$cortvalue)
+cp_long$cortvalueC <- cp_long$cortvalue - mean(cp_long$cortvalue)
 hist(cp_long$cortvalueC, main = "Centered cortvalue", col = rainbow(8))
 
 hist(cp_long$cort_baseline_Win, main = "Uncentered cortisol baseline", col = 'gray')
-cp_long$cort_baseline_WinC <- scale(cp_long$cort_baseline_Win)
+#cp_long$cort_baseline_WinC <- scale(cp_long$cort_baseline_Win)
+cp_long$cort_baseline_WinC <- cp_long$cort_baseline_Win - mean(cp_long$cort_baseline_Win)
 hist(cp_long$cort_baseline_WinC, main = "Centered cortvalue", col = rainbow(8))
 
 hist(cp_long$stime, main = "Uncentered stime", col = 'gray')
-cp_long$stimeC <- scale(cp_long$stime)
+#cp_long$stimeC <- scale(cp_long$stime)
+cp_long$stimeC <- cp_long$stime - mean(cp_long$stime)
 hist(cp_long$stimeC, main = "Centered stime", col = rainbow(8))
 
 hist(cp_long$ctqsum, main = "Uncentered ctqsum", col = 'gray')
-cp_long$ctqsumC <- scale(cp_long$ctqsum)
+#cp_long$ctqsumC <- scale(cp_long$ctqsum)
+cp_long$ctqsumC <- cp_long$ctqsum - mean(cp_long$ctqsum)
 hist(cp_long$ctqsumC, main = "Centered ctqsum", col = rainbow(8))
 
 hist(cp_long$emosum, main = "Uncentered emosum", col = 'gray')
-cp_long$emosumC <- scale(cp_long$emosum)
+#cp_long$emosumC <- scale(cp_long$emosum)
+cp_long$emosumC <- cp_long$emosum - mean(cp_long$emosum)
 hist(cp_long$emosumC, main = "Centered emosum", col = rainbow(8))
 ```
 
@@ -451,6 +462,23 @@ cp_long$sampletimeafterpeak <- ifelse(cp_long$sampletimetopeak > 0, cp_long$samp
 #If sampletimetopeak > 0 (aka positive), then sampletimeafterpeak = sampletimetopeak
 #If sampletimetopeak < 0 (aka negative), then sampletimeafterpeak = 0
 hist(cp_long$sampletimeafterpeak, main = "Histogram of sampletimeafterpeak",col=rainbow(8))
+```
+
+## Final cleaning
+
+```{r}
+cp_long$gender <- as.integer(cp_long$gender)
+cp_long$gendercat <- as.character(cp_long$gendercat)
+cp_long$male <- as.integer(cp_long$male)
+cp_long$female <- as.integer(cp_long$female)
+cp_long$genderold <- NULL
+cp_long$baseline <- as.numeric(cp_long$cort_baseline_Win)
+cp_long$baselineC <- as.numeric(cp_long$cort_baseline_WinC)
+cp_long$cort_baseline_Win <- NULL
+cp_long$cort_baseline_WinC <- NULL
+cp_long$id <- as.factor(cp_long$id)
+cp_long$timebeforepeak <- as.integer(cp_long$timebeforepeak)
+cp_long$timeafterpeak <- as.integer(cp_long$timeafterpeak)
 ```
 
 ## Writing cp_long out into a .csv file
