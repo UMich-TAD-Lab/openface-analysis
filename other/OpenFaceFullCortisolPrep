@@ -60,6 +60,8 @@ gender$X <- NULL
 
 ## OpenFaceProgress
 
+### Merge datasets
+
 ```{r}
 cortisol <- merge(cortisol, threatdep, by = "id")
 cortisol <- merge(cortisol, ctq, by = "id")
@@ -69,11 +71,20 @@ rm(ctq)
 rm(gender)
 ```
 
+### Recenter ThreatCompc, DepCompc, and ThreatDepInt for N = 222
+
+```{r}
+cortisol$ThreatCompc <- cortisol$ThreatComp - mean(cortisol$ThreatComp)
+cortisol$DepCompc <- cortisol$DepComp - mean(cortisol$DepComp)
+cortisol$ThreatDepInt <- cortisol$ThreatCompc*cortisol$DepCompc
+```
+
 ## OpenFaceReformat
 
 ## Making df
 
 ```{r}
+# Add any variables you want in the final datset below
 df <- cortisol[c("id","cort4bc","cort5bc","cort6bc","cort7bc","cort8bc","cort9bc","cort10bc","cort11bc","cort12bc","s4time","s5time","s6time","s7time","s8time","s9time","s10time","s11time","s12time","cort_baseline_Win", "Responder")]
 
 df2 <- cortisol[c("cort4bc","cort5bc","cort6bc","cort7bc","cort8bc","cort9bc","cort10bc","cort11bc","cort12bc")]
@@ -340,5 +351,5 @@ cortisol_new$sampletimeafterpeak <- ifelse(cortisol_new$sampletimetopeak > 0, co
 
 ```{r}
 #write.csv(cortisol_new, file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv")
-write.csv(file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv", header=TRUE, sep=",")
+write.csv(cortisol_new, file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv")
 ```
