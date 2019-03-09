@@ -33,15 +33,15 @@ The generated .csv file should just include six variables: id, anger, fear, happ
 ## Load in data
 
 ```{r}
-cp_full <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_full.csv", header=TRUE, sep=",")
-#cp_full <- read.csv(file="/Users/Julianna/Desktop/data/cp_full.csv", header=TRUE, sep=",")
+#cp_full <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_full.csv", header=TRUE, sep=",")
+cp_full <- read.csv(file="/Users/Julianna/Desktop/data/cp_full.csv", header=TRUE, sep=",")
 cp_full$X <- NULL
 ```
 
 ```{r}
-cp_master <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_master.csv", header=TRUE, sep=",")
+#cp_master <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_master.csv", header=TRUE, sep=",")
 #cp_master <- read.csv(file="/Users/Julianna/Desktop/data/cp_master.csv", header=TRUE, sep=",")
-cp_master$X <- NULL
+#cp_master$X <- NULL
 ```
 
 ## Pain
@@ -73,16 +73,15 @@ cp_full$pain3 <- NULL
 Now do it for cp_master.
 
 ```{r}
-cp_master$pain2 <- 0
-cp_master$pain2 <- ifelse(cp_master$AU06_r > cp_master$AU07_r, cp_master$AU06_r, cp_master$AU07_r)
-cp_master$pain3 <- 0
-cp_master$pain3 <- ifelse(cp_master$AU09_r > cp_master$AU10_r, cp_master$AU09_r, cp_master$AU10_r)
-cp_master$pain <- 0
-cp_master$pain <- cp_master$AU04_r + cp_master$pain2 + cp_master$pain3
-cp_master$pain2 <- NULL
-cp_master$pain3 <- NULL
+#cp_master$pain2 <- 0
+#cp_master$pain2 <- ifelse(cp_master$AU06_r > cp_master$AU07_r, cp_master$AU06_r, cp_master$AU07_r)
+#cp_master$pain3 <- 0
+#cp_master$pain3 <- ifelse(cp_master$AU09_r > cp_master$AU10_r, cp_master$AU09_r, cp_master$AU10_r)
+#cp_master$pain <- 0
+#cp_master$pain <- cp_master$AU04_r + cp_master$pain2 + cp_master$pain3
+#cp_master$pain2 <- NULL
+#cp_master$pain3 <- NULL
 ```
-
 
 ## Anger
 
@@ -114,9 +113,8 @@ cp_full$anger <- cp_full$AU04_r + cp_full$AU05_r + cp_full$AU07_r + cp_full$AU23
 ```
 
 ```{r}
-cp_master$anger <- cp_master$AU04_r + cp_master$AU05_r + cp_master$AU07_r + cp_master$AU23_r
+#cp_master$anger <- cp_master$AU04_r + cp_master$AU05_r + cp_master$AU07_r + cp_master$AU23_r
 ```
-
 
 ## Fear
 
@@ -140,9 +138,8 @@ cp_full$fear <- cp_full$AU01_r + cp_full$AU02_r + cp_full$AU04_r + cp_full$AU05_
 ```
 
 ```{r}
-cp_master$fear <- cp_master$AU01_r + cp_master$AU02_r + cp_master$AU04_r + cp_master$AU05_r + cp_master$AU07_r + cp_master$AU20_r + cp_master$AU26_r
+#cp_master$fear <- cp_master$AU01_r + cp_master$AU02_r + cp_master$AU04_r + cp_master$AU05_r + cp_master$AU07_r + cp_master$AU20_r + cp_master$AU26_r
 ```
-
 
 ## Happiness
 
@@ -167,7 +164,7 @@ cp_full$happiness <- cp_full$AU06_r + cp_full$AU12_r
 ```
 
 ```{r}
-cp_master$happiness <- cp_master$AU06_r + cp_master$AU12_r
+#cp_master$happiness <- cp_master$AU06_r + cp_master$AU12_r
 ```
 
 ## Sadness
@@ -197,7 +194,7 @@ cp_full$sadness <- cp_full$AU01_r + cp_full$AU04_r + cp_full$AU15_r
 ```
 
 ```{r}
-cp_master$sadness <- cp_master$AU01_r + cp_master$AU04_r + cp_master$AU15_r
+#cp_master$sadness <- cp_master$AU01_r + cp_master$AU04_r + cp_master$AU15_r
 ```
 
 ## Decisions...
@@ -207,9 +204,13 @@ I'm having trouble properly using [the original EMFACS combinations](https://www
 ## Write it out back as "cp_full"
 
 ```{r}
-write.csv(cp_full, file="C:/Users/jrcala/Documents/My Research/RStudio/cp_full.csv")
+#write.csv(cp_full, file="C:/Users/jrcala/Documents/My Research/RStudio/cp_full.csv")
+
+write.csv(cp_full, file="/Users/Julianna/Desktop/data/cp_full.csv")
 ```
 
 ```{r}
-write.csv(cp_master, file="C:/Users/jrcala/Documents/My Research/RStudio/cp_master.csv")
+#write.csv(cp_master, file="C:/Users/jrcala/Documents/My Research/RStudio/cp_master.csv")
+
+#write.csv(cp_master, file="/Users/Julianna/Desktop/data/cp_master.csv")
 ```
