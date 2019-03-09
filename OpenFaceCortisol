@@ -6,20 +6,6 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-#install.packages("mosaic")
-#install.packages("ggplot2")
-#install.packages("tidyr")
-#install.packages("dplyr")
-#install.packages("psych")
-#install.packages("nlme")
-#install.packages("plyr")
-#install.packages("Hmisc")
-#install.packages("MASS")
-#install.packages("car")
-#install.packages("rmarkdown")
-#install.packages("shiny")
-#install.packages("yaml")
-
 library(mosaic)
 library(ggplot2)
 library(tidyr)
@@ -39,7 +25,11 @@ library(yaml)
 ## Read in cortisol.csv
 
 ```{r}
-cortisol_original <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol_original.csv", header=TRUE, sep=",") #This should just be Melissa's sav file converted to a .csv
+#cortisol_original <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol_original.csv", header=TRUE, sep=",") #This should just be Melissa's sav file converted to a .csv
+
+cortisol_original <- read.csv(file="/Users/Julianna/Desktop/data/cortisol_original.csv", header=TRUE, sep=",") #This should just be Melissa's sav file converted to a .csv
+
+cortisol_original$X <- NULL
 ```
 
 ## Rename the id variable in cortisol
@@ -149,6 +139,7 @@ rm(cort12bc)
 ## Writing it back out
 
 ```{r}
-write.csv(cortisol, file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv")
-```
+#write.csv(cortisol, file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv")
 
+write.csv(cortisol, file="/Users/Julianna/Desktop/data/cortisol.csv")
+```
