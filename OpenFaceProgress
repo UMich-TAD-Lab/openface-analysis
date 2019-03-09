@@ -85,6 +85,7 @@ names(cp_full)[names(cp_full) == "FF_ID"] <- "id"
 names(ctq)[names(ctq) == "ï..id"] <- "id"
 names(medication)[names(medication) == "ï..id"] <- "id"
 names(threatdep)[names(threatdep) == "ff_id"] <- "id"
+names(cortisol)[names(cortisol) == "ID"] <- "id"
 ```
 
 ## Merge the survey, cortisol, and video data
@@ -104,14 +105,14 @@ join1 <- merge(cp_full,ctq,all=TRUE,by='id')
 #Merge join1 with cortisol to create join2
 
 join2 <- merge(join1,cortisol, all=TRUE, by = 'id')
-#join2 has 237 observations.
+#join2 has 237 observations and 219 variables.
 
 #Remove rows where some AU data is missing
 
 which( colnames(join2)=="AU01_r") #7
 
 join3 <- join2[complete.cases(join2[ , 7]),]
-#join3 has 185 observations.
+#join3 has 185 observations and 219 variables.
 
 #View(join3)
 #write.csv(join3, "C:/Users/jrcala/Documents/My Research/RStudio/join3.csv")
@@ -145,6 +146,8 @@ join3 <- join3[ -c(68)]
 
 which( colnames(join3)=="ctq_complete") #68
 join3 <- join3[ -c(68)]
+
+#join3 has 185 observations and 211 variables.
 ```
 
 ## Modify the CTQ data so that all the -99/88/77's are now NA
@@ -159,7 +162,7 @@ join3[join3 == 88] <- NA
 which(join3 == 77, arr.ind=TRUE) #None.
 #join3[join3 == 77] <- NA
 
-#join3 has 185 observations.
+#join3 has 185 observations and 211 variables.
 ```
 
 ## Merge cp_joined with gender
@@ -167,7 +170,7 @@ which(join3 == 77, arr.ind=TRUE) #None.
 ```{r Merging with gender}
 #Merge join3 and gender
 join4 <- merge(join3,gender,all=TRUE,by='id')
-#join4 has 237 observations.
+#join4 has 237 observations and 213 variables.
 
 which( colnames(join4)=="frame") #2 #Which column is "frame"?
 options(max.print=10000000)
@@ -177,7 +180,7 @@ join4[which(is.na(join4[,2])),] #Which rows are NA for the "frame" column?
 
 #Remove rows if frame is NA
 join5 <- join4[!is.na(join4$frame),]
-#join5 has 185 observations.
+#join5 has 185 observations and 213 variables.
 ```
 
 ## Merge cp_joined with medication
@@ -185,7 +188,7 @@ join5 <- join4[!is.na(join4$frame),]
 ```{r}
 #Merge join5 and medication
 join6 <- merge(join5,medication,all=TRUE,by='id')
-#join6 has 237 observations.
+#join6 has 237 observations and 329 variables.
 
 which( colnames(join6)=="frame") #2 #Which column is "frame"?
 options(max.print=10000000)
@@ -194,7 +197,7 @@ join6[which(is.na(join6[,2])),] #Which rows are NA for the "frame" column?
 
 #Remove rows if frame is NA
 join7 <- join6[!is.na(join6$frame),]
-#join7 has 185 observations.
+#join7 has 185 observations and 329 variables.
 ```
 
 ## Merge with threatdep
@@ -202,7 +205,7 @@ join7 <- join6[!is.na(join6$frame),]
 ```{r}
 #Merge join7 and threatdep
 join8 <- merge(join7,threatdep,all=TRUE,by='id')
-#join8 has 237 observations.
+#join8 has 237 observations and 336 variables.
 
 which( colnames(join8)=="frame") #2 #Which column is "frame"?
 options(max.print=10000000)
@@ -211,7 +214,7 @@ join8[which(is.na(join8[,2])),] #Which rows are NA for the "frame" column?
 
 #Remove rows if frame is NA
 join9 <- join8[!is.na(join8$frame),]
-#join9 has 185 observations.
+#join9 has 185 observations and 336 variables.
 ```
 
 ## Recenter threatdep variables
@@ -244,6 +247,16 @@ rm(join8)
 rm(join9)
 ```
 
+```{r}
+rm(cortisol)
+rm(cp_full)
+rm(ctq)
+rm(gender)
+rm(medication)
+rm(threatdep)
+#rm(cp_joined)
+```
+
 ## Write cp_joined
 
 ```{r}
@@ -251,15 +264,5 @@ rm(join9)
 
 write.csv(cp_joined, "/Users/Julianna/Desktop/data/cp_joined.csv")
 
-#cp_joined has 185 observations and 325 variables.
-```
-
-```{r}
-rm(cortisol)
-rm(cp_full)
-rm(cp_joined)
-rm(ctq)
-rm(gender)
-rm(medication)
-rm(threatdep)
+#cp_joined has 185 observations and 336 variables.
 ```
