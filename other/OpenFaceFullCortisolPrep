@@ -1,5 +1,5 @@
 ---
-title: "OpenFace Full Cortisol Analysis"
+title: "OpenFace Full Cortisol Prep"
 author: "Julianna Calabrese"
 date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
 output: html_document
@@ -25,13 +25,49 @@ library(yaml)
 ## Read in data
 
 ```{r}
-cortisol <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv", header=TRUE, sep=",")
+#cortisol <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv", header=TRUE, sep=",")
+cortisol <- read.csv(file="/Users/Julianna/Desktop/data/cortisol.csv", header=TRUE, sep=",")
 cortisol$X <- NULL
 ```
 
-## OpenFaceProgress?
+```{r}
+#threatdep <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/threatdep.csv", header=TRUE, sep=",")
+threatdep <- read.csv(file="/Users/Julianna/Desktop/data/threatdep.csv", header=TRUE, sep=",")
+threatdep$X <- NULL
+names(threatdep)[names(threatdep) == "ff_id"] <- "id"
+```
 
-You would add gender and other stuff here if you weren't feeling lazy right now. 
+```{r}
+#ctq <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/ctq.csv", header=TRUE, sep=",")
+ctq <- read.csv(file="/Users/Julianna/Desktop/data/ctq.csv", header=TRUE, sep=",")
+ctq$X <- NULL
+which( colnames(ctq)=="ctq4_28_R") #37
+ctq <- ctq[, -c(2:37)]
+ctq$LN_transformation_CTQTotalSum <- NULL
+```
+
+```{r}
+#gender <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/gender.csv", header=TRUE, sep=",")
+gender <- read.csv(file="/Users/Julianna/Desktop/data/gender.csv", header=TRUE, sep=",")
+gender$X <- NULL
+```
+
+```{r}
+#medication <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/medication.csv", header=TRUE, sep=",")
+#medication <- read.csv(file="/Users/Julianna/Desktop/data/medication.csv", header=TRUE, sep=",")
+#medication$X <- NULL
+```
+
+## OpenFaceProgress
+
+```{r}
+cortisol <- merge(cortisol, threatdep, by = "id")
+cortisol <- merge(cortisol, ctq, by = "id")
+cortisol <- merge(cortisol, gender, by = "id")
+rm(threatdep)
+rm(ctq)
+rm(gender)
+```
 
 ## OpenFaceReformat
 
@@ -303,5 +339,6 @@ cortisol_new$sampletimeafterpeak <- ifelse(cortisol_new$sampletimetopeak > 0, co
 ## Write it out
 
 ```{r}
-write.csv(cortisol_new, file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv")
+#write.csv(cortisol_new, file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv")
+write.csv(file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv", header=TRUE, sep=",")
 ```
