@@ -25,9 +25,9 @@ library(rapportools)
 ## Read in video AU data
 
 ```{r}
-cp_full <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_full.csv", header=TRUE, sep=",")
+#cp_full <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_full.csv", header=TRUE, sep=",")
 
-#cp_full <- read.csv(file="/Users/Julianna/Desktop/data/cp_full.csv", header=TRUE, sep=",")
+cp_full <- read.csv(file="/Users/Julianna/Desktop/data/cp_full.csv", header=TRUE, sep=",")
 
 cp_full$X <- NULL
 ```
@@ -35,29 +35,35 @@ cp_full$X <- NULL
 ## Read in survey measures and demographic data
 
 ```{r Read in CTQ}
-ctq <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/ctq.csv", header=TRUE, sep=",")
+#ctq <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/ctq.csv", header=TRUE, sep=",")
 
-#ctq <- read.csv(file="/Users/Julianna/Desktop/data/ctq.csv", header=TRUE, sep=",")
+ctq <- read.csv(file="/Users/Julianna/Desktop/data/ctq.csv", header=TRUE, sep=",")
+
+ctq$X <- NULL
 ```
 
 ```{r Read in Gender Data}
-gender <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/gender.csv", header=TRUE, sep=",")
+#gender <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/gender.csv", header=TRUE, sep=",")
 
-#gender <- read.csv(file="/Users/Julianna/Desktop/data/gender.csv", header=TRUE, sep=",")
+gender <- read.csv(file="/Users/Julianna/Desktop/data/gender.csv", header=TRUE, sep=",")
+
+gender$X <- NULL
 ```
 
 ```{r Read in Medication Data}
-medication <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/medication.csv", header=TRUE, sep=",")
+#medication <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/medication.csv", header=TRUE, sep=",")
 
-#medication <- read.csv(file="/Users/Julianna/Desktop/data/medication.csv", header=TRUE, sep=",")
+medication <- read.csv(file="/Users/Julianna/Desktop/data/medication.csv", header=TRUE, sep=",")
+
+medication$X <- NULL
 ```
 
 ## Read in cortisol data
 
 ```{r Read in cortisol data}
-cortisol <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv", header=TRUE, sep=",")
+#cortisol <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv", header=TRUE, sep=",")
 
-#cortisol <- read.csv(file="/Users/Julianna/Desktop/data/cortisol.csv", header=TRUE, sep=",")
+cortisol <- read.csv(file="/Users/Julianna/Desktop/data/cortisol.csv", header=TRUE, sep=",")
 
 cortisol$X <- NULL
 ```
@@ -65,9 +71,9 @@ cortisol$X <- NULL
 ## Read in threatdep data
 
 ```{r}
-threatdep <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/threatdep.csv", header=TRUE, sep=",")
+#threatdep <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/threatdep.csv", header=TRUE, sep=",")
 
-#threatdep <- read.csv(file="/Users/Julianna/Desktop/data/threatdep.csv", header=TRUE, sep=",")
+threatdep <- read.csv(file="/Users/Julianna/Desktop/data/threatdep.csv", header=TRUE, sep=",")
 
 threatdep$X <- NULL
 ```
@@ -208,6 +214,20 @@ join9 <- join8[!is.na(join8$frame),]
 #join9 has 185 observations.
 ```
 
+## Recenter threatdep variables
+
+```{r}
+join9$ThreatCompc <- NULL
+join9$DepCompc <- NULL
+join9$ThreatDepInt <- NULL
+```
+
+```{r}
+join9$ThreatCompc <- join9$ThreatComp - mean(join9$ThreatComp)
+join9$DepCompc <- join9$DepComp - mean(join9$DepComp)
+join9$ThreatDepInt <- join9$ThreatCompc*join9$DepCompc
+```
+
 ## Cleaning up
 
 ```{r}
@@ -227,9 +247,9 @@ rm(join9)
 ## Write cp_joined
 
 ```{r}
-write.csv(cp_joined, "C:/Users/jrcala/Documents/My Research/RStudio/cp_joined.csv")
+#write.csv(cp_joined, "C:/Users/jrcala/Documents/My Research/RStudio/cp_joined.csv")
 
-#write.csv(cp_joined, "/Users/Julianna/Desktop/data/cp_joined.csv")
+write.csv(cp_joined, "/Users/Julianna/Desktop/data/cp_joined.csv")
 
 #cp_joined has 185 observations and 325 variables.
 ```
