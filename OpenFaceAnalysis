@@ -70,11 +70,8 @@ cp_long$gender <- as.integer(cp_long$gender)
 cp_long$gendercat <- as.character(cp_long$gendercat)
 cp_long$male <- as.integer(cp_long$male)
 cp_long$female <- as.integer(cp_long$female)
-cp_long$genderold <- NULL
 cp_long$baseline <- as.numeric(cp_long$cort_baseline_Win)
 cp_long$baselineC <- as.numeric(cp_long$cort_baseline_WinC)
-cp_long$cort_baseline_Win <- NULL
-cp_long$cort_baseline_WinC <- NULL
 cp_long$id <- as.factor(cp_long$id)
 cp_long$timebeforepeak <- as.integer(cp_long$timebeforepeak)
 cp_long$timeafterpeak <- as.integer(cp_long$timeafterpeak)
