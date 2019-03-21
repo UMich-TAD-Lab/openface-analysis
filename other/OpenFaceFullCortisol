@@ -27,9 +27,9 @@ library(yaml)
 ## Read in cortisol.csv
 
 ```{r}
-#cortisol_original <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol_original.csv", header=TRUE, sep=",") #This should just be Melissa's sav file converted to a .csv
+cortisol_original <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol_original.csv", header=TRUE, sep=",") #This should just be Melissa's sav file converted to a .csv
 
-cortisol_original <- read.csv(file="/Users/Julianna/Desktop/data/cortisol_original.csv", header=TRUE, sep=",") #This should just be Melissa's sav file converted to a .csv
+#cortisol_original <- read.csv(file="/Users/Julianna/Desktop/data/cortisol_original.csv", header=TRUE, sep=",") #This should just be Melissa's sav file converted to a .csv
 
 cortisol_original$X <- NULL
 ```
@@ -39,7 +39,6 @@ cortisol_original$X <- NULL
 ```{r}
 names(cortisol_original)[names(cortisol_original) == "ï..ID"] <- "id"
 ```
-
 
 ## Remove all rows that are not "Usable"
 
@@ -144,7 +143,7 @@ rm(cort_baseline_Win_thing)
 ## Writing it back out
 
 ```{r}
-#write.csv(cortisol, file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv")
+write.csv(cortisol, file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv")
 
-write.csv(cortisol, file="/Users/Julianna/Desktop/data/cortisol.csv")
+#write.csv(cortisol, file="/Users/Julianna/Desktop/data/cortisol.csv")
 ```
