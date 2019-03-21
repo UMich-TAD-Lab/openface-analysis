@@ -78,15 +78,17 @@ data$id <- as.factor(data$id)
 data$timebeforepeak <- as.integer(data$timebeforepeak)
 data$timeafterpeak <- as.integer(data$timeafterpeak)
 ctrl <- lmeControl(opt='optim')
-```
 
-```{r include=FALSE}
 data4 <- data
-data4[is.na(data4)] <- 0
+#data4[is.na(data4)] <- 0
 data4$ThreatCompc <- data4$ThreatComp - mean(data4$ThreatComp)
 data4$DepCompc <- data4$DepComp - mean(data4$DepComp)
 data4$ThreatDepInt <- data4$ThreatCompc*data4$DepCompc
 data <- data4
+```
+
+```{r}
+which(is.na(data$id))
 ```
 
 ## Introduction
@@ -163,7 +165,7 @@ mod1 <- lme(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
             random = ~ 1 | id,  # Random intercepts (not slopes)
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
@@ -175,7 +177,7 @@ mod2 <- lme(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id,  # Random slopes (not intercepts)
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
@@ -187,7 +189,7 @@ mod3 <- lme(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
             random = ~ 1 + timebeforepeak + timeafterpeak | id,  # Random intercepts and slopes
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
@@ -223,7 +225,7 @@ mod1 <- lme(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
             random = ~ 1 | id,  # Random intercepts (not slopes)
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
@@ -235,7 +237,7 @@ mod2 <- lme(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
             random = ~ 0 + timebeforepeak + timeafterpeak | id,  # Random slopes (not intercepts)
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
@@ -247,7 +249,7 @@ mod3 <- lme(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
             random = ~ 1 + timebeforepeak + timeafterpeak | id,  # Random intercepts and slopes
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
@@ -277,7 +279,7 @@ mod1 <- lme(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
             random = ~ 1 | id,  # Random intercepts (not slopes)
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
@@ -289,20 +291,8 @@ mod2 <- lme(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
             random = ~ 0 +  timebeforepeak + timeafterpeak | id,  # Random slopes (not intercepts)
-            corr = corAR1(), # specifies AR1 structure
-            method = "REML", # specifies REML fit
-            #control = ctrl, # optimizes model
-            na.action = na.exclude, # removes NA values
-            data = data)
-
-mod3 <- lme(cortvalue ~
-              timebeforepeak + # Fixed effect
-              timeafterpeak + # Fixed effect
-              baseline + # Fixed effect
-            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
-            random = ~ 1 + timebeforepeak + timeafterpeak | id,  # Random intercepts and slopes
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
             #control = ctrl, # optimizes model
@@ -317,53 +307,8 @@ tab_model(mod1, title = "Not Optimized + 1 Random Intercepts", dv.labels = "Cort
 
 tab_model(mod2, title = "Not Optimized + 1 Random Slopes", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
 
-tab_model(mod3, title = "Not Optimized + 1 Random Intercepts and Slopes", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
-
 rm(mod1)
 rm(mod2)
-rm(mod3)
-```
-
-## 4. AR1 or CAR1?
-
-`nlme` offers a number of [different correlation structures to choose from](https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/corClasses.html). In the above models, I used the `corAR1` structure. I think the main difference between `corAR1` and `corAR1` is that `corCAR1` allows for [unequally spaced time observations](https://stats.stackexchange.com/questions/31114/what-is-the-difference-between-corar1-and-corAR1-correlation-structures) while `corAR1` requires that the time intervals be equally spaced.
-
-```{r results='hide', echo=TRUE, error=TRUE, include=FALSE}
-car1 <- lme(cortvalue ~
-              timebeforepeak + # Fixed effect
-              timeafterpeak + # Fixed effect
-              baseline + # Fixed effect
-              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
-            random = ~ 1 | id,  # Random intercepts (not slopes)
-            corr = corCAR1(), # specifies CAR1 structure
-            method = "REML", # specifies REML fit
-            control = ctrl, # optimizes model
-            na.action = na.exclude, # removes NA values
-            data = data)
-
-
-ar1 <- lme(cortvalue ~
-              timebeforepeak + # Fixed effect
-              timeafterpeak + # Fixed effect
-              baseline + # Fixed effect
-              ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak, # Interactions
-            random = ~ 1 | id,  # Random intercepts (not slopes)
-            corr = corAR1(), # specifies AR1 structure
-            method = "REML", # specifies REML fit
-            control = ctrl, # optimizes model
-           na.action = na.exclude, # removes NA values
-            data = data)
-```
-
-```{r echo=FALSE, error=TRUE}
-colorder <- c("est", "se", "p")
-
-tab_model(car1, title = "corCAR1 Random Intercepts", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder)
-
-tab_model(ar1, title = "corAR1 Random Intercepts", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #fff8d3;'))
-
-rm(car1)
-rm(ar1)
 ```
 
 ## 5. Use lme4?
@@ -377,7 +322,7 @@ lmer1 <- lmer(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + # Interactions
+             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline + # Interactions
             (1|timebeforepeak) + (1|timeafterpeak),
             data = data)
 
@@ -386,7 +331,7 @@ lmer2 <- lmer(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + # Interactions
+             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline + # Interactions
             (timebeforepeak|id) + (timeafterpeak|id),
             data = data)
 
@@ -395,7 +340,7 @@ lmer3 <- lmer(cortvalue ~
             timebeforepeak + # Fixed effect
             timeafterpeak + # Fixed effect
               baseline + # Fixed effect
-             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + # Interactions
+             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline + # Interactions
             (1 + timebeforepeak|id) + (1 + timeafterpeak|id),
             data = data)
 ```
@@ -448,9 +393,437 @@ bestmod <- lme(cortvalue ~
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
             control = ctrl, # optimizes model
-            #na.action = na.exclude, # removes NA values
+            na.action = na.exclude, # removes NA values
             data = data4)
 #summary(bestmod)
 
 tab_model(bestmod, title = "The Real Best Model", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
 ```
+
+## Trying things until something works
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+#same as mod4
+mod1 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
+            random = list(timebeforepeak=~1|id, timeafterpeak=~1|id),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+#summary(mod1)
+
+tab_model(mod1, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+
+mod2 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = list(timebeforepeak=~1, timeafterpeak=~1),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+#summary(mod2)
+
+tab_model(mod2, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+#BAD BAD BAD
+mod3 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = list(~timebeforepeak|id, ~timeafterpeak|id),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+#summary(mod3)
+
+tab_model(mod3, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+#same as mod1
+mod4 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = list(~1|timebeforepeak, ~1|timeafterpeak),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+#summary(mod4)
+
+tab_model(mod4, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+#BAD BAD BAD
+mod5 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = list(1|id, 0+timebeforepeak+timeafterpeak|id),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+#summary(mod5)
+
+tab_model(mod5, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+#BAD BAD BAD
+mod6 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = ~1|id,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+#summary(mod6)
+
+tab_model(mod6, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+## back to lmer
+
+```{r}
+mod7 <- lmer(cortvalue ~ 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + 
+               ThreatCompc*timebeforepeak + 
+               ThreatCompc*timeafterpeak + 
+               ThreatCompc*baseline +
+            (1|id),
+            data = data)
+
+tab_model(mod7, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r}
+mod8 <- lmer(cortvalue ~ 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + 
+               ThreatCompc*timebeforepeak + 
+               ThreatCompc*timeafterpeak + 
+               ThreatCompc*baseline +
+            (timebeforepeak + timeafterpeak|id),
+            data = data)
+
+tab_model(mod8, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r}
+mod9 <- lmer(cortvalue ~ 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + 
+               ThreatCompc*timebeforepeak + 
+               ThreatCompc*timeafterpeak + 
+               ThreatCompc*baseline +
+            (timebeforepeak|id) + (timeafterpeak|id),
+            data = data)
+
+tab_model(mod9, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r}
+mod10 <- lmer(cortvalue ~ 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + 
+               ThreatCompc*timebeforepeak + 
+               ThreatCompc*timeafterpeak + 
+               ThreatCompc*baseline +
+            (0+timebeforepeak|id) + (0+timeafterpeak|id),
+            data = data)
+
+tab_model(mod10, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r}
+mod11 <- lmer(cortvalue ~ 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + 
+               ThreatCompc*timebeforepeak + 
+               ThreatCompc*timeafterpeak + 
+               ThreatCompc*baseline +
+            (1|id) + (0+timeafterpeak+timeafterpeak|id),
+            data = data)
+
+tab_model(mod11, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r}
+mod12 <- lmer(cortvalue ~ 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + 
+               ThreatCompc*timebeforepeak + 
+               ThreatCompc*timeafterpeak + 
+               ThreatCompc*baseline +
+            (1|id) + (0+timeafterpeak|id) + (0+timeafterpeak|id),
+            data = data)
+
+tab_model(mod12, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+## back to nlme
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+#Random group intercept
+mod13 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = ~1|id,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+
+
+tab_model(mod13, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+#Random slope of x within group with correlated intercept
+
+mod14 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = ~(timebeforepeak+timeafterpeak)|id,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+
+
+tab_model(mod14, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+#Intercept varying among sites and among blocks within sites
+#(nested random effects)
+
+mod15 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = ~1/(timebeforepeak+timeafterpeak)|id,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+
+
+tab_model(mod15, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+
+mod16 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = ~(timebeforepeak+timeafterpeak)|id,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+           #Do I need to add weights???
+            data = data)
+
+
+tab_model(mod16, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+## Trying again :(
+
+```{r error=TRUE}
+data5 <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak + baseline | id, data=data, outer= ~ timebeforepeak + timeafterpeak + baseline)
+```
+
+```{r error=TRUE}
+mod1 <- lme(cortvalue ~               timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+             ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline, data=data5, random = ~ 1|id, na.action="na.omit")
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+
+mod2 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + ThreatCompc*timebeforepeak + 
+              ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            random = list(id = ~timebeforepeak, id=~timeafterpeak),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+            data = data)
+
+tab_model(mod2, title = "aaaaaaah", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r echo=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+
+mod2 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+              ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random = list(timebeforepeak = ~ 1, timeafterpeak = ~ 1),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+            data = data)
+
+tab_model(mod2, title = "aaaaaaah", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r error=TRUE}
+mod4 <- lmer(cortvalue ~ 
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline + # Interactions
+            (1 + timebeforepeak|id) + (1 + timeafterpeak|id),
+            data = data)
+summary(mod4)
+```
+
+## Multiple random effects with nlme
+
+```{r error=TRUE}
+colorder <- c("est", "se", "p")
+#no no no
+mod2 <- lme(cortvalue ~
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+              ThreatCompc + 
+              ThreatCompc*timebeforepeak + 
+              ThreatCompc*timeafterpeak + 
+              ThreatCompc*baseline,
+            random=list(id=pdBlocked(list(pdIdent(~timebeforepeak-1), pdIdent(~timeafterpeak-1)))),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+            data = data)
+
+tab_model(mod2, title = "aaaaaaah", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+```{r}
+lmer1.1 <- lmer(cortvalue ~ 
+              timebeforepeak + # Fixed effect
+              timeafterpeak + # Fixed effect
+              baseline + # Fixed effect
+             ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline + # Interactions
+            (1|timebeforepeak:timeafterpeak),
+            data = data)
+```
+
