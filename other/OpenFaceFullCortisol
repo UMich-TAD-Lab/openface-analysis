@@ -140,6 +140,15 @@ rm(cort12bc)
 rm(cort_baseline_Win_thing)
 ```
 
+## Removing a few IDs so Melissa's and my datasets match
+
+```{r}
+cortisol <- cortisol[!(cortisol$id==10007),]
+cortisol <- cortisol[!(cortisol$id==10051),]
+cortisol <- cortisol[!(cortisol$id==10061),]
+cortisol <- cortisol[!(cortisol$id==10004),]
+```
+
 ## Writing it back out
 
 ```{r}
