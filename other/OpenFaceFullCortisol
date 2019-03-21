@@ -1,0 +1,150 @@
+---
+title: "OpenFaceCortisol"
+author: "Julianna Calabrese"
+date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(mosaic)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(psych)
+library(nlme)
+library(plyr)
+library(Hmisc)
+library(data.table)
+library(MASS)
+library(car)
+library(rmarkdown)
+library(shiny)
+library(yaml)
+```
+
+## Read in cortisol.csv
+
+```{r}
+#cortisol_original <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol_original.csv", header=TRUE, sep=",") #This should just be Melissa's sav file converted to a .csv
+
+cortisol_original <- read.csv(file="/Users/Julianna/Desktop/data/cortisol_original.csv", header=TRUE, sep=",") #This should just be Melissa's sav file converted to a .csv
+
+cortisol_original$X <- NULL
+```
+
+## Rename the id variable in cortisol
+
+```{r}
+names(cortisol_original)[names(cortisol_original) == "ï..ID"] <- "id"
+```
+
+
+## Remove all rows that are not "Usable"
+
+```{r}
+#Removes all rows where Usable = 0
+cortisol1 <- cortisol_original[!(cortisol_original$Usable == "0"),]
+#This removes all the rows where Usable = 0, but there are some rows where Usable = NA. The next chunk removes those rows. 
+```
+
+```{r }
+#Removes all rows where Usable is NA
+#cortisol2 <- cortisol1[!(cortisol1$Usable == "NA"),]
+
+#cortisola <- cortisol1
+#na.omit(cortisola, cols="Usable")
+#View(cortisola)
+
+cortisolb <- cortisol1
+which( colnames(cortisolb)=="Usable") #8
+cortisolc <- cortisolb[complete.cases(cortisolb[ , 8:8]),]
+#The above command actually deletes the rows where Column 8 ("Usable") is NA.
+
+#write.csv(cortisolc, file="C:/Users/jrcala/Documents/My Research/RStudio/cortisolc.csv")
+
+cortisol <- cortisolc
+rm(cortisol_original)
+rm(cortisol1)
+rm(cortisolb)
+rm(cortisolc)
+```
+
+# Box Cox Transformation
+
+A Box Cox transformation is a way to transform non-normal dependent variables into a normal shape. Normality is an important assumption for many statistical techniques; if your data isn't normal, applying a Box-Cox means that you are able to run a broader number of tests.
+
+https://www.statisticshowto.datasciencecentral.com/box-cox-transformation/
+
+
+The formula used in Lopez-Duran 2014:
+X' = ((X^0.26) - 1))/0.26
+
+```{r BoxCox Power Transformations}
+cort1bc <- ((((cortisol$Cortisol_Win.1)^.26)- 1)/0.26)
+cort2bc <- ((((cortisol$Cortisol_Win.2)^.26)- 1)/0.26)
+cort3bc <- ((((cortisol$Cortisol_Win.3)^.26)- 1)/0.26)
+cort4bc <- ((((cortisol$Cortisol_Win.4)^.26)- 1)/0.26)
+cort5bc <- ((((cortisol$Cortisol_Win.5)^.26)- 1)/0.26)
+cort6bc <- ((((cortisol$Cortisol_Win.6)^.26)- 1)/0.26)
+cort7bc <- ((((cortisol$Cortisol_Win.7)^.26)- 1)/0.26)
+cort8bc <- ((((cortisol$Cortisol_Win.8)^.26)- 1)/0.26)
+cort9bc <- ((((cortisol$Cortisol_Win.9)^.26)- 1)/0.26)
+cort10bc <- ((((cortisol$Cortisol_Win.10)^.26)- 1)/0.26)
+cort11bc <- ((((cortisol$Cortisol_Win.11)^.26)- 1)/0.26)
+cort12bc <- ((((cortisol$Cortisol_Win.12)^.26)- 1)/0.26)
+cort_baseline_Win_thing <- ((((cortisol$cort_baseline_Win)^.26)- 1)/0.26)
+```
+
+```{r }
+#plot(cortisol$cortisol.1)
+#plot(cortisol$Cortisol_Win.1)
+#plot(cort1bc)
+
+#These plots allow you to see the difference after winsorization and Box-Cox transformation.
+```
+
+### Adding the Box-Cox transformed variables back to the dataframe
+
+```{r}
+cortisol["cort1bc"] <- cort1bc
+cortisol["cort2bc"] <- cort2bc
+cortisol["cort3bc"] <- cort3bc
+cortisol["cort4bc"] <- cort4bc
+cortisol["cort5bc"] <- cort5bc
+cortisol["cort6bc"] <- cort6bc
+cortisol["cort7bc"] <- cort7bc
+cortisol["cort8bc"] <- cort8bc
+cortisol["cort9bc"] <- cort9bc
+cortisol["cort10bc"] <- cort10bc
+cortisol["cort11bc"] <- cort11bc
+cortisol["cort12bc"] <- cort12bc
+cortisol["cort_baseline_Win_thing"] <- cort_baseline_Win_thing
+```
+
+### Removing anything unneccessary from environment
+
+```{r}
+rm(cort1bc)
+rm(cort2bc)
+rm(cort3bc)
+rm(cort4bc)
+rm(cort5bc)
+rm(cort6bc)
+rm(cort7bc)
+rm(cort8bc)
+rm(cort9bc)
+rm(cort10bc)
+rm(cort11bc)
+rm(cort12bc)
+rm(cort_baseline_Win_thing)
+```
+
+## Writing it back out
+
+```{r}
+#write.csv(cortisol, file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv")
+
+write.csv(cortisol, file="/Users/Julianna/Desktop/data/cortisol.csv")
+```
