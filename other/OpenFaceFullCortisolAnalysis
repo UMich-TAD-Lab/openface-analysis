@@ -315,6 +315,8 @@ rm(mod2)
 
 The main reason I might want to use `lme4` is that for the random intercepts model, I think I can let the intercept vary using TimeBeforePeak and TimeAfterPeak. With `nlme`'s random intercept model, I can only specify one variable, which I chose to be id.
 
+https://www.cscu.cornell.edu/news/Handouts/R_Model_Specification.pdf
+
 ```{r results='hide', echo=TRUE, error=TRUE, include=FALSE}
 # lmer intercepts
 lmer1 <- lmer(cortvalue ~ 
@@ -402,7 +404,7 @@ tab_model(bestmod, title = "The Real Best Model", dv.labels = "Cortisol", digits
 
 ## Trying things until something works
 
-```{r echo=FALSE, error=TRUE}
+```{r BEST BEST BEST, echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
 #same as mod4
 mod1 <- lme(cortvalue ~
@@ -416,7 +418,6 @@ mod1 <- lme(cortvalue ~
             method = "REML", # specifies REML fit
             control = ctrl, # optimizes model
             na.action = na.exclude, # removes NA values
-           #Do I need to add weights???
             data = data)
 #summary(mod1)
 
