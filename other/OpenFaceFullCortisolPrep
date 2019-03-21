@@ -3,6 +3,8 @@ title: "OpenFace Full Cortisol Prep"
 author: "Julianna Calabrese"
 date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -25,30 +27,31 @@ library(yaml)
 ## Read in data
 
 ```{r}
-#cortisol <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv", header=TRUE, sep=",")
-cortisol <- read.csv(file="/Users/Julianna/Desktop/data/cortisol.csv", header=TRUE, sep=",")
+cortisol <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol.csv", header=TRUE, sep=",")
+#cortisol <- read.csv(file="/Users/Julianna/Desktop/data/cortisol.csv", header=TRUE, sep=",")
 cortisol$X <- NULL
 ```
 
 ```{r}
-#threatdep <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/threatdep.csv", header=TRUE, sep=",")
-threatdep <- read.csv(file="/Users/Julianna/Desktop/data/threatdep.csv", header=TRUE, sep=",")
+threatdep <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/threatdep.csv", header=TRUE, sep=",")
+#threatdep <- read.csv(file="/Users/Julianna/Desktop/data/threatdep.csv", header=TRUE, sep=",")
 threatdep$X <- NULL
 names(threatdep)[names(threatdep) == "ff_id"] <- "id"
 ```
 
 ```{r}
-#ctq <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/ctq.csv", header=TRUE, sep=",")
-ctq <- read.csv(file="/Users/Julianna/Desktop/data/ctq.csv", header=TRUE, sep=",")
+ctq <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/ctq.csv", header=TRUE, sep=",")
+#ctq <- read.csv(file="/Users/Julianna/Desktop/data/ctq.csv", header=TRUE, sep=",")
 ctq$X <- NULL
 which( colnames(ctq)=="ctq4_28_R") #37
 ctq <- ctq[, -c(2:37)]
 ctq$LN_transformation_CTQTotalSum <- NULL
+names(ctq)[names(ctq) == "ï..id"] <- "id"
 ```
 
 ```{r}
-#gender <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/gender.csv", header=TRUE, sep=",")
-gender <- read.csv(file="/Users/Julianna/Desktop/data/gender.csv", header=TRUE, sep=",")
+gender <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/gender.csv", header=TRUE, sep=",")
+#gender <- read.csv(file="/Users/Julianna/Desktop/data/gender.csv", header=TRUE, sep=",")
 gender$X <- NULL
 ```
 
@@ -81,11 +84,20 @@ cortisol$ThreatDepInt <- cortisol$ThreatCompc*cortisol$DepCompc
 
 ## OpenFaceReformat
 
+## Removing a few IDs so Melissa's and my datasets match
+
+```{r}
+cortisol <- cortisol[!(cortisol$id==10007),]
+cortisol <- cortisol[!(cortisol$id==10051),]
+cortisol <- cortisol[!(cortisol$id==10061),]
+cortisol <- cortisol[!(cortisol$id==10004),]
+```
+
 ## Making df
 
 ```{r}
 # Add any variables you want in the final datset below
-df <- cortisol[c("id","cort4bc","cort5bc","cort6bc","cort7bc","cort8bc","cort9bc","cort10bc","cort11bc","cort12bc","s4time","s5time","s6time","s7time","s8time","s9time","s10time","s11time","s12time","cort_baseline_Win", "Responder")]
+df <- cortisol[c("id","cort4bc","cort5bc","cort6bc","cort7bc","cort8bc","cort9bc","cort10bc","cort11bc","cort12bc","s4time","s5time","s6time","s7time","s8time","s9time","s10time","s11time","s12time","cort_baseline_Win", "Responder", "ThreatCompc")]
 
 df2 <- cortisol[c("cort4bc","cort5bc","cort6bc","cort7bc","cort8bc","cort9bc","cort10bc","cort11bc","cort12bc")]
 #This just includes (the Box-Cox-transformed) cortisol values
@@ -350,6 +362,6 @@ cortisol_new$sampletimeafterpeak <- ifelse(cortisol_new$sampletimetopeak > 0, co
 ## Write it out
 
 ```{r}
-#write.csv(cortisol_new, file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv")
-write.csv(cortisol_new, file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv")
+write.csv(cortisol_new, file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv")
+#write.csv(cortisol_new, file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv")
 ```
