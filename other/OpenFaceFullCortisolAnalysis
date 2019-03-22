@@ -1469,9 +1469,9 @@ mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
             corr = corAR1(form=~1|id), # specifies AR1 structure
             method = "REML", # specifies REML fit
             control = ctrl, # optimizes model
-            na.action=na.exclude,
-            random = pdBlocked(list(~id, ~timebeforepeak+timeafterpeak)))
-            #weights = varIdent(form = 1|id)))
+            na.action=na.exclude, random=list(id = pdBlocked(list(pdIdent(~timebeforepeak-1), pdIdent(~timeafterpeak-1),
+            weights = varIdent(form = ~1|id)))))
+
 summary(mod1)
 tab_model(mod1)
 ```
