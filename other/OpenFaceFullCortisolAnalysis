@@ -78,13 +78,13 @@ data$id <- as.factor(data$id)
 data$timebeforepeak <- as.integer(data$timebeforepeak)
 data$timeafterpeak <- as.integer(data$timeafterpeak)
 ctrl <- lmeControl(opt='optim')
-
-data4 <- data
+colorder <- c("est", "se", "p")
+#data4 <- data
 #data4[is.na(data4)] <- 0
-data4$ThreatCompc <- data4$ThreatComp - mean(data4$ThreatComp)
-data4$DepCompc <- data4$DepComp - mean(data4$DepComp)
-data4$ThreatDepInt <- data4$ThreatCompc*data4$DepCompc
-data <- data4
+#data4$ThreatCompc <- data4$ThreatComp - mean(data4$ThreatComp)
+#data4$DepCompc <- data4$DepComp - mean(data4$DepComp)
+#data4$ThreatDepInt <- data4$ThreatCompc*data4$DepCompc
+#data <- data4
 ```
 
 ```{r}
@@ -396,7 +396,7 @@ bestmod <- lme(cortvalue ~
             method = "REML", # specifies REML fit
             control = ctrl, # optimizes model
             na.action = na.exclude, # removes NA values
-            data = data4)
+            data = data)
 #summary(bestmod)
 
 tab_model(bestmod, title = "The Real Best Model", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
@@ -571,7 +571,7 @@ mod8 <- lmer(cortvalue ~
 tab_model(mod8, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
 ```
 
-```{r}
+```{r nice??}
 mod9 <- lmer(cortvalue ~ 
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
@@ -611,7 +611,7 @@ mod11 <- lmer(cortvalue ~
                ThreatCompc*timeafterpeak + 
                ThreatCompc*baseline +
             (1|id) + (0+timeafterpeak+timeafterpeak|id),
-            data = data)
+            data = data,control = ctrl)
 
 tab_model(mod11, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
 ```
@@ -828,3 +828,650 @@ lmer1.1 <- lmer(cortvalue ~
             data = data)
 ```
 
+## March 22 2019
+
+#### Model 1
+
+```{r results='hide', echo=TRUE, error=TRUE, include=FALSE}
+mod1 <- lme(cortvalue ~
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
+            random = list(timebeforepeak=~1|id, timeafterpeak=~1|id),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+            data = data)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak", "ThreatCompc * Baseline")
+
+tab_model(mod1, title = "Model 1", dv.labels = "Cortisol", pred.labels = labels, digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+#### Model 2
+
+```{r results='hide', echo=TRUE, error=TRUE, include=FALSE}
+mod2 <- lme(cortvalue ~
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
+            random = list(timebeforepeak=~1, timeafterpeak=~1),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+            data = data)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak", "ThreatCompc * Baseline")
+
+tab_model(mod2, title = "Model 2", dv.labels = "Cortisol", pred.labels = labels, digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+#### Model 3
+
+```{r results='hide', echo=TRUE, error=TRUE, include=FALSE}
+mod3 <- lme(cortvalue ~
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
+            random = list(timebeforepeak = ~id, timeafterpeak = ~id),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+            data = data)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak", "ThreatCompc * Baseline")
+
+tab_model(mod3, title = "Model 3", dv.labels = "Cortisol", pred.labels = labels, digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+#### Model 4
+
+```{r results='hide', echo=TRUE, error=TRUE, include=FALSE}
+mod4 <- lme(cortvalue ~
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
+            random = list(id = ~timebeforepeak, id = ~timeafterpeak),
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action = na.exclude, # removes NA values
+            data = data)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=TRUE}
+colorder <- c("est", "se", "p")
+
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak", "ThreatCompc * Baseline")
+
+tab_model(mod4, title = "Model 4", dv.labels = "Cortisol", pred.labels = labels, digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+```
+
+#### delete
+
+```{r}
+Oxide$Dummy <- factor(1)
+Oxide <- groupedData(Thickness ~ 1 | Dummy, Oxide)
+lme(Thickness ~ 1, data=Oxide,
+    random=pdBlocked(list(pdIdent(~ 0 + Lot),
+                          pdIdent(~ 0 + Wafer))))
+```
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | Dummy, data)
+delete1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=data1,
+    na.action = na.exclude,
+    random=pdBlocked(list(pdIdent(~ 0 + timebeforepeak),
+                          pdIdent(~ 0 + timeafterpeak))))
+```
+
+```{r}
+tab_model(delete1)
+```
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete1.1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=data1,
+    na.action = na.exclude,
+    random=pdBlocked(list(pdIdent(~ 0 + timebeforepeak),
+                          pdIdent(~ 0 + timeafterpeak))))
+tab_model(delete1.1)
+```
+
+### https://stackoverflow.com/questions/36643713/how-to-specify-different-random-effects-in-nlme-vs-lme4
+
+```{r}
+data$dummy <- factor(1)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+          random=list(dummy =
+                pdBlocked(list(pdIdent(~id),
+                               pdIdent(~timebeforepeak),
+                               pdIdent(~timeafterpeak)))),
+          data=data,
+          na.action=na.exclude)
+```
+
+```{r}
+data$dummy <- factor(1)
+delete3 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+          random=list(id =
+                pdBlocked(list(pdIdent(~timebeforepeak-1),
+                               pdIdent(~timeafterpeak-1)))),
+          data=data,
+          na.action=na.exclude)
+tab_model(delete3)
+```
+
+```{r}
+data$dummy <- factor(1)
+delete4 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=data1, na.action=na.exclude, 
+            random = pdBlocked( list( pdIdent( ~ id), pdIdent( ~ timebeforepeak - 1), pdIdent( ~ timeafterpeak - 1))))
+                                                                 
+                                                                 
+                                                                 
+tab_model(delete4)
+```
+
+## an old book 
+
+### grouped data
+
+```{r}
+data$Dummy <- factor(1)
+groupeddata0 <- groupedData(cortvalue ~ 1 | Dummy, data)
+```
+
+```{r}
+groupeddata <- groupedData(cortvalue ~ 1 | id, data=data)
+```
+
+```{r}
+groupeddata2 <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak | id, data=data)
+```
+
+### model
+
+
+> fm1Assay <- lme( logDens ~ sample * dilut, Assay,
++ random = pdBlocked(list(pdIdent(~ 1), pdIdent(~ sample - 1),
++ pdIdent(~ dilut - 1))) )
+
+```{r good?}
+mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=groupeddata0,
+            na.action=na.exclude,
+            random = pdBlocked(list(pdIdent(~ 1), pdIdent(~ timebeforepeak - 1), pdIdent(~ timeafterpeak - 1))))
+
+summary(mod1)
+tab_model(mod1)
+```
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | Dummy, data)
+delete1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=data1,
+    na.action = na.exclude,
+    random=pdBlocked(list(pdIdent(~ 0 + timebeforepeak),
+                          pdIdent(~ 0 + timeafterpeak))))
+```
+
+```{r actual decent??}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | Dummy, data)
+delete1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            data=mydata,
+    na.action = na.exclude,
+    random=pdDiag( ~ timebeforepeak + timeafterpeak))
+summary(delete1)
+tab_model(delete1)
+```
+
+```{r }
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=data1,
+    na.action = na.exclude,
+    random=pdDiag( ~ timebeforepeak + timeafterpeak))
+summary(delete1)
+tab_model(delete1)
+```
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=data1,
+    na.action = na.exclude,
+    random=pdDiag( ~ timebeforepeak + timeafterpeak))
+summary(delete1)
+tab_model(delete1)
+```
+
+
+## ok i actually read the things now
+
+
+> PROC MIXED DATA=longdata COVTEST METHOD=REML;
+	CLASS ID ;
+	MODEL Cortwinbox = Cort_baseline_winbox
+	       TimeBeforePeak2
+	       TimeAfterPeak2
+			   threatcomp_mc
+			   threatcomp_mc*Cort_baseline_winbox 
+			   threatcomp_mc*TimeBeforePeak2 
+			   threatcomp_mc*TimeAfterPeak2
+	RANDOM intercept TimeBeforePeak2 TimeAfterPeak2/SUB=ID TYPE=ar(1) GCORR; 
+	RUN; QUIT;
+
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete1.1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(), # specifies AR1 structure
+            #control = ctrl,
+            method = "REML", # specifies REML fit
+    na.action = na.exclude,
+    random=pdBlocked(list(pdIdent(~ 1),
+                          pdIdent(~ timebeforepeak-1), # 0 + and -1 are the same
+                          pdIdent(~ timeafterpeak-1))))
+tab_model(delete1.1)
+```
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(), # specifies AR1 structure
+            #control = ctrl,
+            method = "REML", # specifies REML fit
+    na.action = na.exclude,
+    random = list(Dummy = pdBlocked(list(~timebeforepeak-1, ~timeafterpeak-1))))
+tab_model(delete2)
+```
+
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(), # specifies AR1 structure
+            #control = ctrl,
+            method = "REML", # specifies REML fit
+    na.action = na.exclude,
+    random = pdBlocked(list(~timebeforepeak-1, ~timeafterpeak-1)))
+tab_model(delete2)
+```
+
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=groupeddata2,
+            corr = corAR1(), # specifies AR1 structure
+            #control = ctrl,
+            method = "REML", # specifies REML fit
+    na.action = na.exclude,
+    random = list(Dummy = pdBlocked(list(~timebeforepeak-1, ~timeafterpeak-1))))
+tab_model(delete2)
+summary(delete2)
+```
+
+```{r}
+data$Dummy <- factor(1)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=groupeddata2,
+            corr = corAR1(), # specifies AR1 structure
+            #control = ctrl,
+            method = "REML", # specifies REML fit
+    na.action = na.exclude,
+    random = list(id = pdBlocked(list(pdIdent(~ timebeforepeak-1), pdIdent( ~ timeafterpeak-1)))))
+tab_model(delete2)
+```
+
+```{r}
+data$Dummy <- factor(1)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=groupeddata2,
+            corr = corAR1(), # specifies AR1 structure
+            #control = ctrl,
+            method = "REML", # specifies REML fit
+    na.action = na.exclude,
+    random = pdBlocked(list(pdIdent(~ timebeforepeak-1), pdIdent( ~ timeafterpeak-1))))
+tab_model(delete2)
+```
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=groupeddata2,
+            corr = corAR1(), # specifies AR1 structure
+            #control = ctrl,
+            method = "REML", # specifies REML fit
+    na.action = na.exclude,
+    random = list(id = pdDiag(~ timebeforepeak + timeafterpeak)))
+tab_model(delete2)
+```
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=groupeddata2,
+            corr = corAR1(), # specifies AR1 structure
+            #control = ctrl,
+            method = "REML", # specifies REML fit
+    na.action = na.exclude,
+    random = pdBlocked(~ timebeforepeak + timeafterpeak)))
+tab_model(delete2)
+```
+
+
+```{r}
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=groupeddata2,
+            corr = corAR1(), # specifies AR1 structure
+            #control = ctrl,
+            method = "REML", # specifies REML fit
+    na.action = na.exclude,
+    random = pdBlocked(list(pdIdent(~ timebeforepeak-1), pdIdent( ~ timeafterpeak-1))))
+tab_model(delete2)
+```
+
+```{r}
+options(contrasts = c(factor = "contr.SAS", ordered = "contr.poly"))
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=groupeddata2,
+    na.action = na.exclude,
+    random = pdBlocked(list(pdDiag(~ id), pdIdent(~ timebeforepeak - 1), pdIdent(~ timeafterpeak - 1))))
+tab_model(delete2)
+```
+
+```{r}
+
+data$Dummy <- factor(1)
+data1 <- groupedData(cortvalue ~ 1 | id, data)
+delete2 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=groupeddata2,
+    na.action = na.exclude,
+    random = list(Dummy = pdBlocked(list(~timebeforepeak-1, ~timeafterpeak-1))))
+tab_model(delete2)
+summary(delete2)
+```
+
+```{r}
+options(contrasts = c(factor = "contr.SAS", ordered = "contr.poly"))
+mydata <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak | id, data=data)
+mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            na.action=na.exclude,
+            random = ~ 1 | id)
+summary(mod1)
+tab_model(mod1)
+```
+
+https://stackoverflow.com/questions/36342072/how-to-get-two-random-effects-crossed-with-one-nested-in-the-other-in-nlme
+
+https://rdrr.io/cran/nlme/man/pdBlocked.html WE NEED THIS!!!
+
+```{r}
+options(contrasts = c(factor = "contr.SAS", ordered = "contr.poly"))
+mydata <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak | id, data=data)
+mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            na.action=na.exclude,
+            random = pdBlocked(list(pdDiag(~ timebeforepeak - 1), pdDiag(~ timeafterpeak - 1))))
+summary(mod1)
+tab_model(mod1)
+```
+
+```{r}
+options(contrasts = c(factor = "contr.SAS", ordered = "contr.poly"))
+mydata <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak | id, data=data)
+mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            na.action=na.exclude,
+            random = pdBlocked(list(pdDiag(~ id), pdIdent(~ timeafterpeak), pdIdent(~timebeforepeak))))
+summary(mod1)
+tab_model(mod1)
+```
+
+```{r}
+options(contrasts = c(factor = "contr.SAS", ordered = "contr.poly"))
+mydata <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak | id, data=data)
+mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            na.action=na.exclude,
+            random = pdBlocked(list(pdDiag(~ id), pdIdent(~ timeafterpeak), pdIdent(~timebeforepeak))))
+summary(mod1)
+tab_model(mod1)
+```
+
+https://stats.stackexchange.com/questions/332103/how-to-specify-a-model-with-spatial-correlation-and-crossed-random-intercepts-in
+
+```{r}
+options(contrasts = c(factor = "contr.SAS", ordered = "contr.poly"))
+mydata <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak | id, data=data)
+mydata$dummy = 1
+mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            na.action=na.exclude,
+            random = list(dummy=pdBlocked(list(pdDiag(~ 1), pdIdent(~ timeafterpeak-1), pdIdent(~timebeforepeak-1)))))
+summary(mod1)
+tab_model(mod1)
+```
+
+
+```{r}
+options(contrasts = c(factor = "contr.SAS", ordered = "contr.poly"))
+mydata <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak | id, data=data)
+mydata$dummy <- 1
+mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            na.action=na.exclude,
+            random = pdBlocked(list(pdDiag(~ 1), pdIdent(~ timeafterpeak-1), pdIdent(~timebeforepeak-1))))
+summary(mod1)
+tab_model(mod1)
+```
+
+```{r}
+options(contrasts = c(factor = "contr.SAS", ordered = "contr.poly"))
+mydata <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak | id, data=data)
+mydata$dummy <- 1
+mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(form=~1|id), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            #control = ctrl, # optimizes model
+            na.action=na.exclude,
+            random = pdBlocked(list(pdIdent(~ timeafterpeak-1), pdIdent(~timebeforepeak-1))))
+summary(mod1)
+tab_model(mod1)
+```
+
+```{r}
+options(contrasts = c(factor = "contr.SAS", ordered = "contr.poly"))
+mydata <- groupedData(cortvalue ~ timebeforepeak + timeafterpeak | id, data=data)
+mydata$dummy <- 1
+mod1 <- lme(cortvalue ~ timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + 
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline,
+            data=mydata,
+            corr = corAR1(form=~1|id), # specifies AR1 structure
+            method = "REML", # specifies REML fit
+            control = ctrl, # optimizes model
+            na.action=na.exclude,
+            random = pdBlocked(list(~id, ~timebeforepeak+timeafterpeak)))
+            #weights = varIdent(form = 1|id)))
+summary(mod1)
+tab_model(mod1)
+```
