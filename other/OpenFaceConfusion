@@ -1,0 +1,108 @@
+---
+title: "Confused!"
+author: "Julianna Calabrese"
+date: "March 21, 2019"
+output: html_document
+---
+
+```{r library, include=FALSE}
+library(car)
+library(MASS)
+library(tidyverse)
+library(psych)
+library(stats)
+library(summarytools)
+library(kableExtra)
+library(nlme)
+library(lme4)
+library(sjPlot)
+library(zoo)
+```
+
+```{r Load in and lightly clean data, include=FALSE}
+data <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+#data <- read.csv(file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv", header=TRUE, sep=",")
+data$X <- NULL
+data$genderold <- NULL
+data$baseline <- as.numeric(data$cort_baseline_Win_thing)
+data$cort_baseline_Win_thing <- NULL
+ctrl <- lmeControl(opt='optim')
+data$ThreatCompc <- data$ThreatComp - mean(data$ThreatComp)
+data$DepCompc <- data$DepComp - mean(data$DepComp)
+data$ThreatDepInt <- data$ThreatCompc*data$DepCompc
+```
+
+```{r Locating the NAs, include=FALSE}
+#colSums(is.na(data))
+```
+
+```{r Change NAs to zero, include=FALSE}
+#data$timebeforepeak[is.na(data$timebeforepeak)] <- 0
+#data$timeafterpeak[is.na(data$timeafterpeak)] <- 0
+#data$cortvalue[is.na(data$cortvalue)] <- 0
+```
+
+```{r Change NAs to the mean, include=FALSE}
+#data$timebeforepeak <- na.aggregate(data$timebeforepeak)
+#data$timeafterpeak <- na.aggregate(data$timeafterpeak)
+#data$cortvalue <- na.aggregate(data$cortvalue)
+```
+
+## SAS syntax for reference
+
+> PROC MIXED DATA=longdata COVTEST METHOD=REML;
+	WHERE time > -1 and usable = 1; /*starting at sample 0, usable only*/
+	CLASS ID ; /*Categorical variables*/
+	MODEL Cortwinbox = Cort_baseline_winbox TimeBeforePeak2 TimeAfterPeak2
+			   threatcomp_mc threatcomp_mc*Cort_baseline_winbox threatcomp_mc*TimeBeforePeak2 threatcomp_mc*TimeAfterPeak2
+						/SOLUTION DDFM=BW;
+	RANDOM intercept TimeBeforePeak2 TimeAfterPeak2/SUB=ID TYPE=ar(1) GCORR; 
+	RUN; QUIT;
+	
+* SUBJECT= creates block-diagonality
+* If something is mentioned in CLASS, it has to be mentioned in the model line
+
+[Cool reference for SAS.](https://support.sas.com/documentation/cdl/en/statug/63962/HTML/default/viewer.htm#mixed_toc.htm)
+
+## Differences between R packages
+
+While there are many R packages that can conduct mixed modeling, the two most popular choices are the [lme4 package](https://cran.r-project.org/web/packages/lme4/lme4.pdf) with the lmer command and the [nlme package](https://cran.r-project.org/web/packages/nlme/nlme.pdf) with the lme command. Both are suitable alternatives to SAS' PROC MIXED command: [lme4 here](https://cran.r-project.org/web/packages/SASmixed/vignettes/Usinglmer.pdf), [nlme here](http://www.solutionmetrics.com.au/support/splus82win/lmeSAS.pdf). 
+
+Ultimately, I decided to go with the nlme package. The main reason I went with nlme is because nlme allows me to specify a correlation structure (e.g. AR1), while lme4 automatically [defaults to unstructured and is unable to be changed.](https://stats.stackexchange.com/questions/86958/variance-covariance-structure-for-random-effects-in-lme4) It is important to note that both packages allow me to have multiple crossed random effects, something I originally thought was impossible with nlme.
+
+Other packages include [glmmTMB](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf) and [brms](https://cran.r-project.org/web/packages/brms/brms.pdf). However, glmmTMB seems to offer nothing more than what nlme can offer and brms is used for Bayesian regression modelling, which wasn't used in Lopez-Duran 2014.
+
+## Multiple ways to specify multiple random effects in nlme
+
+There are multiple ways to specify two or more random effects in nlme. This is easier done in lme4. It can also be done in nlme, but it is not intuitive. The random effects need to let the intercept and slope vary randomly. Below I list some examples of how to do this, where a and b are two crossed random effects.
+
+[Here is a good reference guide for R model specifications, which includes sections on lme4 and nlme.](https://www.cscu.cornell.edu/news/Handouts/R_Model_Specification.pdf)
+
+### Single random effect
+
+> random = ~1|id
+
+> random = ~a|id 
+
+| Syntax | Output |
+|:----:|:------:|
+| random = ~1|id | Random group Intercept |
+| random = ~a|id | Random slope of a within id with correlated intercept |
+
+
+### Multiple random effects
+
+> random = list(a=~1|id, b=~1|id)
+
+> random = list(a=~1, b=~1)
+
+| Model | Syntax | Output |
+|:-----:|:------:|:------:|
+| Model 1 | random = list(a=~1|id, b=~1|id) | ? |
+| Model 2 | random = list(a=~1, b=~1) | ? |
+| Model 3 | random = list(a = ~id, b = ~id) | ? |
+| Model 4 | random = list(id = ~a, id = ~b) | ? |
+
+
+Model 1 and Model 2 give the same output.
+
