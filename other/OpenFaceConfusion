@@ -48,7 +48,7 @@ data$ThreatDepInt <- data$ThreatCompc*data$DepCompc
 #data$cortvalue <- na.aggregate(data$cortvalue)
 ```
 
-## SAS syntax for reference
+## Melissa's syntax for reference
 
 > PROC MIXED DATA=longdata COVTEST METHOD=REML;
 	WHERE time > -1 and usable = 1; /*starting at sample 0, usable only*/
