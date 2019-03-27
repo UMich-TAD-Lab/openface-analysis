@@ -106,63 +106,27 @@ There are multiple ways to specify two or more random effects in nlme. This is e
 | Model 3 | random = list(a = ~id, b = ~id) |
 | Model 4 | random = list(id = ~a, id = ~b) |
 
+## The Final Model
 
-## New Models 032519
+Okay, I went to CSCAR on March 27th and spoke to Kerby. He told me that the below model is the best model. However, it is not a replica of Melissa's model because what Melissa did is not replicable in R. 
 
-```{r BEST BEST BEST, echo=FALSE, error=TRUE}
+Put stuff here that he said. 
+
+```{r Final Model, echo=FALSE, error=TRUE}
 colorder <- c("est", "se", "p")
-#same as mod4
-mod1 <- lme(cortvalue ~
+
+finalmod <- lme(cortvalue ~
               timebeforepeak + # Fixed effect
               timeafterpeak + # Fixed effect
               baseline + # Fixed effect
             ThreatCompc + ThreatCompc*timebeforepeak + 
              ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
-            random = list(timebeforepeak=~1|id, timeafterpeak=~1|id),
+            random = ~1|id,
             corr = corAR1(), # specifies AR1 structure
             method = "REML", # specifies REML fit
-            #control = ctrl, # optimizes model
             na.action = na.exclude, # removes NA values
             data = data)
-summary(mod1)
+summary(finalmod)
 
-tab_model(mod1, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
+tab_model(finalmod, title = "The Final Model", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
 ```
-
-```{r BEST BEST BEST, echo=FALSE, error=TRUE}
-colorder <- c("est", "se", "p")
-#same as mod4
-mod1 <- lme(cortvalue ~
-              timebeforepeak + # Fixed effect
-              timeafterpeak + # Fixed effect
-              baseline + # Fixed effect
-            ThreatCompc + ThreatCompc*timebeforepeak + 
-             ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
-            random = ~1 + timebeforepeak + timeafterpeak|id,
-            corr = corAR1(), # specifies AR1 structure
-            method = "REML", # specifies REML fit
-            control = ctrl, # optimizes model
-            na.action = na.exclude, # removes NA values
-            data = data)
-summary(mod1)
-
-tab_model(mod1, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
-```
-
-
-```{r}
-mod7 <- lmer(cortvalue ~ 
-              timebeforepeak + # Fixed effect
-              timeafterpeak + # Fixed effect
-              baseline + # Fixed effect
-             ThreatCompc + 
-               ThreatCompc*timebeforepeak + 
-               ThreatCompc*timeafterpeak + 
-               ThreatCompc*baseline +
-            (timebeforepeak + timeafterpeak|id),
-            data = data)
-
-tab_model(mod7, title = "Will it work? Who knows!", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
-```
-
-
