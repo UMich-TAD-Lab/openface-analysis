@@ -353,6 +353,11 @@ ggplot(group_by(data), aes(sampletime, cortvalue, group=id,color=as.factor(id)))
 ```
 
 ```{r}
-xyplot(cortvalue~1|id,data=data)
+xyplot(cortvalue~,data=data)
+```
+
+```{r}
+# select only levels 30, 50 and 70 from continuous variable Barthel-Index
+plot_model(mod1, type = "pred", terms = c("ThreatCompc")
 ```
 
