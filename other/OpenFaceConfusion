@@ -1,9 +1,17 @@
 ---
-title: "Confused!"
+title: "Another attempt at an explanation"
 author: "Julianna Calabrese"
-date: "March 21, 2019"
-output: html_document
-editor_options: 
+date: "March 28, 2019"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    collapse: subsection
+    theme: united
+    highlight: tango
+  pdf_document: default
+editor_options:
   chunk_output_type: console
 ---
 
@@ -18,7 +26,8 @@ library(kableExtra)
 library(nlme)
 library(lme4)
 library(sjPlot)
-library(zoo)
+library(sjstats)
+library(lmerTest) # Gives you p-values for lmer models
 ```
 
 ```{r Load in and lightly clean data, include=FALSE}
@@ -28,39 +37,20 @@ data$X <- NULL
 data$genderold <- NULL
 data$baseline <- as.numeric(data$cort_baseline_Win_thing)
 data$cort_baseline_Win_thing <- NULL
-ctrl <- lmeControl(opt='optim')
 data$ThreatCompc <- data$ThreatComp - mean(data$ThreatComp)
 data$DepCompc <- data$DepComp - mean(data$DepComp)
 data$ThreatDepInt <- data$ThreatCompc*data$DepCompc
-colorder <- c("est", "se", "p")
-```
-
-```{r Locating the NAs, include=FALSE}
-#colSums(is.na(data))
-```
-
-```{r Change NAs to zero, include=FALSE}
-#data$timebeforepeak[is.na(data$timebeforepeak)] <- 0
-#data$timeafterpeak[is.na(data$timeafterpeak)] <- 0
-#data$cortvalue[is.na(data$cortvalue)] <- 0
-```
-
-```{r Change NAs to the mean, include=FALSE}
-#data$timebeforepeak <- na.aggregate(data$timebeforepeak)
-#data$timeafterpeak <- na.aggregate(data$timeafterpeak)
-#data$cortvalue <- na.aggregate(data$cortvalue)
 ```
 
 ## Melissa's syntax for reference
 
 > PROC MIXED DATA=longdata COVTEST METHOD=REML;
-	WHERE time > -1 and usable = 1; /*starting at sample 0, usable only*/
-	CLASS ID ; /*Categorical variables*/
-	MODEL Cortwinbox = Cort_baseline_winbox TimeBeforePeak2 TimeAfterPeak2
-			   threatcomp_mc threatcomp_mc*Cort_baseline_winbox threatcomp_mc*TimeBeforePeak2 threatcomp_mc*TimeAfterPeak2
-						/SOLUTION DDFM=BW;
-	RANDOM intercept TimeBeforePeak2 TimeAfterPeak2/SUB=ID TYPE=ar(1) GCORR; 
-	RUN; QUIT;
+	    > WHERE time > -1 and usable = 1; /*starting at sample 0, usable only*/
+	    > CLASS ID ; /*Categorical variables*/
+      >	MODEL Cortwinbox = Cort_baseline_winbox TimeBeforePeak2 TimeAfterPeak2 threatcomp_mc threatcomp_mc*Cort_baseline_winbox threatcomp_mc*TimeBeforePeak2 threatcomp_mc*TimeAfterPeak2
+					>	/SOLUTION DDFM=BW;
+	    > RANDOM intercept TimeBeforePeak2 TimeAfterPeak2/SUB=ID TYPE=ar(1) GCORR; 
+	    > RUN; QUIT;
 	
 * SUBJECT= creates block-diagonality
 * If something is mentioned in CLASS, it has to be mentioned in the model line
@@ -81,52 +71,141 @@ There are multiple ways to specify two or more random effects in nlme. This is e
 
 [Here is a good reference guide for R model specifications, which includes sections on lme4 and nlme.](https://www.cscu.cornell.edu/news/Handouts/R_Model_Specification.pdf)
 
-### Single random effect
+## Models
 
-> random = ~1|id
-
-> random = ~a|id 
-
-| Syntax | Output |
-|:----:|:------:|
-| random = ~1|id | Random group Intercept |
-| random = ~a|id | Random slope of a within id with correlated intercept |
-
-
-### Multiple random effects
-
-> random = list(a=~1|id, b=~1|id)
-
-> random = list(a=~1, b=~1)
-
-| Model | Syntax |
-|:-----:|:------:|
-| Model 1 | random = list(a=~1|id, b=~1|id) |
-| Model 2 | random = list(a=~1, b=~1) |
-| Model 3 | random = list(a = ~id, b = ~id) |
-| Model 4 | random = list(id = ~a, id = ~b) |
-
-## The Final Model
-
-Okay, I went to CSCAR on March 27th and spoke to Kerby. He told me that the below model is the best model. However, it is not a replica of Melissa's model because what Melissa did is not replicable in R. 
-
-Put stuff here that he said. 
-
-```{r Final Model, echo=FALSE, error=TRUE}
-colorder <- c("est", "se", "p")
-
-finalmod <- lme(cortvalue ~
-              timebeforepeak + # Fixed effect
-              timeafterpeak + # Fixed effect
-              baseline + # Fixed effect
-            ThreatCompc + ThreatCompc*timebeforepeak + 
-             ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
-            random = ~1|id,
-            corr = corAR1(), # specifies AR1 structure
-            method = "REML", # specifies REML fit
+```{r echo=TRUE, results = 'hide'}
+# Random intercept with ar1 structure
+mod1 <- lme(cortvalue ~
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + # Fixed effect
+            ThreatCompc*timebeforepeak + # Interaction
+            ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interaction
+            random = ~1|id, # Random intercept for Subject
+            corr = corAR1(), # Specifies AR1 structure
+            method = "REML", # Specifies REML fit
             na.action = na.exclude, # removes NA values
             data = data)
-summary(finalmod)
-
-tab_model(finalmod, title = "The Final Model", dv.labels = "Cortisol", digits = 5, digits.p = 5,  show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF",  show.r2=TRUE, col.order=colorder) #CSS = list(css.table = 'background-color: #f4ebb7;'))
 ```
+
+```{include=FALSE, echo=FALSE}
+summary(mod1)
+```
+
+```{r echo=TRUE, results = 'hide', warning=FALSE, message=FALSE}
+# Random slopes with unconstrained structure
+mod2 <- lmer(cortvalue ~ 
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + # Fixed effect
+            ThreatCompc*timebeforepeak + # Interaction
+            ThreatCompc*timeafterpeak + # Interaction
+            ThreatCompc*baseline + # Interaction
+            (timebeforepeak|id) + (timeafterpeak|id), # Random slopes
+            # Default unconstrained cor structure
+            data = data)
+```
+
+```{r include=FALSE}
+options(scipen=99)
+summary(mod2)
+```
+
+```{r include=FALSE}
+colorder <- c("est", "se", "p")
+
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak", "ThreatCompc * Baseline")
+```
+
+```{r echo=FALSE}
+tab_model(mod1, title = "nlme Model with a Random Intercept and a corAR1 structure",
+          dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3,
+          show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
+          show.std=NULL,
+          show.df = TRUE, string.df="DF", p.val = "wald",
+          show.stat = TRUE, string.stat = "T",          
+          show.est = TRUE, # No string.est
+          show.se = TRUE, string.se="Std Error",
+          show.p = TRUE, string.p="P-value",
+          show.r2 = TRUE,
+          col.order=colorder)
+```
+
+$\begin{aligned}
+Cortisol = \beta_0  
+& + \beta_1 \cdot TimeBeforePeak \\
+& + \beta_2 \cdot TimeAfterPeak \\
+& + \beta_3 \cdot Baseline \\
+& + \beta_4 \cdot ThreatCompc \\
+& + \beta_5 \cdot ThreatCompc \cdot TimeBeforePeak \\
+& + \beta_6 \cdot ThreatCompc \cdot TimeAfterPeak \\
+& + \beta_7 \cdot ThreatCompc \cdot Baseline \\
+& + \mu \cdot Subject \\
+& + \epsilon \\
+\end{aligned}$
+
+```{r echo=FALSE}
+tab_model(mod2, title = "lme4 Model with Random Slopes and a UN structure",
+          dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3,
+          show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
+          show.std = NULL,
+          show.df = TRUE, string.df="DF", p.val = "wald",
+          show.stat = TRUE, string.stat = "T",          
+          show.est = TRUE, # No string.est
+          show.se = TRUE, string.se="Std Error",
+          show.p = TRUE, string.p="P-value",
+          show.r2 = TRUE,
+          col.order=colorder)
+```
+
+
+
+```{r echo=FALSE, include=FALSE}
+dv <- c("nlme Model", "lme4 Model")
+tab_model(mod1, mod2, 
+          title = "nlme vs. lme4",
+          dv.labels = dv, pred.labels = labels, digits = 3, digits.p = 3,
+          show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
+          show.std = NULL,
+          show.df = TRUE, string.df="DF", p.val = "wald",
+          show.stat = TRUE, string.stat = "T",          
+          show.est = TRUE, # No string.est
+          show.se = TRUE, string.se="Std Error",
+          show.p = TRUE, string.p="P-value",
+          show.r2 = TRUE,
+          col.order=colorder)
+```
+
+
+That's all. I like mod1 better; Intercept is significant there. I also think having the ar1 structure is important, more important than having TimeBeforePeak and TimeAfterPeak as random effects. Also I keep getting an error with `tab_model` on mod2. 
+
+$\begin{aligned}
+Cortisol = \beta_0  
+& + \beta_1 \cdot TimeBeforePeak \\
+& + \beta_2 \cdot TimeAfterPeak \\
+& + \beta_3 \cdot Baseline \\
+& + \beta_4 \cdot ThreatCompc \\
+& + \beta_5 \cdot ThreatCompc \cdot TimeBeforePeak \\
+& + \beta_6 \cdot ThreatCompc \cdot TimeAfterPeak \\
+& + \beta_7 \cdot ThreatCompc \cdot Baseline \\
+& + \mu \cdot Subject \\
+& + \epsilon \\
+\end{aligned}$
+
+```{r, include=FALSE}
+$\begin{aligned}
+Cortisol = \beta_{Intercept} \\  
+& + \beta_{TimeBeforePeak} \\
+& + \beta_{TimeAfterPeak} \\
+& + \beta_{Baseline} \\
+& + \beta_{ThreatCompc} \\
+& + \beta_{ThreatCompc \cdot TimeBeforePeak} \\
+& + \beta_{ThreatCompc \cdot TimeAfterPeak} \\
+& + \beta_{ThreatCompc \cdot Baseline} \\
+& + \mu_{Subject} \\
+& + \epsilon \\
+\end{aligned}$
+```
+
