@@ -61,7 +61,7 @@ PROC MIXED DATA=longdata COVTEST METHOD=REML;
 
 [SAS reference here.](https://support.sas.com/documentation/cdl/en/statug/63962/HTML/default/viewer.htm#mixed_toc.htm)
 
-## Differences between R packages
+## R packages
 
 While there are many R packages that can conduct mixed modeling, the two most popular choices are the [lme4 package](https://cran.r-project.org/web/packages/lme4/lme4.pdf) with the lmer command and the [nlme package](https://cran.r-project.org/web/packages/nlme/nlme.pdf) with the lme command. Both are suitable alternatives to SAS' PROC MIXED command: [lme4 here](https://cran.r-project.org/web/packages/SASmixed/vignettes/Usinglmer.pdf), [nlme here](http://www.solutionmetrics.com.au/support/splus82win/lmeSAS.pdf). 
 
@@ -190,37 +190,29 @@ That's all. I like mod1 better; Intercept is significant there. I also think hav
 
 ```{r References, include=FALSE}
 #https://quantdev.ssri.psu.edu/tutorials/growth-modeling-chapter-3-linear-growth-models
+#http://dpmartin42.github.io/posts/Piecewise-growth
 ```
 
-```{r}
-ggplot(data, aes(x=stime, y=cortvalue)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE)
+```{r include=FALSE, warning=FALSE, message=FALSE}
+data$peaktime <- factor(data$peaktime, levels = c("s4time", "s5time", "s6time", "s7time", "s8time", "s9time", "s10time", "s11time", "s12time"))
 ```
 
-```{r}
-ggplot(group_by(data), aes(sampletime, cortvalue, group=id,color=as.factor(id))) +   geom_line(color="#c0c0c0") + geom_point() + theme(legend.position="none")
+```{r Bad barplot, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+ggplot(data=data, aes(x=peaktime, fill="red")) + 
+  geom_bar(aes(y = ..prop.., group = 1)) + ggtitle("When did most people peak?") +
+  theme(legend.position = "none")
 ```
-
-## plot_model
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
-#plot_model(mod1, type = "est") #good
-#plot_model(mod1, type = "re") #bad
-#plot_model(mod1, type = "std") #bad
-#plot_model(mod1, type = "std2") #bad
-#plot_model(mod1, type = "pred") #bad
-#plot_model(mod1, type = "eff") #bad
-#plot_model(mod1, type = "int") #bad
-#plot_model(mod1, type = "slope") #bad
-plot_model(mod1, type = "resid") #good but warnings
-plot_model(mod1, type = "diag") #good
+ggplot(data=data, aes(x=peaktimenum, fill="red")) + 
+  geom_density(aes(stat = "identity")) + ggtitle("When did most people peak?") +
+  theme(legend.position = "none")
 ```
 
-```{r I think this is TERRIBLE, include=FALSE}
+```{r I still think this is TERRIBLE, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
 timeticks <- c(0, 3, 15, 25, 30, 35, 40, 45, 60)
-
-ggplot(data, aes(sampletime, cortvalue)) +
+#Is this a sign that I overfitted the data?
+ggplot(data, aes(stime, cortvalue)) +
 stat_summary(fun.y=mean, geom="point", size=5) +
 stat_summary(fun.data=mean_se, geom="errorbar",
 linetype="solid", width=0.6) +
@@ -232,67 +224,39 @@ theme(legend.justification=c(0,1), legend.position=c(0,1),
 legend.background = element_rect(fill="white", color="black")) + scale_x_continuous(breaks=timeticks) + ggtitle("Cortisol Growth Curve")
 ```
 
-```{r Good graph, echo=FALSE}
-ggplot(data, aes(x = stime, y = cortvalue)) +
-  geom_point(aes(color=as.factor(Responder))) +
-  #geom_line(aes(group = id), color = "gray") + 
-  geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
-  theme(legend.position = "none")
+```{r include=FALSE, warning=FALSE, message=FALSE}
+ggplot(data, aes(x=stime, y=cortvalue)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) + xlab("Time") + ylab("Cortisol")
 ```
 
-```{r Good barplot, echo=FALSE}
-ggplot(data=data, aes(x=peaktime, fill="red")) + 
-  geom_bar(aes(y = ..prop.., group = 1)) + ggtitle("When did most people peak?")
+```{r echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+ggplot(group_by(data), aes(sampletime, cortvalue, group=id,color=as.factor(id))) +   geom_line(color="#c0c0c0") + geom_point() + theme(legend.position="none") + xlab("Time") + ylab("Cortisol")
 ```
 
-```{r}
-ggplot(data, aes(stime,cortvalue)) + geom_line(aes(y=predict(mod1)))
-```
-
-```{r}
-ggplot(aes(x = stime, y = cortvalue), data = data) +
-  geom_line(aes(group = id), color = "gray") + 
-  geom_smooth(aes(group = 1), method = "lm", size = 3, color = "red", se = FALSE) +
-  theme_bw()
-```
-
-```{r good DONT TOUCH}
-#http://dpmartin42.github.io/posts/Piecewise-growth
+```{r Pretty good, include=FALSE, warning=FALSE, message=FALSE}
 ggplot(aes(x = stime, y = cortvalue), data = data) +
   geom_line(aes(group = id), color = "gray") + 
   geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
-  theme_bw()
+  theme_bw() + xlab("Time") + ylab("Cortisol")
 ```
 
-```{r }
-ggplot(data, aes(x = stime, y = cortvalue)) +
-  geom_point(aes(y=predict(mod1))) +
-  geom_smooth(aes(group = 1), size = 3, color = "red", se = TRUE)
-```
-
-```{r }
-ggplot(data, aes(x = stime, y = cortvalue)) +
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(data, aes(x = stime, y = cortvalue, color=as.factor(Responder))) +
   geom_point(data=data) +
-  geom_smooth(aes(y=predict(mod1)), size = 3, color = "red", se = FALSE)
+  geom_smooth(aes(y=predict(mod1)), size = 3, color = "red", se = FALSE) + xlab("Time") + ylab("Cortisol") + theme(legend.position = "none")
 ```
 
-```{r also good!!!!!!!}
-ggplot(data, aes(x = stime, y = cortvalue)) +
-  geom_point(aes(color=as.factor(Responder))) +
-  geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
-  theme(legend.position = "none")
-```
-
-```{r TimeBeforePeak}
+```{r TimeBeforePeak, include=FALSE, warning=FALSE, message=FALSE}
 ggplot(data, aes(x = timebeforepeak, y = cortvalue)) +
   geom_point(aes(color=as.factor(Responder))) +
   geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") + xlab("TimeBeforePeak") + ylab("Cortisol")
 ```
 
-```{r TimeAfterPeak}
+```{r TimeAfterPeak, include=FALSE, warning=FALSE, message=FALSE}
 ggplot(data, aes(x = timeafterpeak, y = cortvalue)) +
   geom_point(aes(color=as.factor(Responder))) +
   geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") + xlab("TimeAfterPeak") + ylab("Cortisol")
 ```
