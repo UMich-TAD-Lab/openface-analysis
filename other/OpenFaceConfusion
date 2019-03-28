@@ -27,6 +27,9 @@ library(nlme)
 library(lme4)
 library(sjPlot)
 library(sjstats)
+library(multcomp)
+library(effects)
+library(lattice)
 library(lmerTest) # Gives you p-values for lmer models
 ```
 
@@ -44,34 +47,39 @@ data$ThreatDepInt <- data$ThreatCompc*data$DepCompc
 
 ## Melissa's syntax for reference
 
-> PROC MIXED DATA=longdata COVTEST METHOD=REML;
-	    > WHERE time > -1 and usable = 1; /*starting at sample 0, usable only*/
-	    > CLASS ID ; /*Categorical variables*/
-      >	MODEL Cortwinbox = Cort_baseline_winbox TimeBeforePeak2 TimeAfterPeak2 threatcomp_mc threatcomp_mc*Cort_baseline_winbox threatcomp_mc*TimeBeforePeak2 threatcomp_mc*TimeAfterPeak2
-					>	/SOLUTION DDFM=BW;
-	    > RANDOM intercept TimeBeforePeak2 TimeAfterPeak2/SUB=ID TYPE=ar(1) GCORR; 
-	    > RUN; QUIT;
-	
-* SUBJECT= creates block-diagonality
-* If something is mentioned in CLASS, it has to be mentioned in the model line
+```
+PROC MIXED DATA=longdata COVTEST METHOD=REML;
+	WHERE time > -1 and usable = 1; /*starting at sample 0, usable only*/
+	CLASS ID ; /*Categorical variables*/
+	MODEL Cortwinbox = Cort_baseline_winbox TimeBeforePeak2 TimeAfterPeak2
+			 threatcomp_mc threatcomp_mc*Cort_baseline_winbox 
+			 threatcomp_mc*TimeBeforePeak2 threatcomp_mc*TimeAfterPeak2
+						/SOLUTION DDFM=BW;
+	RANDOM intercept TimeBeforePeak2 TimeAfterPeak2/SUB=ID TYPE=ar(1) GCORR; 
+	RUN; QUIT;
+```
 
-[Cool reference for SAS.](https://support.sas.com/documentation/cdl/en/statug/63962/HTML/default/viewer.htm#mixed_toc.htm)
+[SAS reference here.](https://support.sas.com/documentation/cdl/en/statug/63962/HTML/default/viewer.htm#mixed_toc.htm)
 
 ## Differences between R packages
 
 While there are many R packages that can conduct mixed modeling, the two most popular choices are the [lme4 package](https://cran.r-project.org/web/packages/lme4/lme4.pdf) with the lmer command and the [nlme package](https://cran.r-project.org/web/packages/nlme/nlme.pdf) with the lme command. Both are suitable alternatives to SAS' PROC MIXED command: [lme4 here](https://cran.r-project.org/web/packages/SASmixed/vignettes/Usinglmer.pdf), [nlme here](http://www.solutionmetrics.com.au/support/splus82win/lmeSAS.pdf). 
 
-Ultimately, I decided to go with the nlme package. The main reason I went with nlme is because nlme allows me to specify a correlation structure (e.g. AR1), while lme4 automatically [defaults to unstructured and is unable to be changed.](https://stats.stackexchange.com/questions/86958/variance-covariance-structure-for-random-effects-in-lme4) It is important to note that both packages allow me to have multiple crossed random effects, something I originally thought was impossible with nlme.
+The biggest difference between nlme and lme is that nlme allows you to specify a correlation structure (e.g. AR1), while lme4 automatically [defaults to unstructured and is unable to be changed.](https://stats.stackexchange.com/questions/86958/variance-covariance-structure-for-random-effects-in-lme4) However, it's 100x easier to specify non-nested random effects in lme4 than nlme, so if I used nlme, I could only have one random effect or I would have to nest one random effect within the other.
 
 Other packages include [glmmTMB](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf) and [brms](https://cran.r-project.org/web/packages/brms/brms.pdf). However, glmmTMB seems to offer nothing more than what nlme can offer and brms is used for Bayesian regression modelling, which wasn't used in Lopez-Duran 2014.
 
-## Multiple ways to specify multiple random effects in nlme
-
-There are multiple ways to specify two or more random effects in nlme. This is easier done in lme4. It can also be done in nlme, but it is not intuitive. The random effects need to let the intercept and slope vary randomly. Below I list some examples of how to do this, where a and b are two crossed random effects.
-
-[Here is a good reference guide for R model specifications, which includes sections on lme4 and nlme.](https://www.cscu.cornell.edu/news/Handouts/R_Model_Specification.pdf)
+[This is a good reference guide for R model specifications, which includes sections on lme4 and nlme.](https://www.cscu.cornell.edu/news/Handouts/R_Model_Specification.pdf)
 
 ## Models
+
+On March 27th, I went to CSCAR and had an appointment with Kerby where we discussed how to replicate Melissa's model in R. He told me that the two models below are the closest models I'm going to get to Melissa's model. However, it is not an exact replica of Melissa's model because what Melissa did is not replicable in R. 
+
+In Melissa's analyses, she put the AR1 on the random effects, although she likely should've put it on the error. This can be fixed by putting the random effect on different lines (aka as different statements) in SAS syntax, or by removing TimeBeforePeak and TimeAfterPeak as random effects entirely; you could just have TBP and TAP as fixed effects. The only random effect would be id. 
+
+Additionally, Kerby said that I need to choose between having random slopes or having a AR1 correlation structure. I cannot have both at the same time. `mod1` was made in `nlme` and has the random effect of subject and an autoregressive correlation structure. `mod2` was made in `lme4` and has two random effects: random slopes for TimeBeforePeak and TimeAfterPeak. He also questioned that ThreatCompc was significant as a main effect and as an interaction with the many time variables. He says it makes more sense for ThreatCompc just to be significant as part of an interaction.
+
+Out of curiousity, I also tested another model: made in `lme4` that had random intercepts and slopes for TimeBeforePeak and TimeAfterPeak. However, that model was identical to the model that just had random slopes. So there is no point in adding random intercepts to a `lme4` model. 
 
 ```{r echo=TRUE, results = 'hide'}
 # Random intercept with ar1 structure
@@ -119,9 +127,10 @@ colorder <- c("est", "se", "p")
 labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak", "ThreatCompc * Baseline")
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, results = 'asis'}
 tab_model(mod1, title = "nlme Model with a Random Intercept and a corAR1 structure",
           dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3,
+          emph.p = TRUE,
           show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
           show.std=NULL,
           show.df = TRUE, string.df="DF", p.val = "wald",
@@ -146,11 +155,12 @@ Cortisol = \beta_0
 & + \epsilon \\
 \end{aligned}$
 
-```{r echo=FALSE}
+```{r echo=FALSE, results = 'asis'}
 tab_model(mod2, title = "lme4 Model with Random Slopes and a UN structure",
           dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3,
           show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
           show.std = NULL,
+          emph.p = TRUE,
           show.df = TRUE, string.df="DF", p.val = "wald",
           show.stat = TRUE, string.stat = "T",          
           show.est = TRUE, # No string.est
@@ -159,27 +169,6 @@ tab_model(mod2, title = "lme4 Model with Random Slopes and a UN structure",
           show.r2 = TRUE,
           col.order=colorder)
 ```
-
-
-
-```{r echo=FALSE, include=FALSE}
-dv <- c("nlme Model", "lme4 Model")
-tab_model(mod1, mod2, 
-          title = "nlme vs. lme4",
-          dv.labels = dv, pred.labels = labels, digits = 3, digits.p = 3,
-          show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
-          show.std = NULL,
-          show.df = TRUE, string.df="DF", p.val = "wald",
-          show.stat = TRUE, string.stat = "T",          
-          show.est = TRUE, # No string.est
-          show.se = TRUE, string.se="Std Error",
-          show.p = TRUE, string.p="P-value",
-          show.r2 = TRUE,
-          col.order=colorder)
-```
-
-
-That's all. I like mod1 better; Intercept is significant there. I also think having the ar1 structure is important, more important than having TimeBeforePeak and TimeAfterPeak as random effects. Also I keep getting an error with `tab_model` on mod2. 
 
 $\begin{aligned}
 Cortisol = \beta_0  
@@ -190,22 +179,180 @@ Cortisol = \beta_0
 & + \beta_5 \cdot ThreatCompc \cdot TimeBeforePeak \\
 & + \beta_6 \cdot ThreatCompc \cdot TimeAfterPeak \\
 & + \beta_7 \cdot ThreatCompc \cdot Baseline \\
-& + \mu \cdot Subject \\
+& + \mu \cdot TimeBeforePeak_{Subject} \\
+& + \mu \cdot TimeAfterPeak_{Subject} \\
 & + \epsilon \\
 \end{aligned}$
 
-```{r, include=FALSE}
-$\begin{aligned}
-Cortisol = \beta_{Intercept} \\  
-& + \beta_{TimeBeforePeak} \\
-& + \beta_{TimeAfterPeak} \\
-& + \beta_{Baseline} \\
-& + \beta_{ThreatCompc} \\
-& + \beta_{ThreatCompc \cdot TimeBeforePeak} \\
-& + \beta_{ThreatCompc \cdot TimeAfterPeak} \\
-& + \beta_{ThreatCompc \cdot Baseline} \\
-& + \mu_{Subject} \\
-& + \epsilon \\
-\end{aligned}$
+```{r echo=FALSE, results = 'asis', include=FALSE}
+dv <- c("nlme Model", "lme4 Model")
+tab_model(mod1, mod2, 
+          title = "nlme vs. lme4",
+          dv.labels = dv, pred.labels = labels, digits = 3, digits.p = 3,
+          show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
+          show.std = NULL,
+          emph.p = TRUE,
+          show.df = TRUE, string.df="DF", p.val = "wald",
+          show.stat = TRUE, string.stat = "T",          
+          show.est = TRUE, # No string.est
+          show.se = TRUE, string.se="Std Error",
+          show.p = TRUE, string.p="P-value",
+          show.r2 = TRUE,
+          col.order=colorder)
+```
+
+That's all. I like mod1 better; Intercept is significant there. I also think having the ar1 structure is important, more important than having TimeBeforePeak and TimeAfterPeak as random effects. Also I keep getting an error with `tab_model` on mod2. 
+
+## Plots
+
+```{r}
+library(ggplot2)
+p <- ggplot(Orthodont, aes(x=age, y=distance, colour=Sex)) +
+  geom_point(size=3) +
+  geom_line(aes(y=predict(fm2), group=Subject, size="Subjects")) +
+  geom_line(data=newdat, aes(y=predict(fm2, level=0, newdata=newdat), size="Population")) +
+  scale_size_manual(name="Predictions", values=c("Subjects"=0.5, "Population"=3)) +
+  theme_bw(base_size=22) 
+print(p)
+```
+
+
+```{r}
+library(ggplot2)
+p <- ggplot(data, aes(x=cortvalue, y=stime)) +
+  geom_point(size=3) +
+  geom_line(aes(y=predict(mod1), group=id, size="Subjects")) +
+  geom_line(data=data, aes(y=predict(mod1), size="Population")) +
+  scale_size_manual(name="Predictions", values=c("Subjects"=0.5, "Population"=3)) +
+  theme_bw(base_size=22) 
+print(p)
+```
+
+```{r}
+plot(mod1)
+```
+
+```{r}
+ggplot(datalong, aes(x=CO2.Emissions, y=GDP, group=Country))+
+  stat_smooth(method="lm", se=FALSE, size=.5, color="springgreen") + # slopes for different countries
+  stat_smooth(aes(group=1), method="lm", color="blue", size=1.5)
+```
+
+
+```{r}
+plot.lme(mod1)
+plot(mod1)
+plot_model(mod1)
+plot_model(mod1, type="ri.pc", show.se=TRUE)
+?sjp.glmer
+
+```
+
+
+```{r}
+ggplot(data, aes(x=stime, y=cortvalue)) + geom_point(size=3) +
+  geom_line(aes(y=predict(mod1), group=id, size="Subjects"))
+```
+
+```{r}
+qqnorm(mod1)
+```
+
+```{r}
+# First possibility
+tmp <- as.data.frame(confint(glht(mod1, mcp(status = "Tukey")))$confint)
+tmp$Comparison <- rownames(tmp)
+ggplot(tmp, aes(x = Comparison, y = Estimate, ymin = lwr, ymax = upr)) +
+  geom_errorbar() + geom_point()
+
+tmp <- as.data.frame(confint(glht(mod1, mcp(status = "Tukey")))$confint)
+tmp$Comparison <- rownames(tmp)
+ggplot(tmp, aes(x = Comparison, y = Estimate, ymin = lwr, ymax = upr)) +
+  geom_errorbar() + geom_point()
+
+# Second possibility
+tmp <- as.data.frame(confint(glht(model))$confint)
+tmp$Comparison <- rownames(tmp)
+ggplot(tmp, aes(x = Comparison, y = Estimate, ymin = lwr, ymax = upr)) +
+  geom_errorbar() + geom_point()
+
+# Third possibility
+model <- lmer(value ~ 0 + status + (1|experiment), data = dataset)
+tmp <- as.data.frame(confint(glht(model))$confint)
+tmp$Comparison <- rownames(tmp)
+ggplot(tmp, aes(x = Comparison, y = Estimate, ymin = lwr, ymax = upr)) +
+  geom_errorbar() + geom_point()
+```
+
+```{r}
+    ggplot(data,aes(cortvalue, stime)) + 
+      facet_grid() +
+      geom_line(aes(y=mod1), size=0.8) +
+      geom_point(alpha = 0.3) + 
+      geom_hline(yintercept=0, linetype="dashed") +
+      theme_bw()
+```
+
+```{r}
+ggplot(data, aes(x=stime, y=cortvalue)) + 
+    geom_point() + 
+    geom_line(size=1.2) +
+    geom_ribbon(aes(ymin=fit-se, ymax=fit+se, fill=PersMeanCent_DailyControl),alpha=0.3) + 
+    labs(title = "Reactivity by Daily Control Beliefs", x= "Daily Stressor (0=Did not occur, 1=Occurred)", y="Negative Affect", color="Daily Control Beliefs", fill="Daily Control Beliefs") + theme_classic() + theme(text=element_text(size=20))
+```
+
+```{r}
+ggplot(data, aes(x=stime, y=cortvalue)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+https://quantdev.ssri.psu.edu/tutorials/growth-modeling-chapter-3-linear-growth-models
+
+```{r}
+plot_obs <- ggplot(data=data,
+                   aes(x = stime, y = cortvalue, group = id)) +
+                   geom_line() +
+                   theme_bw()
+plot_obs
+```
+
+```{r}
+b_1i_hat <- ranef(mod1)[,1] + fixef(mod1)[1]
+b_2i_hat <- ranef(mod1)[,2] + fixef(mod1)[2]
+```
+
+```{r}
+plot_pred <- ggplot(data=data, 
+                    aes(x = stime, y = cortvalue, group = id)) + 
+                    geom_line() + 
+                    theme_bw() + 
+                    scale_x_continuous(breaks = 2:8, name = "Grade") +
+                    scale_y_continuous(name = "PIAT Mathematics - Predictions")
+print(plot_pred)
+
+```
+
+```{r}
+plot(density(coef(mod1[[2]])[,1]), col=2,main="intercept")
+lines(density(coef(fm_lis[[1]])[,1]), col=1) # => not a normal distribution
+```
+
+```{r}
+ggplot(data, aes(x=stime, y=cortvalue,color=as.factor(id))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) + theme(legend.position = "none")
+```
+
+```{r}
+ggplot(group_by(data), aes(stime, cortvalue, group=id,color=as.factor(id))) +   geom_line(color="#c0c0c0") + geom_point() + theme(legend.position="none")
+```
+
+```{r}
+ggplot(group_by(data), aes(sampletime, cortvalue, group=id,color=as.factor(id))) +   geom_line(color="#c0c0c0") + geom_point() + theme(legend.position="none")
+```
+
+```{r}
+xyplot(cortvalue~1|id,data=data)
 ```
 
