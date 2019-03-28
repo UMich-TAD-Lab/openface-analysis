@@ -81,6 +81,7 @@ Additionally, Kerby said that I need to choose between having random slopes or h
 
 Out of curiousity, I also tested another model: made in `lme4` that had random intercepts and slopes for TimeBeforePeak and TimeAfterPeak. However, that model was identical to the model that just had random slopes. So there is no point in adding random intercepts to a `lme4` model. 
 
+
 ```{r echo=TRUE, results = 'hide'}
 # Random intercept with ar1 structure
 mod1 <- lme(cortvalue ~
@@ -200,13 +201,13 @@ data$peaktime <- factor(data$peaktime, levels = c("s4time", "s5time", "s6time", 
 ```{r Bad barplot, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
 ggplot(data=data, aes(x=peaktime, fill="red")) + 
   geom_bar(aes(y = ..prop.., group = 1)) + ggtitle("When did most people peak?") +
-  theme(legend.position = "none")
+  theme(legend.position = "none") + xlab("Time") + ylab("Time of Peak")
 ```
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(data=data, aes(x=peaktimenum, fill="red")) + 
   geom_density(aes(stat = "identity")) + ggtitle("When did most people peak?") +
-  theme(legend.position = "none")
+  theme(legend.position = "none") + xlab("Time") + ylab("Time of Peak")
 ```
 
 ```{r I still think this is TERRIBLE, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
