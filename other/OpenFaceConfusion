@@ -28,14 +28,14 @@ library(lme4)
 library(sjPlot)
 library(sjstats)
 library(multcomp)
-library(effects)
 library(lattice)
+library(rlang)
 library(lmerTest) # Gives you p-values for lmer models
 ```
 
 ```{r Load in and lightly clean data, include=FALSE}
-data <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
-#data <- read.csv(file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv", header=TRUE, sep=",")
+#data <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+data <- read.csv(file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv", header=TRUE, sep=",")
 data$X <- NULL
 data$genderold <- NULL
 data$baseline <- as.numeric(data$cort_baseline_Win_thing)
@@ -184,121 +184,12 @@ Cortisol = \beta_0
 & + \epsilon \\
 \end{aligned}$
 
-```{r echo=FALSE, results = 'asis', include=FALSE}
-dv <- c("nlme Model", "lme4 Model")
-tab_model(mod1, mod2, 
-          title = "nlme vs. lme4",
-          dv.labels = dv, pred.labels = labels, digits = 3, digits.p = 3,
-          show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
-          show.std = NULL,
-          emph.p = TRUE,
-          show.df = TRUE, string.df="DF", p.val = "wald",
-          show.stat = TRUE, string.stat = "T",          
-          show.est = TRUE, # No string.est
-          show.se = TRUE, string.se="Std Error",
-          show.p = TRUE, string.p="P-value",
-          show.r2 = TRUE,
-          col.order=colorder)
-```
-
 That's all. I like mod1 better; Intercept is significant there. I also think having the ar1 structure is important, more important than having TimeBeforePeak and TimeAfterPeak as random effects. Also I keep getting an error with `tab_model` on mod2. 
 
 ## Plots
 
-```{r}
-library(ggplot2)
-p <- ggplot(Orthodont, aes(x=age, y=distance, colour=Sex)) +
-  geom_point(size=3) +
-  geom_line(aes(y=predict(fm2), group=Subject, size="Subjects")) +
-  geom_line(data=newdat, aes(y=predict(fm2, level=0, newdata=newdat), size="Population")) +
-  scale_size_manual(name="Predictions", values=c("Subjects"=0.5, "Population"=3)) +
-  theme_bw(base_size=22) 
-print(p)
-```
-
-
-```{r}
-library(ggplot2)
-p <- ggplot(data, aes(x=cortvalue, y=stime)) +
-  geom_point(size=3) +
-  geom_line(aes(y=predict(mod1), group=id, size="Subjects")) +
-  geom_line(data=data, aes(y=predict(mod1), size="Population")) +
-  scale_size_manual(name="Predictions", values=c("Subjects"=0.5, "Population"=3)) +
-  theme_bw(base_size=22) 
-print(p)
-```
-
-```{r}
-plot(mod1)
-```
-
-```{r}
-ggplot(datalong, aes(x=CO2.Emissions, y=GDP, group=Country))+
-  stat_smooth(method="lm", se=FALSE, size=.5, color="springgreen") + # slopes for different countries
-  stat_smooth(aes(group=1), method="lm", color="blue", size=1.5)
-```
-
-
-```{r}
-plot.lme(mod1)
-plot(mod1)
-plot_model(mod1)
-plot_model(mod1, type="ri.pc", show.se=TRUE)
-?sjp.glmer
-
-```
-
-
-```{r}
-ggplot(data, aes(x=stime, y=cortvalue)) + geom_point(size=3) +
-  geom_line(aes(y=predict(mod1), group=id, size="Subjects"))
-```
-
-```{r}
-qqnorm(mod1)
-```
-
-```{r}
-# First possibility
-tmp <- as.data.frame(confint(glht(mod1, mcp(status = "Tukey")))$confint)
-tmp$Comparison <- rownames(tmp)
-ggplot(tmp, aes(x = Comparison, y = Estimate, ymin = lwr, ymax = upr)) +
-  geom_errorbar() + geom_point()
-
-tmp <- as.data.frame(confint(glht(mod1, mcp(status = "Tukey")))$confint)
-tmp$Comparison <- rownames(tmp)
-ggplot(tmp, aes(x = Comparison, y = Estimate, ymin = lwr, ymax = upr)) +
-  geom_errorbar() + geom_point()
-
-# Second possibility
-tmp <- as.data.frame(confint(glht(model))$confint)
-tmp$Comparison <- rownames(tmp)
-ggplot(tmp, aes(x = Comparison, y = Estimate, ymin = lwr, ymax = upr)) +
-  geom_errorbar() + geom_point()
-
-# Third possibility
-model <- lmer(value ~ 0 + status + (1|experiment), data = dataset)
-tmp <- as.data.frame(confint(glht(model))$confint)
-tmp$Comparison <- rownames(tmp)
-ggplot(tmp, aes(x = Comparison, y = Estimate, ymin = lwr, ymax = upr)) +
-  geom_errorbar() + geom_point()
-```
-
-```{r}
-    ggplot(data,aes(cortvalue, stime)) + 
-      facet_grid() +
-      geom_line(aes(y=mod1), size=0.8) +
-      geom_point(alpha = 0.3) + 
-      geom_hline(yintercept=0, linetype="dashed") +
-      theme_bw()
-```
-
-```{r}
-ggplot(data, aes(x=stime, y=cortvalue)) + 
-    geom_point() + 
-    geom_line(size=1.2) +
-    geom_ribbon(aes(ymin=fit-se, ymax=fit+se, fill=PersMeanCent_DailyControl),alpha=0.3) + 
-    labs(title = "Reactivity by Daily Control Beliefs", x= "Daily Stressor (0=Did not occur, 1=Occurred)", y="Negative Affect", color="Daily Control Beliefs", fill="Daily Control Beliefs") + theme_classic() + theme(text=element_text(size=20))
+```{r References, include=FALSE}
+#https://quantdev.ssri.psu.edu/tutorials/growth-modeling-chapter-3-linear-growth-models
 ```
 
 ```{r}
@@ -307,57 +198,101 @@ ggplot(data, aes(x=stime, y=cortvalue)) +
   geom_smooth(method = "lm", se = FALSE)
 ```
 
-https://quantdev.ssri.psu.edu/tutorials/growth-modeling-chapter-3-linear-growth-models
-
-```{r}
-plot_obs <- ggplot(data=data,
-                   aes(x = stime, y = cortvalue, group = id)) +
-                   geom_line() +
-                   theme_bw()
-plot_obs
-```
-
-```{r}
-b_1i_hat <- ranef(mod1)[,1] + fixef(mod1)[1]
-b_2i_hat <- ranef(mod1)[,2] + fixef(mod1)[2]
-```
-
-```{r}
-plot_pred <- ggplot(data=data, 
-                    aes(x = stime, y = cortvalue, group = id)) + 
-                    geom_line() + 
-                    theme_bw() + 
-                    scale_x_continuous(breaks = 2:8, name = "Grade") +
-                    scale_y_continuous(name = "PIAT Mathematics - Predictions")
-print(plot_pred)
-
-```
-
-```{r}
-plot(density(coef(mod1[[2]])[,1]), col=2,main="intercept")
-lines(density(coef(fm_lis[[1]])[,1]), col=1) # => not a normal distribution
-```
-
-```{r}
-ggplot(data, aes(x=stime, y=cortvalue,color=as.factor(id))) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) + theme(legend.position = "none")
-```
-
-```{r}
-ggplot(group_by(data), aes(stime, cortvalue, group=id,color=as.factor(id))) +   geom_line(color="#c0c0c0") + geom_point() + theme(legend.position="none")
-```
-
 ```{r}
 ggplot(group_by(data), aes(sampletime, cortvalue, group=id,color=as.factor(id))) +   geom_line(color="#c0c0c0") + geom_point() + theme(legend.position="none")
 ```
 
-```{r}
-xyplot(cortvalue~,data=data)
+## plot_model
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+#plot_model(mod1, type = "est") #good
+#plot_model(mod1, type = "re") #bad
+#plot_model(mod1, type = "std") #bad
+#plot_model(mod1, type = "std2") #bad
+#plot_model(mod1, type = "pred") #bad
+#plot_model(mod1, type = "eff") #bad
+#plot_model(mod1, type = "int") #bad
+#plot_model(mod1, type = "slope") #bad
+plot_model(mod1, type = "resid") #good but warnings
+plot_model(mod1, type = "diag") #good
+```
+
+```{r I think this is TERRIBLE, include=FALSE}
+timeticks <- c(0, 3, 15, 25, 30, 35, 40, 45, 60)
+
+ggplot(data, aes(sampletime, cortvalue)) +
+stat_summary(fun.y=mean, geom="point", size=5) +
+stat_summary(fun.data=mean_se, geom="errorbar",
+linetype="solid", width=0.6) +
+stat_summary(aes(y=fitted(mod1)), fun.y=mean, geom="line", lwd=1.5, col="gray") +
+scale_shape_manual(values=c(16, 17)) +
+labs(x="Time", y="Cortisol") +
+theme_bw(base_size=12) +
+theme(legend.justification=c(0,1), legend.position=c(0,1),
+legend.background = element_rect(fill="white", color="black")) + scale_x_continuous(breaks=timeticks) + ggtitle("Cortisol Growth Curve")
+```
+
+```{r Good graph, echo=FALSE}
+ggplot(data, aes(x = stime, y = cortvalue)) +
+  geom_point(aes(color=as.factor(Responder))) +
+  #geom_line(aes(group = id), color = "gray") + 
+  geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
+  theme(legend.position = "none")
+```
+
+```{r Good barplot, echo=FALSE}
+ggplot(data=data, aes(x=peaktime, fill="red")) + 
+  geom_bar(aes(y = ..prop.., group = 1)) + ggtitle("When did most people peak?")
 ```
 
 ```{r}
-# select only levels 30, 50 and 70 from continuous variable Barthel-Index
-plot_model(mod1, type = "pred", terms = c("ThreatCompc")
+ggplot(data, aes(stime,cortvalue)) + geom_line(aes(y=predict(mod1)))
 ```
 
+```{r}
+ggplot(aes(x = stime, y = cortvalue), data = data) +
+  geom_line(aes(group = id), color = "gray") + 
+  geom_smooth(aes(group = 1), method = "lm", size = 3, color = "red", se = FALSE) +
+  theme_bw()
+```
+
+```{r good DONT TOUCH}
+#http://dpmartin42.github.io/posts/Piecewise-growth
+ggplot(aes(x = stime, y = cortvalue), data = data) +
+  geom_line(aes(group = id), color = "gray") + 
+  geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
+  theme_bw()
+```
+
+```{r }
+ggplot(data, aes(x = stime, y = cortvalue)) +
+  geom_point(aes(y=predict(mod1))) +
+  geom_smooth(aes(group = 1), size = 3, color = "red", se = TRUE)
+```
+
+```{r }
+ggplot(data, aes(x = stime, y = cortvalue)) +
+  geom_point(data=data) +
+  geom_smooth(aes(y=predict(mod1)), size = 3, color = "red", se = FALSE)
+```
+
+```{r also good!!!!!!!}
+ggplot(data, aes(x = stime, y = cortvalue)) +
+  geom_point(aes(color=as.factor(Responder))) +
+  geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
+  theme(legend.position = "none")
+```
+
+```{r TimeBeforePeak}
+ggplot(data, aes(x = timebeforepeak, y = cortvalue)) +
+  geom_point(aes(color=as.factor(Responder))) +
+  geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
+  theme(legend.position = "none")
+```
+
+```{r TimeAfterPeak}
+ggplot(data, aes(x = timeafterpeak, y = cortvalue)) +
+  geom_point(aes(color=as.factor(Responder))) +
+  geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
+  theme(legend.position = "none")
+```
