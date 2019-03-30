@@ -51,6 +51,7 @@ data$ThreatDepInt <- data$ThreatCompc*data$DepCompc
 * [lme4 cheatsheet](https://stats.stackexchange.com/questions/13166/rs-lmer-cheat-sheet)
 * [nlme cheatsheet](https://bartomeuslab.com/tag/nlme/)
 * [Mixed model reference](https://www.cscu.cornell.edu/news/Handouts/R_Model_Specification.pdf)
+* [Random intercept model](https://www.bristol.ac.uk/media-library/sites/cmm/migrated/documents/random-ints.pdf)
 
 ## Melissa's syntax for reference
 
@@ -65,7 +66,6 @@ PROC MIXED DATA=longdata COVTEST METHOD=REML;
 	RANDOM intercept TimeBeforePeak2 TimeAfterPeak2/SUB=ID TYPE=ar(1) GCORR; 
 	RUN; QUIT;
 ```
-
 
 ## R packages
 
@@ -85,7 +85,7 @@ Additionally, Kerby said that I need to choose between having random slopes or h
 
 Out of curiousity, I also tested another model: made in `lme4` that had random intercepts and slopes for TimeBeforePeak and TimeAfterPeak. However, that model was identical to the model that just had random slopes. So there is no point in adding random intercepts to a `lme4` model. 
 
-```{r echo=TRUE, results = 'hide'}
+```{r mod1, echo=TRUE, results = 'hide'}
 # Random intercept with ar1 structure
 mod1 <- lme(cortvalue ~
             timebeforepeak + # Fixed effect
@@ -101,11 +101,11 @@ mod1 <- lme(cortvalue ~
             data = data)
 ```
 
-```{include=FALSE, echo=FALSE}
+```{summary mod1, include=FALSE, echo=FALSE}
 summary(mod1)
 ```
 
-```{r echo=TRUE, results = 'hide', warning=FALSE, message=FALSE}
+```{r mod2, echo=TRUE, results = 'hide', warning=FALSE, message=FALSE}
 # Random slopes with unconstrained structure
 mod2 <- lmer(cortvalue ~ 
             timebeforepeak + # Fixed effect
@@ -120,18 +120,18 @@ mod2 <- lmer(cortvalue ~
             data = data)
 ```
 
-```{r include=FALSE}
+```{r summary mod2, include=FALSE}
 options(scipen=99)
 summary(mod2)
 ```
 
-```{r include=FALSE}
+```{r Cleaning for tab_model, include=FALSE}
 colorder <- c("est", "se", "p")
 
 labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak", "ThreatCompc * Baseline")
 ```
 
-```{r echo=FALSE, results = 'asis'}
+```{r mod1 table, echo=FALSE, results = 'asis'}
 tab_model(mod1, title = "nlme Model with a Random Intercept and a corAR1 structure",
           dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3,
           emph.p = TRUE,
@@ -159,7 +159,7 @@ Cortisol = \beta_0
 & + \epsilon \\
 \end{aligned}$
 
-```{r echo=FALSE, results = 'asis'}
+```{r mod2 table, echo=FALSE, results = 'asis'}
 tab_model(mod2, title = "lme4 Model with Random Slopes and a UN structure",
           dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3,
           show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
@@ -188,7 +188,24 @@ Cortisol = \beta_0
 & + \epsilon \\
 \end{aligned}$
 
-That's all. I like mod1 better; Intercept is significant there. I also think having the ar1 structure is important, more important than having TimeBeforePeak and TimeAfterPeak as random effects. Also I keep getting an error with `tab_model` on mod2.
+I would say that there are no big differences between the models. The only difference is that the Intercept is not significant in mod2, which makes because mod2 doesn't allow the intercept to vary. I like mod1 better because I think having the ar1 structure is more important than having TimeBeforePeak and TimeAfterPeak as random effects.
+
+```{r mod1 and mod2 table, include=FALSE, echo=FALSE, results = 'asis'}
+tab_model(mod1, mod2, 
+          title = "nlme model vs. lme4 model",
+          dv.labels = c("nlme model", "lme4 model"), 
+          pred.labels = labels, digits = 3, digits.p = 3,
+          show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
+          show.std = NULL,
+          emph.p = TRUE,
+          show.df = TRUE, string.df="DF", p.val = "wald",
+          show.stat = TRUE, string.stat = "T",          
+          show.est = TRUE, # No string.est
+          show.se = TRUE, string.se="Std Error",
+          show.p = TRUE, string.p="P-value",
+          show.r2 = TRUE,
+          col.order=colorder)
+```
 
 ## Plots
 
@@ -222,12 +239,22 @@ ggplot(data2, aes(x=peaktime, y=perc, fill="red")) +
 rm(data2)
 ```
 
-```{r Descriptive Density plot, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+```{r Descriptive Density plot, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
 ggplot(data=data, aes(x=peaktimenum, fill="red")) + 
   geom_density(aes(stat = "identity")) + 
   ggtitle("When did most people peak?") +
   theme(legend.position = "none") + 
   xlab("Peak Time") + ylab("")
+```
+
+```{r All cortisol, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+ggplot(group_by(data), aes(timetopeak, cortvalue, group=id,color=as.factor(sampletimetopeak))) +
+  geom_line(color="#c0c0c0") + 
+  geom_point() +
+  theme(legend.position="none") + 
+  xlab("Sample Time") + ylab("Cortisol") + 
+  ggtitle("Everyone's Cortisol, No Modelling") +
+  scale_x_continuous(breaks=timeticks2) 
 ```
 
 ```{r Plot mod1 regression line, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
@@ -239,36 +266,28 @@ ggplot(data, aes(x = timetopeak, y = cortvalue)) +
   scale_x_continuous(breaks=timeticks2)
 ```
 
-```{r echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+```{r Everyone gets a line with regression line, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(data, aes(x = timetopeak, y = cortvalue)) +
+  geom_line(aes(color = as.factor(id))) + 
+  geom_smooth(aes(y=predict(mod1)), size = 2, color = "red", se = TRUE) +
+  xlab("Time to Peak") + ylab("Cortisol") + 
+  scale_x_continuous(breaks=timeticks2) +
+  theme(legend.position = "none") +
+  ggtitle("Everyone's Cortisol with nlme Regression Line")
+```
+
+```{r Cortisol growth curve, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
 ggplot(data, aes(timetopeak, cortvalue)) +
   stat_summary(fun.y=mean, geom="point", size=2) +
   stat_summary(fun.data=mean_se, geom="errorbar", linetype="solid", width=0.6) +
-  stat_summary(aes(y=fitted(mod1)), fun.y=mean, geom="line", lwd=1.5, col="gray") +
+  stat_summary(aes(y=predict(mod1)), fun.y=mean, geom="line", lwd=1.5, col="gray") +
   scale_shape_manual(values=c(16, 17)) +
   labs(x="Time to Peak", y="Cortisol") + 
-  ggtitle("Cortisol Growth Curve") + 
+  ggtitle("Cortisol growth curve") + 
   scale_x_continuous(breaks=timeticks2)
 ```
 
-```{r echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
-ggplot(group_by(data), aes(timetopeak, cortvalue, group=id,color=as.factor(sampletimetopeak))) +
-  geom_line(color="#c0c0c0") + 
-  geom_point() +
-  theme(legend.position="none") + 
-  xlab("Time") + ylab("Cortisol") + 
-  ggtitle("Everyone's Cortisol, No Modelling") +
-  scale_x_continuous(breaks=timeticks2) 
-```
-
-```{r Pretty good, include=FALSE, warning=FALSE, message=FALSE}
-ggplot(data, aes(x = timetopeak, y = cortvalue)) +
-  geom_line(aes(group = id), color = "gray") + 
-  geom_smooth(aes(y=predict(mod1)), size = 2, color = "red", se = TRUE) +
-  xlab("Time to Peak") + ylab("Cortisol") + 
-  scale_x_continuous(breaks=timeticks2)
-```
-
-```{r echo=FALSE, warning=FALSE, message=FALSE}
+```{r Colored by Responder, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
 data2 <- data
 data$Responder2 <- data$Responder
 
