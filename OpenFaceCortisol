@@ -92,6 +92,8 @@ cort9bc <- (((cortisol$Cortisol_Win.9)^-.26)- 1)/0.26
 cort10bc <- (((cortisol$Cortisol_Win.10)^-.26)- 1)/0.26
 cort11bc <- (((cortisol$Cortisol_Win.11)^-.26)- 1)/0.26
 cort12bc <- (((cortisol$Cortisol_Win.12)^-.26)- 1)/0.26
+cort12bc <- (((cortisol$Cortisol_Win.12)^-.26)- 1)/0.26
+cort_baseline_Win <- (((cortisol$cort_baseline_Win)^-.26)- 1)/0.26
 ```
 
 ```{r }
@@ -117,6 +119,7 @@ cortisol["cort9bc"] <- cort9bc
 cortisol["cort10bc"] <- cort10bc
 cortisol["cort11bc"] <- cort11bc
 cortisol["cort12bc"] <- cort12bc
+cortisol["cort_baseline_Win"] <- cort_baseline_Win
 ```
 
 ### Removing anything unneccessary from environment
@@ -134,6 +137,7 @@ rm(cort9bc)
 rm(cort10bc)
 rm(cort11bc)
 rm(cort12bc)
+rm(cort_baseline_Win)
 ```
 
 ## Writing it back out
