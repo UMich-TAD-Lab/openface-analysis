@@ -45,6 +45,13 @@ data$DepCompc <- data$DepComp - mean(data$DepComp)
 data$ThreatDepInt <- data$ThreatCompc*data$DepCompc
 ```
 
+## Cheatsheets
+
+* [SAS reference](https://support.sas.com/documentation/cdl/en/statug/63962/HTML/default/viewer.htm#mixed_toc.htm)
+* [lme4 cheatsheet](https://stats.stackexchange.com/questions/13166/rs-lmer-cheat-sheet)
+* [nlme cheatsheet](https://bartomeuslab.com/tag/nlme/)
+* [Mixed model reference](https://www.cscu.cornell.edu/news/Handouts/R_Model_Specification.pdf)
+
 ## Melissa's syntax for reference
 
 ```
@@ -59,7 +66,6 @@ PROC MIXED DATA=longdata COVTEST METHOD=REML;
 	RUN; QUIT;
 ```
 
-[SAS reference here.](https://support.sas.com/documentation/cdl/en/statug/63962/HTML/default/viewer.htm#mixed_toc.htm)
 
 ## R packages
 
@@ -68,8 +74,6 @@ While there are many R packages that can conduct mixed modeling, the two most po
 The biggest difference between nlme and lme is that nlme allows you to specify a correlation structure (e.g. AR1), while lme4 automatically [defaults to unstructured and is unable to be changed.](https://stats.stackexchange.com/questions/86958/variance-covariance-structure-for-random-effects-in-lme4) However, it's 100x easier to specify non-nested random effects in lme4 than nlme, so if I used nlme, I could only have one random effect or I would have to nest one random effect within the other.
 
 Other packages include [glmmTMB](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf) and [brms](https://cran.r-project.org/web/packages/brms/brms.pdf). However, glmmTMB seems to offer nothing more than what nlme can offer and brms is used for Bayesian regression modelling, which wasn't used in Lopez-Duran 2014.
-
-[This is a good reference guide for R model specifications, which includes sections on lme4 and nlme.](https://www.cscu.cornell.edu/news/Handouts/R_Model_Specification.pdf)
 
 ## Models
 
@@ -80,7 +84,6 @@ In Melissa's analyses, she put the AR1 on the random effects, although she likel
 Additionally, Kerby said that I need to choose between having random slopes or having a AR1 correlation structure. I cannot have both at the same time. `mod1` was made in `nlme` and has the random effect of subject and an autoregressive correlation structure. `mod2` was made in `lme4` and has two random effects: random slopes for TimeBeforePeak and TimeAfterPeak. He also questioned that ThreatCompc was significant as a main effect and as an interaction with the many time variables. He says it makes more sense for ThreatCompc just to be significant as part of an interaction.
 
 Out of curiousity, I also tested another model: made in `lme4` that had random intercepts and slopes for TimeBeforePeak and TimeAfterPeak. However, that model was identical to the model that just had random slopes. So there is no point in adding random intercepts to a `lme4` model. 
-
 
 ```{r echo=TRUE, results = 'hide'}
 # Random intercept with ar1 structure
@@ -185,17 +188,18 @@ Cortisol = \beta_0
 & + \epsilon \\
 \end{aligned}$
 
-That's all. I like mod1 better; Intercept is significant there. I also think having the ar1 structure is important, more important than having TimeBeforePeak and TimeAfterPeak as random effects. Also I keep getting an error with `tab_model` on mod2. 
+That's all. I like mod1 better; Intercept is significant there. I also think having the ar1 structure is important, more important than having TimeBeforePeak and TimeAfterPeak as random effects. Also I keep getting an error with `tab_model` on mod2.
 
 ## Plots
 
 ```{r References, include=FALSE}
 #https://quantdev.ssri.psu.edu/tutorials/growth-modeling-chapter-3-linear-growth-models
 #http://dpmartin42.github.io/posts/Piecewise-growth
-```
 
-```{r include=FALSE, warning=FALSE, message=FALSE}
 data$peaktime <- factor(data$peaktime, levels = c("s4time", "s5time", "s6time", "s7time", "s8time", "s9time", "s10time", "s11time", "s12time"))
+
+timeticks <- c(0, 3, 15, 25, 30, 35, 40, 45, 60)
+timeticks2 <- c(-60, -45, -40, -35, -30, -25, -15, -3, 0, 3, 15, 25, 30, 35, 40, 45, 60)
 ```
 
 ```{r Bad barplot, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
@@ -210,54 +214,65 @@ ggplot(data=data, aes(x=peaktimenum, fill="red")) +
   theme(legend.position = "none") + xlab("Time") + ylab("Time of Peak")
 ```
 
+```{r}
+ggplot(data, aes(x = timetopeak, y = cortvalue)) +
+  geom_line(aes(group = id), color = "gray") + 
+  geom_smooth(aes(group = 1), method = "loess", size = 3, color = "red", se = FALSE) +
+  theme_bw()
+```
+
+```{r}
+ggplot(data, aes(x = timetopeak, y = cortvalue)) +
+  geom_line(aes(group = id), color = "gray") + 
+  geom_smooth(aes(y=predict(mod1)), method = "loess", size = 3, color = "red", se = FALSE) +
+  theme_bw()
+```
+
+```{r}
+ggplot(data, aes(x = timetopeak, y = cortvalue)) +
+  geom_line(aes(color=as.factor(id))) + 
+  geom_smooth(aes(y=predict(mod1)), method = "loess", size = 3, color = "red", se = FALSE) +
+  theme_bw()
+```
+
 ```{r I still think this is TERRIBLE, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
-timeticks <- c(0, 3, 15, 25, 30, 35, 40, 45, 60)
-#Is this a sign that I overfitted the data?
-ggplot(data, aes(stime, cortvalue)) +
+ggplot(data, aes(timetopeak, cortvalue)) +
 stat_summary(fun.y=mean, geom="point", size=5) +
 stat_summary(fun.data=mean_se, geom="errorbar",
 linetype="solid", width=0.6) +
 stat_summary(aes(y=fitted(mod1)), fun.y=mean, geom="line", lwd=1.5, col="gray") +
 scale_shape_manual(values=c(16, 17)) +
-labs(x="Time", y="Cortisol") +
+labs(x="Time to Peak", y="Cortisol") +
 theme_bw(base_size=12) +
 theme(legend.justification=c(0,1), legend.position=c(0,1),
-legend.background = element_rect(fill="white", color="black")) + scale_x_continuous(breaks=timeticks) + ggtitle("Cortisol Growth Curve")
-```
-
-```{r include=FALSE, warning=FALSE, message=FALSE}
-ggplot(data, aes(x=stime, y=cortvalue)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) + xlab("Time") + ylab("Cortisol")
+legend.background = element_rect(fill="white", color="black")) + ggtitle("Cortisol Growth Curve") + scale_x_continuous(breaks=timeticks2)
 ```
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
-ggplot(group_by(data), aes(sampletime, cortvalue, group=id,color=as.factor(id))) +   geom_line(color="#c0c0c0") + geom_point() + theme(legend.position="none") + xlab("Time") + ylab("Cortisol")
+ggplot(group_by(data), aes(timetopeak, cortvalue, group=id,color=as.factor(sampletimetopeak))) +   geom_line(color="#c0c0c0") + geom_point() + theme(legend.position="none") + xlab("Time") + ylab("Cortisol") + scale_x_continuous(breaks=timeticks2)
 ```
 
 ```{r Pretty good, include=FALSE, warning=FALSE, message=FALSE}
-ggplot(aes(x = stime, y = cortvalue), data = data) +
+ggplot(data, aes(x = timetopeak, y = cortvalue)) +
   geom_line(aes(group = id), color = "gray") + 
   geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
-  theme_bw() + xlab("Time") + ylab("Cortisol")
+  theme_bw() + xlab("Time") + ylab("Cortisol") + scale_x_continuous(breaks=timeticks2)
 ```
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
-ggplot(data, aes(x = stime, y = cortvalue, color=as.factor(Responder))) +
+ggplot(data, aes(x = timetopeak, y = cortvalue, color=as.factor(Responder))) +
   geom_point(data=data) +
-  geom_smooth(aes(y=predict(mod1)), size = 3, color = "red", se = FALSE) + xlab("Time") + ylab("Cortisol") + theme(legend.position = "none")
+  geom_smooth(aes(y=predict(mod1)), size = 3, color = "red", se = FALSE) + 
+  xlab("Time to Peak ") + ylab("Cortisol") + 
+  theme(legend.position = "none") + 
+  scale_x_continuous(breaks=timeticks2)
 ```
 
-```{r TimeBeforePeak, include=FALSE, warning=FALSE, message=FALSE}
-ggplot(data, aes(x = timebeforepeak, y = cortvalue)) +
-  geom_point(aes(color=as.factor(Responder))) +
-  geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
-  theme(legend.position = "none") + xlab("TimeBeforePeak") + ylab("Cortisol")
-```
-
-```{r TimeAfterPeak, include=FALSE, warning=FALSE, message=FALSE}
-ggplot(data, aes(x = timeafterpeak, y = cortvalue)) +
-  geom_point(aes(color=as.factor(Responder))) +
-  geom_smooth(aes(group = 1), size = 3, color = "red", se = FALSE) +
-  theme(legend.position = "none") + xlab("TimeAfterPeak") + ylab("Cortisol")
+```{r YES YES YES}
+ggplot(data, aes(x = timetopeak, y = cortvalue, color=as.factor(Responder))) +
+  geom_point(data=data) +
+  geom_smooth(aes(y=predict(mod1)), size = 3, color = "red", se = FALSE) + 
+  xlab("Time to Peak") + ylab("Cortisol") + 
+  theme(legend.position = "none") + 
+  scale_x_continuous(breaks=timeticks2)
 ```
