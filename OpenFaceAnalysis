@@ -132,7 +132,7 @@ names(corr_vars) <- gsub(pattern = "cp_long._*", replacement = "", x = names(cor
 
 corr_data <- stats::cor(corr_vars)
 
-labels <- c("AU01_r", "AU02_r", "AU04_r", "AU05_r", "AU06_r", "AU07_r", "AU09_r", "AU10_r", "AU12_r", "AU14_r", "AU15_r", "AU17_r", "AU20_r", "AU23_r", "AU25_r", "AU26_r", "CTQ Total", "ThreapCompc", "DepCompc", "Responder")
+labels <- c("AU1", "AU2", "AU4", "AU5", "AU6", "AU7", "AU9", "AU10", "AU12", "AU14", "AU15", "AU17", "AU20", "AU23", "AU25", "AU26", "CTQ Total", "ThreapCompc", "DepCompc", "Responder")
 
 set_theme(axis.title.size = 0, geom.label.size = 4.5, axis.textsize.x = 1, axis.textsize.y = 1, axis.angle.x = 90)
 
