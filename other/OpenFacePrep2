@@ -1,0 +1,2123 @@
+---
+title: "OpenFacePrep but what if we didn't exclude that many people"
+author: "Julianna Calabrese"
+date: "12/7/2018"
+  pdf_document: default
+  html_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages("mosaic")
+#install.packages("ggplot2")
+#install.packages("tidyr")
+#install.packages("dplyr")
+#install.packages("psych")
+#install.packages("nlme")
+#install.packages("apaTables")
+#install.packages("plyr")
+
+library(mosaic)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(psych)
+library(nlme)
+library(apaTables)
+library(plyr)
+```
+
+```{r IDs that were missing/unusable before this step}
+#Missing: 10001, 10007, 10039, 10069, 10098, 10101, 10129, 10147, 10168, 10175, 10199, 10204, 10233, 10234
+#Had two Cold Press video files on the server: 10074, 10107, 10122, 10177, 10191
+#Corrupted: 10189
+```
+
+## Read in all the .csv files
+
+```{r}
+cp_10002 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10002_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10003 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10003_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10004 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10004_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10005 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10005_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10006 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10006_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10008 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10008_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10009 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10009_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10010 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10010_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10011 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10011_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10012 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10012_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10013 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10013_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10014 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10014_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10015 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10015_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10016 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10016_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10017 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10017_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10018 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10018_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10019 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10019_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10020 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10020_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10021 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10021_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10022 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10022_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10023 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10023_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10024 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10024_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10025 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10025_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10026 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10026_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10027 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10027_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10028 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10028_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10029 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10029_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10030 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10030_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10031 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10031_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10032 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10032_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10033 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10033_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10034 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10034_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10035 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10035_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10036 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10036_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10037 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10037_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10038 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10038_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10040 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10040_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10041 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10041_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10042 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10042_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10043 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10043_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10044 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10044_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10045 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10045_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10046 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10046_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10047 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10047_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10048 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10048_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10049 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10049_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10050 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10050_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10051 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10051_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10052 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10052_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10053 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10053_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10054 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10054_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10055 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10055_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10056 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10056_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10057 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10057_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10058 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10058_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10059 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10059_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10060 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10060_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10061 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10061_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10062 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10062_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10063 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10063_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10064 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10064_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10065 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10065_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10066 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10066_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10067 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10067_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10068 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10068_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10070 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10070_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10071 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10071_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10072 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10072_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10073 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10073_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10075 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10075_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10076 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10076_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10077 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10077_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10078 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10078_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10079 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10079_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10080 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10080_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10081 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10081_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10082 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10082_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10083 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10083_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10084 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10084_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10085 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10085_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10086 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10086_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10087 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10087_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10088 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10088_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10089 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10089_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10090 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10090_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10091 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10091_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10092 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10092_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10093 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10093_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10094 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10094_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10095 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10095_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10096 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10096_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10097 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10097_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10099 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10099_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10100 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10100_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10102 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10102_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10103 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10103_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10104 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10104_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10105 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10105_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10106 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10106_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10108 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10108_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10109 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10109_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10110 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10110_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10111 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10111_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10112 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10112_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10113 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10113_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10114 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10114_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10115 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10115_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10116 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10116_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10117 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10117_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10118 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10118_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10119 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10119_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10120 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10120_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10121 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10121_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10123 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10123_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10124 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10124_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10125 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10125_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10126 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10126_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10127 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10127_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10128 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10128_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10130 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10130_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10131 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10131_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10132 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10132_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10133 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10133_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10134 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10134_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10135 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10135_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10136 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10136_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10137 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10137_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10138 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10138_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10139 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10139_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10140 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10140_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10141 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10141_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10142 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10142_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10143 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10143_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10144 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10144_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10145 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10145_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10146 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10146_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10148 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10148_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10149 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10149_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10150 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10150_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10151 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10151_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10152 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10152_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10153 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10153_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10154 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10154_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10155 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10155_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10156 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10156_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10157 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10157_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10158 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10158_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10159 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10159_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10160 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10160_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10161 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10161_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10162 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10162_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10163 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10163_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10164 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10164_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10165 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10165_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10166 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10166_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10167 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10167_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10169 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10169_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10170 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10170_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10171 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10171_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10172 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10172_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10173 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10173_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10174 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10174_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10176 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10176_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10178 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10178_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10179 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10179_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10180 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10180_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10181 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10181_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10182 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10182_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10183 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10183_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10184 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10184_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10185 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10185_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10186 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10186_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10187 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10187_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10188 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10188_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10190 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10190_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10192 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10192_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10193 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10193_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10194 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10194_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10195 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10195_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10196 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10196_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10197 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10197_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10198 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10198_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10200 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10200_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10201 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10201_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10202 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10202_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10203 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10203_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10205 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10205_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10206 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10206_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10207 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10207_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10208 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10208_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10209 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10209_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10210 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10210_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10211 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10211_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10212 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10212_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10213 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10213_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10214 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10214_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10215 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10215_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10216 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10216_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10217 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10217_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10218 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10218_ColdPress.csv", header=TRUE, sep=",")
+
+#cp_10219 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10219_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10220 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10220_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10221 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10221_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10222 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10222_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10223 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10223_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10224 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10224_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10225 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10225_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10226 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10226_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10227 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10227_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10228 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10228_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10229 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10229_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10230 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10230_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10231 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10231_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10232 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10232_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10235 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10235_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10236 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10236_ColdPress.csv", header=TRUE, sep=",")
+
+cp_10237 <- read.csv(file="C:/Users/jrcala/Documents/My Research/OpenFace-master/x64/Release/processed/10237_ColdPress.csv", header=TRUE, sep=",")
+```
+
+## Create the FF_ID Variable
+
+```{r}
+cp_10002$FF_ID <- 10002
+
+cp_10003$FF_ID <- 10003
+
+cp_10004$FF_ID <- 10004
+
+cp_10005$FF_ID <- 10005
+
+cp_10006$FF_ID <- 10006
+
+cp_10008$FF_ID <- 10008
+
+cp_10009$FF_ID <- 10009
+
+cp_10010$FF_ID <- 10010
+
+cp_10011$FF_ID <- 10011
+
+cp_10012$FF_ID <- 10012
+
+cp_10013$FF_ID <- 10013
+
+cp_10014$FF_ID <- 10014
+
+cp_10015$FF_ID <- 10015
+
+cp_10016$FF_ID <- 10016
+
+cp_10017$FF_ID <- 10017
+
+cp_10018$FF_ID <- 10018
+
+cp_10019$FF_ID <- 10019
+
+cp_10020$FF_ID <- 10020
+
+cp_10021$FF_ID <- 10021
+
+cp_10022$FF_ID <- 10022
+
+cp_10023$FF_ID <- 10023
+
+cp_10024$FF_ID <- 10024
+
+cp_10025$FF_ID <- 10025
+
+cp_10026$FF_ID <- 10026
+
+cp_10027$FF_ID <- 10027
+
+cp_10028$FF_ID <- 10028
+
+cp_10029$FF_ID <- 10029
+
+cp_10030$FF_ID <- 10030
+
+cp_10031$FF_ID <- 10031
+
+cp_10032$FF_ID <- 10032
+
+cp_10033$FF_ID <- 10033
+
+cp_10034$FF_ID <- 10034
+
+#cp_10035$FF_ID <- 10035
+
+cp_10036$FF_ID <- 10036
+
+cp_10037$FF_ID <- 10037
+
+#cp_10038$FF_ID <- 10038
+
+cp_10040$FF_ID <- 10040
+
+cp_10041$FF_ID <- 10041
+
+#cp_10042$FF_ID <- 10042
+
+cp_10043$FF_ID <- 10043
+
+cp_10044$FF_ID <- 10044
+
+cp_10045$FF_ID <- 10045
+
+cp_10046$FF_ID <- 10046
+
+cp_10047$FF_ID <- 10047
+
+cp_10048$FF_ID <- 10048
+
+cp_10049$FF_ID <- 10049
+
+cp_10050$FF_ID <- 10050
+
+cp_10051$FF_ID <- 10051
+
+cp_10052$FF_ID <- 10052
+
+cp_10053$FF_ID <- 10053
+
+cp_10054$FF_ID <- 10054
+
+cp_10055$FF_ID <- 10055
+
+cp_10056$FF_ID <- 10056
+
+cp_10057$FF_ID <- 10057
+
+cp_10058$FF_ID <- 10058
+
+cp_10059$FF_ID <- 10059
+
+cp_10060$FF_ID <- 10060
+
+cp_10061$FF_ID <- 10061
+
+cp_10062$FF_ID <- 10062
+
+cp_10063$FF_ID <- 10063
+
+#cp_10064$FF_ID <- 10064
+
+cp_10065$FF_ID <- 10065
+
+cp_10066$FF_ID <- 10066
+
+cp_10067$FF_ID <- 10067
+
+cp_10068$FF_ID <- 10068
+
+cp_10070$FF_ID <- 10070
+
+cp_10071$FF_ID <- 10071
+
+cp_10072$FF_ID <- 10072
+
+cp_10073$FF_ID <- 10073
+
+cp_10075$FF_ID <- 10075
+
+cp_10076$FF_ID <- 10076
+
+cp_10077$FF_ID <- 10077
+
+cp_10078$FF_ID <- 10078
+
+cp_10079$FF_ID <- 10079
+
+cp_10080$FF_ID <- 10080
+
+#cp_10081$FF_ID <- 10081
+
+cp_10082$FF_ID <- 10082
+
+cp_10083$FF_ID <- 10083
+
+cp_10084$FF_ID <- 10084
+
+cp_10085$FF_ID <- 10085
+
+cp_10086$FF_ID <- 10086
+
+cp_10087$FF_ID <- 10087
+
+cp_10088$FF_ID <- 10088
+
+cp_10089$FF_ID <- 10089
+
+cp_10090$FF_ID <- 10090
+
+cp_10091$FF_ID <- 10091
+
+cp_10092$FF_ID <- 10092
+
+cp_10093$FF_ID <- 10093
+
+cp_10094$FF_ID <- 10094
+
+cp_10095$FF_ID <- 10095
+
+cp_10096$FF_ID <- 10096
+
+cp_10097$FF_ID <- 10097
+
+cp_10099$FF_ID <- 10099
+
+cp_10100$FF_ID <- 10100
+
+cp_10102$FF_ID <- 10102
+
+cp_10103$FF_ID <- 10103
+
+cp_10104$FF_ID <- 10104
+
+cp_10105$FF_ID <- 10105
+
+cp_10106$FF_ID <- 10106
+
+cp_10108$FF_ID <- 10108
+
+cp_10109$FF_ID <- 10109
+
+cp_10110$FF_ID <- 10110
+
+cp_10111$FF_ID <- 10111
+
+cp_10112$FF_ID <- 10112
+
+cp_10113$FF_ID <- 10113
+
+cp_10114$FF_ID <- 10114
+
+cp_10115$FF_ID <- 10115
+
+cp_10116$FF_ID <- 10116
+
+cp_10117$FF_ID <- 10117
+
+cp_10118$FF_ID <- 10118
+
+cp_10119$FF_ID <- 10119
+
+#cp_10120$FF_ID <- 10120
+
+cp_10121$FF_ID <- 10121
+
+cp_10123$FF_ID <- 10123
+
+cp_10124$FF_ID <- 10124
+
+cp_10125$FF_ID <- 10125
+
+cp_10126$FF_ID <- 10126
+
+cp_10127$FF_ID <- 10127
+
+cp_10128$FF_ID <- 10128
+
+cp_10130$FF_ID <- 10130
+
+cp_10131$FF_ID <- 10131
+
+cp_10132$FF_ID <- 10132
+
+cp_10133$FF_ID <- 10133
+
+cp_10134$FF_ID <- 10134
+
+cp_10135$FF_ID <- 10135
+
+cp_10136$FF_ID <- 10136
+
+cp_10137$FF_ID <- 10137
+
+cp_10138$FF_ID <- 10138
+
+cp_10139$FF_ID <- 10139
+
+cp_10140$FF_ID <- 10140
+
+cp_10141$FF_ID <- 10141
+
+cp_10142$FF_ID <- 10142
+
+cp_10143$FF_ID <- 10143
+
+cp_10144$FF_ID <- 10144
+
+cp_10145$FF_ID <- 10145
+
+cp_10146$FF_ID <- 10146
+
+#cp_10148$FF_ID <- 10148
+
+cp_10149$FF_ID <- 10149
+
+cp_10150$FF_ID <- 10150
+
+cp_10151$FF_ID <- 10151
+
+cp_10152$FF_ID <- 10152
+
+cp_10153$FF_ID <- 10153
+
+cp_10154$FF_ID <- 10154
+
+cp_10155$FF_ID <- 10155
+
+cp_10156$FF_ID <- 10156
+
+cp_10157$FF_ID <- 10157
+
+cp_10158$FF_ID <- 10158
+
+cp_10159$FF_ID <- 10159
+
+cp_10160$FF_ID <- 10160
+
+cp_10161$FF_ID <- 10161
+
+cp_10162$FF_ID <- 10162
+
+cp_10163$FF_ID <- 10163
+
+cp_10164$FF_ID <- 10164
+
+cp_10165$FF_ID <- 10165
+
+cp_10166$FF_ID <- 10166
+
+cp_10167$FF_ID <- 10167
+
+cp_10169$FF_ID <- 10169
+
+cp_10170$FF_ID <- 10170
+
+cp_10171$FF_ID <- 10171
+
+cp_10172$FF_ID <- 10172
+
+#cp_10173$FF_ID <- 10173
+
+cp_10174$FF_ID <- 10174
+
+cp_10176$FF_ID <- 10176
+
+cp_10178$FF_ID <- 10178
+
+cp_10179$FF_ID <- 10179
+
+cp_10180$FF_ID <- 10180
+
+cp_10181$FF_ID <- 10181
+
+cp_10182$FF_ID <- 10182
+
+cp_10183$FF_ID <- 10183
+
+cp_10184$FF_ID <- 10184
+
+cp_10185$FF_ID <- 10185
+
+cp_10186$FF_ID <- 10186
+
+cp_10187$FF_ID <- 10187
+
+cp_10188$FF_ID <- 10188
+
+cp_10190$FF_ID <- 10190
+
+cp_10192$FF_ID <- 10192
+
+cp_10193$FF_ID <- 10193
+
+cp_10194$FF_ID <- 10194
+
+cp_10195$FF_ID <- 10195
+
+cp_10196$FF_ID <- 10196
+
+cp_10197$FF_ID <- 10197
+
+cp_10198$FF_ID <- 10198
+
+cp_10200$FF_ID <- 10200
+
+cp_10201$FF_ID <- 10201
+
+cp_10202$FF_ID <- 10202
+
+cp_10203$FF_ID <- 10203
+
+cp_10205$FF_ID <- 10205
+
+cp_10206$FF_ID <- 10206
+
+cp_10207$FF_ID <- 10207
+
+cp_10208$FF_ID <- 10208
+
+cp_10209$FF_ID <- 10209
+
+cp_10210$FF_ID <- 10210
+
+cp_10211$FF_ID <- 10211
+
+cp_10212$FF_ID <- 10212
+
+cp_10213$FF_ID <- 10213
+
+cp_10214$FF_ID <- 10214
+
+cp_10215$FF_ID <- 10215
+
+#cp_10216$FF_ID <- 10216
+
+cp_10217$FF_ID <- 10217
+
+cp_10218$FF_ID <- 10218
+
+#cp_10219$FF_ID <- 10219
+
+cp_10220$FF_ID <- 10220
+
+cp_10221$FF_ID <- 10221
+
+cp_10222$FF_ID <- 10222
+
+cp_10223$FF_ID <- 10223
+
+cp_10224$FF_ID <- 10224
+
+cp_10225$FF_ID <- 10225
+
+cp_10226$FF_ID <- 10226
+
+cp_10227$FF_ID <- 10227
+
+cp_10228$FF_ID <- 10228
+
+cp_10229$FF_ID <- 10229
+
+cp_10230$FF_ID <- 10230
+
+cp_10231$FF_ID <- 10231
+
+cp_10232$FF_ID <- 10232
+
+cp_10235$FF_ID <- 10235
+
+cp_10236$FF_ID <- 10236
+
+cp_10237$FF_ID <- 10237
+```
+
+## Removing rows where success = 0
+
+```{r}
+cp_10002 <- cp_10002[cp_10002$success != "0", ]
+
+cp_10003 <- cp_10003[cp_10003$success != "0", ]
+
+cp_10004 <- cp_10004[cp_10004$success != "0", ]
+
+cp_10005 <- cp_10005[cp_10005$success != "0", ]
+
+cp_10006 <- cp_10006[cp_10006$success != "0", ]
+
+cp_10008 <- cp_10008[cp_10008$success != "0", ]
+
+cp_10009 <- cp_10009[cp_10009$success != "0", ]
+
+cp_10010 <- cp_10010[cp_10010$success != "0", ]
+
+cp_10011 <- cp_10011[cp_10011$success != "0", ]
+
+cp_10012 <- cp_10012[cp_10012$success != "0", ]
+
+cp_10013 <- cp_10013[cp_10013$success != "0", ]
+
+cp_10014 <- cp_10014[cp_10014$success != "0", ]
+
+cp_10015 <- cp_10015[cp_10015$success != "0", ]
+
+cp_10016 <- cp_10016[cp_10016$success != "0", ]
+
+cp_10017 <- cp_10017[cp_10017$success != "0", ]
+
+cp_10018 <- cp_10018[cp_10018$success != "0", ]
+
+cp_10019 <- cp_10019[cp_10019$success != "0", ]
+
+cp_10020 <- cp_10020[cp_10020$success != "0", ]
+
+cp_10021 <- cp_10021[cp_10021$success != "0", ]
+
+cp_10022 <- cp_10022[cp_10022$success != "0", ]
+
+cp_10023 <- cp_10023[cp_10023$success != "0", ]
+
+cp_10024 <- cp_10024[cp_10024$success != "0", ]
+
+cp_10025 <- cp_10025[cp_10025$success != "0", ]
+
+cp_10026 <- cp_10026[cp_10026$success != "0", ]
+
+cp_10027 <- cp_10027[cp_10027$success != "0", ]
+
+cp_10028 <- cp_10028[cp_10028$success != "0", ]
+
+cp_10029 <- cp_10029[cp_10029$success != "0", ]
+
+cp_10030 <- cp_10030[cp_10030$success != "0", ]
+
+cp_10031 <- cp_10031[cp_10031$success != "0", ]
+
+cp_10032 <- cp_10032[cp_10032$success != "0", ]
+
+cp_10033 <- cp_10033[cp_10033$success != "0", ]
+
+cp_10034 <- cp_10034[cp_10034$success != "0", ]
+
+#cp_10035 <- cp_10035[cp_10035$success != "0", ]
+
+cp_10036 <- cp_10036[cp_10036$success != "0", ]
+
+cp_10037 <- cp_10037[cp_10037$success != "0", ]
+
+#cp_10038 <- cp_10038[cp_10038$success != "0", ]
+
+cp_10040 <- cp_10040[cp_10040$success != "0", ]
+
+cp_10041 <- cp_10041[cp_10041$success != "0", ]
+
+#cp_10042 <- cp_10042[cp_10042$success != "0", ]
+
+cp_10043 <- cp_10043[cp_10043$success != "0", ]
+
+cp_10044 <- cp_10044[cp_10044$success != "0", ]
+
+cp_10045 <- cp_10045[cp_10045$success != "0", ]
+
+cp_10046 <- cp_10046[cp_10046$success != "0", ]
+
+cp_10047 <- cp_10047[cp_10047$success != "0", ]
+
+cp_10048 <- cp_10048[cp_10048$success != "0", ]
+
+cp_10049 <- cp_10049[cp_10049$success != "0", ]
+
+cp_10050 <- cp_10050[cp_10050$success != "0", ]
+
+cp_10051 <- cp_10051[cp_10051$success != "0", ]
+
+cp_10052 <- cp_10052[cp_10052$success != "0", ]
+
+cp_10053 <- cp_10053[cp_10053$success != "0", ]
+
+cp_10054 <- cp_10054[cp_10054$success != "0", ]
+
+cp_10055 <- cp_10055[cp_10055$success != "0", ]
+
+cp_10056 <- cp_10056[cp_10056$success != "0", ]
+
+cp_10057 <- cp_10057[cp_10057$success != "0", ]
+
+cp_10058 <- cp_10058[cp_10058$success != "0", ]
+
+cp_10059 <- cp_10059[cp_10059$success != "0", ]
+
+cp_10060 <- cp_10060[cp_10060$success != "0", ]
+
+cp_10061 <- cp_10061[cp_10061$success != "0", ]
+
+cp_10062 <- cp_10062[cp_10062$success != "0", ]
+
+cp_10063 <- cp_10063[cp_10063$success != "0", ]
+
+#cp_10064 <- cp_10064[cp_10064$success != "0", ]
+
+cp_10065 <- cp_10065[cp_10065$success != "0", ]
+
+cp_10066 <- cp_10066[cp_10066$success != "0", ]
+
+cp_10067 <- cp_10067[cp_10067$success != "0", ]
+
+cp_10068 <- cp_10068[cp_10068$success != "0", ]
+
+cp_10070 <- cp_10070[cp_10070$success != "0", ]
+
+cp_10071 <- cp_10071[cp_10071$success != "0", ]
+
+cp_10072 <- cp_10072[cp_10072$success != "0", ]
+
+cp_10073 <- cp_10073[cp_10073$success != "0", ]
+
+cp_10075 <- cp_10075[cp_10075$success != "0", ]
+
+cp_10076 <- cp_10076[cp_10076$success != "0", ]
+
+cp_10077 <- cp_10077[cp_10077$success != "0", ]
+
+cp_10078 <- cp_10078[cp_10078$success != "0", ]
+
+cp_10079 <- cp_10079[cp_10079$success != "0", ]
+
+cp_10080 <- cp_10080[cp_10080$success != "0", ]
+
+#cp_10081 <- cp_10081[cp_10081$success != "0", ]
+
+cp_10082 <- cp_10082[cp_10082$success != "0", ]
+
+cp_10083 <- cp_10083[cp_10083$success != "0", ]
+
+cp_10084 <- cp_10084[cp_10084$success != "0", ]
+
+cp_10085 <- cp_10085[cp_10085$success != "0", ]
+
+cp_10086 <- cp_10086[cp_10086$success != "0", ]
+
+cp_10087 <- cp_10087[cp_10087$success != "0", ]
+
+cp_10088 <- cp_10088[cp_10088$success != "0", ]
+
+cp_10089 <- cp_10089[cp_10089$success != "0", ]
+
+cp_10090 <- cp_10090[cp_10090$success != "0", ]
+
+cp_10091 <- cp_10091[cp_10091$success != "0", ]
+
+cp_10092 <- cp_10092[cp_10092$success != "0", ]
+
+cp_10093 <- cp_10093[cp_10093$success != "0", ]
+
+cp_10094 <- cp_10094[cp_10094$success != "0", ]
+
+cp_10095 <- cp_10095[cp_10095$success != "0", ]
+
+cp_10096 <- cp_10096[cp_10096$success != "0", ]
+
+cp_10097 <- cp_10097[cp_10097$success != "0", ]
+
+cp_10099 <- cp_10099[cp_10099$success != "0", ]
+
+cp_10100 <- cp_10100[cp_10100$success != "0", ]
+
+cp_10102 <- cp_10102[cp_10102$success != "0", ]
+
+cp_10103 <- cp_10103[cp_10103$success != "0", ]
+
+cp_10104 <- cp_10104[cp_10104$success != "0", ]
+
+cp_10105 <- cp_10105[cp_10105$success != "0", ]
+
+cp_10106 <- cp_10106[cp_10106$success != "0", ]
+
+cp_10108 <- cp_10108[cp_10108$success != "0", ]
+
+cp_10109 <- cp_10109[cp_10109$success != "0", ]
+
+cp_10110 <- cp_10110[cp_10110$success != "0", ]
+
+cp_10111 <- cp_10111[cp_10111$success != "0", ]
+
+cp_10112 <- cp_10112[cp_10112$success != "0", ]
+
+cp_10113 <- cp_10113[cp_10113$success != "0", ]
+
+cp_10114 <- cp_10114[cp_10114$success != "0", ]
+
+cp_10115 <- cp_10115[cp_10115$success != "0", ]
+
+cp_10116 <- cp_10116[cp_10116$success != "0", ]
+
+cp_10117 <- cp_10117[cp_10117$success != "0", ]
+
+cp_10118 <- cp_10118[cp_10118$success != "0", ]
+
+cp_10119 <- cp_10119[cp_10119$success != "0", ]
+
+#cp_10120 <- cp_10120[cp_10120$success != "0", ]
+
+cp_10121 <- cp_10121[cp_10121$success != "0", ]
+
+cp_10123 <- cp_10123[cp_10123$success != "0", ]
+
+cp_10124 <- cp_10124[cp_10124$success != "0", ]
+
+cp_10125 <- cp_10125[cp_10125$success != "0", ]
+
+cp_10126 <- cp_10126[cp_10126$success != "0", ]
+
+cp_10127 <- cp_10127[cp_10127$success != "0", ]
+
+cp_10128 <- cp_10128[cp_10128$success != "0", ]
+
+cp_10130 <- cp_10130[cp_10130$success != "0", ]
+
+cp_10131 <- cp_10131[cp_10131$success != "0", ]
+
+cp_10132 <- cp_10132[cp_10132$success != "0", ]
+
+cp_10133 <- cp_10133[cp_10133$success != "0", ]
+
+cp_10134 <- cp_10134[cp_10134$success != "0", ]
+
+cp_10135 <- cp_10135[cp_10135$success != "0", ]
+
+cp_10136 <- cp_10136[cp_10136$success != "0", ]
+
+cp_10137 <- cp_10137[cp_10137$success != "0", ]
+
+cp_10138 <- cp_10138[cp_10138$success != "0", ]
+
+cp_10139 <- cp_10139[cp_10139$success != "0", ]
+
+cp_10140 <- cp_10140[cp_10140$success != "0", ]
+
+cp_10141 <- cp_10141[cp_10141$success != "0", ]
+
+cp_10142 <- cp_10142[cp_10142$success != "0", ]
+
+cp_10143 <- cp_10143[cp_10143$success != "0", ]
+
+cp_10144 <- cp_10144[cp_10144$success != "0", ]
+
+cp_10145 <- cp_10145[cp_10145$success != "0", ]
+
+cp_10146 <- cp_10146[cp_10146$success != "0", ]
+
+#cp_10148 <- cp_10148[cp_10148$success != "0", ]
+
+cp_10149 <- cp_10149[cp_10149$success != "0", ]
+
+cp_10150 <- cp_10150[cp_10150$success != "0", ]
+
+cp_10151 <- cp_10151[cp_10151$success != "0", ]
+
+cp_10152 <- cp_10152[cp_10152$success != "0", ]
+
+cp_10153 <- cp_10153[cp_10153$success != "0", ]
+
+cp_10154 <- cp_10154[cp_10154$success != "0", ]
+
+cp_10155 <- cp_10155[cp_10155$success != "0", ]
+
+cp_10156 <- cp_10156[cp_10156$success != "0", ]
+
+cp_10157 <- cp_10157[cp_10157$success != "0", ]
+
+cp_10158 <- cp_10158[cp_10158$success != "0", ]
+
+cp_10159 <- cp_10159[cp_10159$success != "0", ]
+
+cp_10160 <- cp_10160[cp_10160$success != "0", ]
+
+cp_10161 <- cp_10161[cp_10161$success != "0", ]
+
+cp_10162 <- cp_10162[cp_10162$success != "0", ]
+
+cp_10163 <- cp_10163[cp_10163$success != "0", ]
+
+cp_10164 <- cp_10164[cp_10164$success != "0", ]
+
+cp_10165 <- cp_10165[cp_10165$success != "0", ]
+
+cp_10166 <- cp_10166[cp_10166$success != "0", ]
+
+cp_10167 <- cp_10167[cp_10167$success != "0", ]
+
+cp_10169 <- cp_10169[cp_10169$success != "0", ]
+
+cp_10170 <- cp_10170[cp_10170$success != "0", ]
+
+cp_10171 <- cp_10171[cp_10171$success != "0", ]
+
+cp_10172 <- cp_10172[cp_10172$success != "0", ]
+
+#cp_10173 <- cp_10173[cp_10173$success != "0", ]
+
+cp_10174 <- cp_10174[cp_10174$success != "0", ]
+
+cp_10176 <- cp_10176[cp_10176$success != "0", ]
+
+cp_10178 <- cp_10178[cp_10178$success != "0", ]
+
+cp_10179 <- cp_10179[cp_10179$success != "0", ]
+
+cp_10180 <- cp_10180[cp_10180$success != "0", ]
+
+cp_10181 <- cp_10181[cp_10181$success != "0", ]
+
+cp_10182 <- cp_10182[cp_10182$success != "0", ]
+
+cp_10183 <- cp_10183[cp_10183$success != "0", ]
+
+cp_10184 <- cp_10184[cp_10184$success != "0", ]
+
+cp_10185 <- cp_10185[cp_10185$success != "0", ]
+
+cp_10186 <- cp_10186[cp_10186$success != "0", ]
+
+cp_10187 <- cp_10187[cp_10187$success != "0", ]
+
+cp_10188 <- cp_10188[cp_10188$success != "0", ]
+
+cp_10190 <- cp_10190[cp_10190$success != "0", ]
+
+cp_10192 <- cp_10192[cp_10192$success != "0", ]
+
+cp_10193 <- cp_10193[cp_10193$success != "0", ]
+
+cp_10194 <- cp_10194[cp_10194$success != "0", ]
+
+cp_10195 <- cp_10195[cp_10195$success != "0", ]
+
+cp_10196 <- cp_10196[cp_10196$success != "0", ]
+
+cp_10197 <- cp_10197[cp_10197$success != "0", ]
+
+cp_10198 <- cp_10198[cp_10198$success != "0", ]
+
+cp_10200 <- cp_10200[cp_10200$success != "0", ]
+
+cp_10201 <- cp_10201[cp_10201$success != "0", ]
+
+cp_10202 <- cp_10202[cp_10202$success != "0", ]
+
+cp_10203 <- cp_10203[cp_10203$success != "0", ]
+
+cp_10205 <- cp_10205[cp_10205$success != "0", ]
+
+cp_10206 <- cp_10206[cp_10206$success != "0", ]
+
+cp_10207 <- cp_10207[cp_10207$success != "0", ]
+
+cp_10208 <- cp_10208[cp_10208$success != "0", ]
+
+cp_10209 <- cp_10209[cp_10209$success != "0", ]
+
+cp_10210 <- cp_10210[cp_10210$success != "0", ]
+
+cp_10211 <- cp_10211[cp_10211$success != "0", ]
+
+cp_10212 <- cp_10212[cp_10212$success != "0", ]
+
+cp_10213 <- cp_10213[cp_10213$success != "0", ]
+
+cp_10214 <- cp_10214[cp_10214$success != "0", ]
+
+cp_10215 <- cp_10215[cp_10215$success != "0", ]
+
+#cp_10216 <- cp_10216[cp_10216$success != "0", ]
+
+cp_10217 <- cp_10217[cp_10217$success != "0", ]
+
+cp_10218 <- cp_10218[cp_10218$success != "0", ]
+
+#cp_10219 <- cp_10219[cp_10219$success != "0", ]
+
+cp_10220 <- cp_10220[cp_10220$success != "0", ]
+
+cp_10221 <- cp_10221[cp_10221$success != "0", ]
+
+cp_10222 <- cp_10222[cp_10222$success != "0", ]
+
+cp_10223 <- cp_10223[cp_10223$success != "0", ]
+
+cp_10224 <- cp_10224[cp_10224$success != "0", ]
+
+cp_10225 <- cp_10225[cp_10225$success != "0", ]
+
+cp_10226 <- cp_10226[cp_10226$success != "0", ]
+
+cp_10227 <- cp_10227[cp_10227$success != "0", ]
+
+cp_10228 <- cp_10228[cp_10228$success != "0", ]
+
+cp_10229 <- cp_10229[cp_10229$success != "0", ]
+
+cp_10230 <- cp_10230[cp_10230$success != "0", ]
+
+cp_10231 <- cp_10231[cp_10231$success != "0", ]
+
+cp_10232 <- cp_10232[cp_10232$success != "0", ]
+
+cp_10235 <- cp_10235[cp_10235$success != "0", ]
+
+cp_10236 <- cp_10236[cp_10236$success != "0", ]
+
+cp_10237 <- cp_10237[cp_10237$success != "0", ]
+```
+
+
+## Removing participants that had a disaproprtionate number of rows 
+
+```{r Unsuccessful Videos}
+#Unsuccessfulness is defined as 30%+ rows of a video were removed during the "success = 0" removal process. 15 videos were removed.
+#10070
+
+#rm(cp_10070)
+
+#10054, 10091, 10095
+
+#rm(cp_10054)
+#rm(cp_10091)
+#rm(cp_10095)
+
+#10011, 10028, 10030, 10052, 10092, 10115, 10124, 10126, 10136, 10152
+
+#rm(cp_10011)
+#rm(cp_10028)
+#rm(cp_10030)
+#rm(cp_10052)
+#rm(cp_10092)
+#rm(cp_10115)
+#rm(cp_10124)
+#rm(cp_10126)
+#rm(cp_10136)
+#rm(cp_10152)
+#rm(cp_10218)
+```
+
+```{r Very Long Videos}
+#Very long is defined as longer than nine minutes.
+#10022, 10036, 10094, 10109, 10142
+
+#rm(cp_10022)
+#rm(cp_10036)
+#rm(cp_10094)
+#rm(cp_10109)
+#rm(cp_10142)
+```
+
+```{r Very Short Videos}
+#Very short is defined as less than 1 minute 45 seconds, about 3200 frames.
+#10002, 10203
+
+#rm(cp_10002)
+#rm(cp_10203)
+```
+
+```{r What Remains}
+#10003, 10004, 10005, 10006, 10008, 10009, 10010, 10012, 10013, 10014, 10015, 10016, 10017, 10018, 10019, 10020, 10021, 10023, 10024, 10025, 10026, 10027, 10029, 10031, 10032, 10033, 10034, 10035, 10037, 10038, 10040, 10041, 10042, 10043, 10044, 10045, 10046, 10047, 10048, 10049, 10050, 10051, 10053, 10055, 10056, 10057, 10058, 10059, 10060, 10061, 10062, 10063, 10064, 10065, 10066, 10067, 10068, 10071, 10072, 10073, 10075, 10076, 10077, 10078, 10079, 10080, 10081, 10082, 10083, 10084, 10085, 10086, 10087, 10088, 10089, 10090, 10093, 10096, 10097, 10099, 10100, 10102, 10103, 10104, 10105, 10106, 10108, 10110, 10111, 10112, 10113, 10114, 10116, 10117, 10118, 10119, 10120, 10121, 10123, 10125, 10127, 10128, 10130, 10131, 10132, 10133, 10134, 10135, 10137, 10138, 10139, 10140, 10141, 10143, 10144, 10145, 10146, 10148, 10149, 10150, 10151, 10153, 10154, 10155, 10156, 10157, 10158, 10159, 10160, 10161, 10162, 10163, 10164, 10165, 10166, 10167, 10169, 10170, 10171, 10172, 10173, 10174, 10176, 10178, 10179, 10180, 10181, 10182, 10183, 10184, 10185, 10186, 10187, 10188, 10190, 10192, 10193, 10194, 10195, 10196, 10197, 10198, 10200, 10201, 10202, 10205, 10206, 10207, 10208, 10209, 10210, 10211, 10212, 10213, 10214, 10215, 10216, 10217, 10219, 10220, 10221, 10222, 10223, 10224, 10225, 10226, 10227, 10228, 10229, 10230, 10231, 10232, 10235, 10236, 10237
+```
+
+## Aggregating the datasets
+
+```{r}
+cp_10002agg <- aggregate(cp_10002, by=list(cp_10002$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10003agg <- aggregate(cp_10003, by=list(cp_10003$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10004agg <- aggregate(cp_10004, by=list(cp_10004$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10005agg <- aggregate(cp_10005, by=list(cp_10005$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10006agg <- aggregate(cp_10006, by=list(cp_10006$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10008agg <- aggregate(cp_10008, by=list(cp_10008$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10009agg <- aggregate(cp_10009, by=list(cp_10009$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10010agg <- aggregate(cp_10010, by=list(cp_10010$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10011agg <- aggregate(cp_10011, by=list(cp_10011$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10012agg <- aggregate(cp_10012, by=list(cp_10012$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10013agg <- aggregate(cp_10013, by=list(cp_10013$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10014agg <- aggregate(cp_10014, by=list(cp_10014$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10015agg <- aggregate(cp_10015, by=list(cp_10015$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10016agg <- aggregate(cp_10016, by=list(cp_10016$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10017agg <- aggregate(cp_10017, by=list(cp_10017$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10018agg <- aggregate(cp_10018, by=list(cp_10018$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10019agg <- aggregate(cp_10019, by=list(cp_10019$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10020agg <- aggregate(cp_10020, by=list(cp_10020$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10021agg <- aggregate(cp_10021, by=list(cp_10021$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10022agg <- aggregate(cp_10022, by=list(cp_10022$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10023agg <- aggregate(cp_10023, by=list(cp_10023$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10024agg <- aggregate(cp_10024, by=list(cp_10024$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10025agg <- aggregate(cp_10025, by=list(cp_10025$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10026agg <- aggregate(cp_10026, by=list(cp_10026$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10027agg <- aggregate(cp_10027, by=list(cp_10027$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10028agg <- aggregate(cp_10028, by=list(cp_10028$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10029agg <- aggregate(cp_10029, by=list(cp_10029$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10030agg <- aggregate(cp_10030, by=list(cp_10030$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10031agg <- aggregate(cp_10031, by=list(cp_10031$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10032agg <- aggregate(cp_10032, by=list(cp_10032$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10033agg <- aggregate(cp_10033, by=list(cp_10033$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10034agg <- aggregate(cp_10034, by=list(cp_10034$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10035agg <- aggregate(cp_10035, by=list(cp_10035$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10036agg <- aggregate(cp_10036, by=list(cp_10036$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10037agg <- aggregate(cp_10037, by=list(cp_10037$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10038agg <- aggregate(cp_10038, by=list(cp_10038$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10040agg <- aggregate(cp_10040, by=list(cp_10040$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10041agg <- aggregate(cp_10041, by=list(cp_10041$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10042agg <- aggregate(cp_10042, by=list(cp_10042$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10043agg <- aggregate(cp_10043, by=list(cp_10043$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10044agg <- aggregate(cp_10044, by=list(cp_10044$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10045agg <- aggregate(cp_10045, by=list(cp_10045$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10046agg <- aggregate(cp_10046, by=list(cp_10046$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10047agg <- aggregate(cp_10047, by=list(cp_10047$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10048agg <- aggregate(cp_10048, by=list(cp_10048$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10049agg <- aggregate(cp_10049, by=list(cp_10049$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10050agg <- aggregate(cp_10050, by=list(cp_10050$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10051agg <- aggregate(cp_10051, by=list(cp_10051$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10052agg <- aggregate(cp_10052, by=list(cp_10052$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10053agg <- aggregate(cp_10053, by=list(cp_10053$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10054agg <- aggregate(cp_10054, by=list(cp_10054$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10055agg <- aggregate(cp_10055, by=list(cp_10055$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10056agg <- aggregate(cp_10056, by=list(cp_10056$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10057agg <- aggregate(cp_10057, by=list(cp_10057$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10058agg <- aggregate(cp_10058, by=list(cp_10058$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10059agg <- aggregate(cp_10059, by=list(cp_10059$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10060agg <- aggregate(cp_10060, by=list(cp_10060$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10061agg <- aggregate(cp_10061, by=list(cp_10061$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10062agg <- aggregate(cp_10062, by=list(cp_10062$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10063agg <- aggregate(cp_10063, by=list(cp_10063$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10064agg <- aggregate(cp_10064, by=list(cp_10064$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10065agg <- aggregate(cp_10065, by=list(cp_10065$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10066agg <- aggregate(cp_10066, by=list(cp_10066$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10067agg <- aggregate(cp_10067, by=list(cp_10067$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10068agg <- aggregate(cp_10068, by=list(cp_10068$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10070agg <- aggregate(cp_10070, by=list(cp_10070$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10071agg <- aggregate(cp_10071, by=list(cp_10071$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10072agg <- aggregate(cp_10072, by=list(cp_10072$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10073agg <- aggregate(cp_10073, by=list(cp_10073$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10075agg <- aggregate(cp_10075, by=list(cp_10075$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10076agg <- aggregate(cp_10076, by=list(cp_10076$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10077agg <- aggregate(cp_10077, by=list(cp_10077$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10078agg <- aggregate(cp_10078, by=list(cp_10078$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10079agg <- aggregate(cp_10079, by=list(cp_10079$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10080agg <- aggregate(cp_10080, by=list(cp_10080$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10081agg <- aggregate(cp_10081, by=list(cp_10081$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10082agg <- aggregate(cp_10082, by=list(cp_10082$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10083agg <- aggregate(cp_10083, by=list(cp_10083$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10084agg <- aggregate(cp_10084, by=list(cp_10084$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10085agg <- aggregate(cp_10085, by=list(cp_10085$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10086agg <- aggregate(cp_10086, by=list(cp_10086$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10087agg <- aggregate(cp_10087, by=list(cp_10087$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10088agg <- aggregate(cp_10088, by=list(cp_10088$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10089agg <- aggregate(cp_10089, by=list(cp_10089$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10090agg <- aggregate(cp_10090, by=list(cp_10090$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10091agg <- aggregate(cp_10091, by=list(cp_10091$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10092agg <- aggregate(cp_10092, by=list(cp_10092$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10093agg <- aggregate(cp_10093, by=list(cp_10093$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10094agg <- aggregate(cp_10094, by=list(cp_10094$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10095agg <- aggregate(cp_10095, by=list(cp_10095$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10096agg <- aggregate(cp_10096, by=list(cp_10096$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10097agg <- aggregate(cp_10097, by=list(cp_10097$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10099agg <- aggregate(cp_10099, by=list(cp_10099$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10100agg <- aggregate(cp_10100, by=list(cp_10100$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10102agg <- aggregate(cp_10102, by=list(cp_10102$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10103agg <- aggregate(cp_10103, by=list(cp_10103$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10104agg <- aggregate(cp_10104, by=list(cp_10104$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10105agg <- aggregate(cp_10105, by=list(cp_10105$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10106agg <- aggregate(cp_10106, by=list(cp_10106$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10108agg <- aggregate(cp_10108, by=list(cp_10108$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10109agg <- aggregate(cp_10109, by=list(cp_10109$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10110agg <- aggregate(cp_10110, by=list(cp_10110$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10111agg <- aggregate(cp_10111, by=list(cp_10111$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10112agg <- aggregate(cp_10112, by=list(cp_10112$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10113agg <- aggregate(cp_10113, by=list(cp_10113$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10114agg <- aggregate(cp_10114, by=list(cp_10114$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10115agg <- aggregate(cp_10115, by=list(cp_10115$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10116agg <- aggregate(cp_10116, by=list(cp_10116$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10117agg <- aggregate(cp_10117, by=list(cp_10117$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10118agg <- aggregate(cp_10118, by=list(cp_10118$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10119agg <- aggregate(cp_10119, by=list(cp_10119$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10120agg <- aggregate(cp_10120, by=list(cp_10120$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10121agg <- aggregate(cp_10121, by=list(cp_10121$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10123agg <- aggregate(cp_10123, by=list(cp_10123$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10124agg <- aggregate(cp_10124, by=list(cp_10124$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10125agg <- aggregate(cp_10125, by=list(cp_10125$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10126agg <- aggregate(cp_10126, by=list(cp_10126$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10127agg <- aggregate(cp_10127, by=list(cp_10127$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10128agg <- aggregate(cp_10128, by=list(cp_10128$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10130agg <- aggregate(cp_10130, by=list(cp_10130$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10131agg <- aggregate(cp_10131, by=list(cp_10131$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10132agg <- aggregate(cp_10132, by=list(cp_10132$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10133agg <- aggregate(cp_10133, by=list(cp_10133$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10134agg <- aggregate(cp_10134, by=list(cp_10134$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10135agg <- aggregate(cp_10135, by=list(cp_10135$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10136agg <- aggregate(cp_10136, by=list(cp_10136$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10137agg <- aggregate(cp_10137, by=list(cp_10137$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10138agg <- aggregate(cp_10138, by=list(cp_10138$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10139agg <- aggregate(cp_10139, by=list(cp_10139$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10140agg <- aggregate(cp_10140, by=list(cp_10140$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10141agg <- aggregate(cp_10141, by=list(cp_10141$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10142agg <- aggregate(cp_10142, by=list(cp_10142$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10143agg <- aggregate(cp_10143, by=list(cp_10143$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10144agg <- aggregate(cp_10144, by=list(cp_10144$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10145agg <- aggregate(cp_10145, by=list(cp_10145$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10146agg <- aggregate(cp_10146, by=list(cp_10146$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10148agg <- aggregate(cp_10148, by=list(cp_10148$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10149agg <- aggregate(cp_10149, by=list(cp_10149$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10150agg <- aggregate(cp_10150, by=list(cp_10150$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10151agg <- aggregate(cp_10151, by=list(cp_10151$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10152agg <- aggregate(cp_10152, by=list(cp_10152$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10153agg <- aggregate(cp_10153, by=list(cp_10153$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10154agg <- aggregate(cp_10154, by=list(cp_10154$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10155agg <- aggregate(cp_10155, by=list(cp_10155$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10156agg <- aggregate(cp_10156, by=list(cp_10156$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10157agg <- aggregate(cp_10157, by=list(cp_10157$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10158agg <- aggregate(cp_10158, by=list(cp_10158$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10159agg <- aggregate(cp_10159, by=list(cp_10159$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10160agg <- aggregate(cp_10160, by=list(cp_10160$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10161agg <- aggregate(cp_10161, by=list(cp_10161$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10162agg <- aggregate(cp_10162, by=list(cp_10162$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10163agg <- aggregate(cp_10163, by=list(cp_10163$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10164agg <- aggregate(cp_10164, by=list(cp_10164$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10165agg <- aggregate(cp_10165, by=list(cp_10165$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10166agg <- aggregate(cp_10166, by=list(cp_10166$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10167agg <- aggregate(cp_10167, by=list(cp_10167$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10169agg <- aggregate(cp_10169, by=list(cp_10169$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10170agg <- aggregate(cp_10170, by=list(cp_10170$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10171agg <- aggregate(cp_10171, by=list(cp_10171$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10172agg <- aggregate(cp_10172, by=list(cp_10172$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10173agg <- aggregate(cp_10173, by=list(cp_10173$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10174agg <- aggregate(cp_10174, by=list(cp_10174$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10176agg <- aggregate(cp_10176, by=list(cp_10176$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10178agg <- aggregate(cp_10178, by=list(cp_10178$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10179agg <- aggregate(cp_10179, by=list(cp_10179$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10180agg <- aggregate(cp_10180, by=list(cp_10180$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10181agg <- aggregate(cp_10181, by=list(cp_10181$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10182agg <- aggregate(cp_10182, by=list(cp_10182$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10183agg <- aggregate(cp_10183, by=list(cp_10183$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10184agg <- aggregate(cp_10184, by=list(cp_10184$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10185agg <- aggregate(cp_10185, by=list(cp_10185$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10186agg <- aggregate(cp_10186, by=list(cp_10186$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10187agg <- aggregate(cp_10187, by=list(cp_10187$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10188agg <- aggregate(cp_10188, by=list(cp_10188$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10190agg <- aggregate(cp_10190, by=list(cp_10190$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10192agg <- aggregate(cp_10192, by=list(cp_10192$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10193agg <- aggregate(cp_10193, by=list(cp_10193$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10194agg <- aggregate(cp_10194, by=list(cp_10194$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10195agg <- aggregate(cp_10195, by=list(cp_10195$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10196agg <- aggregate(cp_10196, by=list(cp_10196$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10197agg <- aggregate(cp_10197, by=list(cp_10197$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10198agg <- aggregate(cp_10198, by=list(cp_10198$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10200agg <- aggregate(cp_10200, by=list(cp_10200$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10201agg <- aggregate(cp_10201, by=list(cp_10201$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10202agg <- aggregate(cp_10202, by=list(cp_10202$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10203agg <- aggregate(cp_10203, by=list(cp_10203$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10205agg <- aggregate(cp_10205, by=list(cp_10205$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10206agg <- aggregate(cp_10206, by=list(cp_10206$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10207agg <- aggregate(cp_10207, by=list(cp_10207$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10208agg <- aggregate(cp_10208, by=list(cp_10208$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10209agg <- aggregate(cp_10209, by=list(cp_10209$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10210agg <- aggregate(cp_10210, by=list(cp_10210$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10211agg <- aggregate(cp_10211, by=list(cp_10211$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10212agg <- aggregate(cp_10212, by=list(cp_10212$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10213agg <- aggregate(cp_10213, by=list(cp_10213$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10214agg <- aggregate(cp_10214, by=list(cp_10214$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10215agg <- aggregate(cp_10215, by=list(cp_10215$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10216agg <- aggregate(cp_10216, by=list(cp_10216$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10217agg <- aggregate(cp_10217, by=list(cp_10217$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10218agg <- aggregate(cp_10218, by=list(cp_10218$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10219agg <- aggregate(cp_10219, by=list(cp_10219$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10220agg <- aggregate(cp_10220, by=list(cp_10220$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10221agg <- aggregate(cp_10221, by=list(cp_10221$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10222agg <- aggregate(cp_10222, by=list(cp_10222$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10223agg <- aggregate(cp_10223, by=list(cp_10223$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10224agg <- aggregate(cp_10224, by=list(cp_10224$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10225agg <- aggregate(cp_10225, by=list(cp_10225$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10226agg <- aggregate(cp_10226, by=list(cp_10226$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10227agg <- aggregate(cp_10227, by=list(cp_10227$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10228agg <- aggregate(cp_10228, by=list(cp_10228$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10229agg <- aggregate(cp_10229, by=list(cp_10229$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10230agg <- aggregate(cp_10230, by=list(cp_10230$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10231agg <- aggregate(cp_10231, by=list(cp_10231$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10232agg <- aggregate(cp_10232, by=list(cp_10232$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10235agg <- aggregate(cp_10235, by=list(cp_10235$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10236agg <- aggregate(cp_10236, by=list(cp_10236$FF_ID), FUN=mean, na.rm=TRUE)
+
+cp_10237agg <- aggregate(cp_10237, by=list(cp_10237$FF_ID), FUN=mean, na.rm=TRUE)
+```
+
+  
+## Merging all individual files into cp_merged
+
+```{r}
+cp_merged <- join_all(list(
+cp_10002agg, 
+cp_10003agg, 
+cp_10004agg, 
+cp_10005agg, 
+cp_10006agg,
+cp_10008agg, 
+cp_10009agg, 
+cp_10010agg, 
+cp_10011agg, 
+cp_10012agg, 
+cp_10013agg, 
+cp_10014agg, 
+cp_10015agg, 
+cp_10016agg, 
+cp_10017agg, 
+cp_10018agg, 
+cp_10019agg, 
+cp_10020agg, 
+cp_10021agg, 
+cp_10022agg, 
+cp_10023agg, 
+cp_10024agg, 
+cp_10025agg, 
+cp_10026agg, 
+cp_10027agg, 
+cp_10028agg, 
+cp_10029agg, 
+cp_10030agg, 
+cp_10031agg, 
+cp_10032agg, 
+cp_10033agg, 
+cp_10034agg, 
+cp_10035agg, 
+cp_10036agg, 
+cp_10037agg, 
+cp_10038agg, 
+cp_10040agg, 
+cp_10041agg, 
+cp_10042agg, 
+cp_10043agg, 
+cp_10044agg, 
+cp_10045agg, 
+cp_10046agg, 
+cp_10047agg, 
+cp_10048agg, 
+cp_10049agg, 
+cp_10050agg, 
+cp_10051agg, 
+cp_10052agg, 
+cp_10053agg, 
+cp_10054agg, 
+cp_10055agg, 
+cp_10056agg, 
+cp_10057agg, 
+cp_10058agg, 
+cp_10059agg, 
+cp_10060agg, 
+cp_10061agg, 
+cp_10062agg, 
+cp_10063agg, 
+cp_10064agg, 
+cp_10065agg, 
+cp_10066agg, 
+cp_10067agg, 
+cp_10068agg, 
+cp_10070agg,
+cp_10071agg, 
+cp_10072agg, 
+cp_10073agg, 
+cp_10075agg, 
+cp_10076agg, 
+cp_10077agg, 
+cp_10078agg, 
+cp_10079agg, 
+cp_10080agg, 
+cp_10081agg, 
+cp_10082agg, 
+cp_10083agg, 
+cp_10084agg, 
+cp_10085agg, 
+cp_10086agg, 
+cp_10087agg, 
+cp_10088agg, 
+cp_10089agg, 
+cp_10090agg, 
+cp_10091agg, 
+cp_10092agg, 
+cp_10093agg, 
+cp_10094agg, 
+cp_10095agg, 
+cp_10096agg, 
+cp_10097agg, 
+cp_10099agg, 
+cp_10100agg, 
+cp_10102agg, 
+cp_10103agg, 
+cp_10104agg, 
+cp_10105agg, 
+cp_10106agg, 
+cp_10108agg, 
+cp_10109agg, 
+cp_10110agg, 
+cp_10111agg, 
+cp_10112agg, 
+cp_10113agg, 
+cp_10114agg, 
+cp_10115agg, 
+cp_10116agg, 
+cp_10117agg, 
+cp_10118agg, 
+cp_10119agg, 
+cp_10120agg, 
+cp_10121agg, 
+cp_10123agg, 
+cp_10124agg, 
+cp_10125agg, 
+cp_10126agg, 
+cp_10127agg, 
+cp_10128agg, 
+cp_10130agg, 
+cp_10131agg, 
+cp_10132agg, 
+cp_10133agg, 
+cp_10134agg, 
+cp_10135agg, 
+cp_10136agg, 
+cp_10137agg, 
+cp_10138agg, 
+cp_10139agg, 
+cp_10140agg, 
+cp_10141agg, 
+cp_10142agg, 
+cp_10143agg, 
+cp_10144agg, 
+cp_10145agg, 
+cp_10146agg, 
+cp_10148agg, 
+cp_10149agg, 
+cp_10150agg, 
+cp_10151agg, 
+cp_10152agg, 
+cp_10153agg, 
+cp_10154agg, 
+cp_10155agg, 
+cp_10156agg, 
+cp_10157agg, 
+cp_10158agg, 
+cp_10159agg, 
+cp_10160agg, 
+cp_10161agg, 
+cp_10162agg, 
+cp_10163agg, 
+cp_10164agg, 
+cp_10165agg, 
+cp_10166agg, 
+cp_10167agg, 
+cp_10169agg, 
+cp_10170agg, 
+cp_10171agg, 
+cp_10172agg, 
+cp_10173agg, 
+cp_10174agg, 
+cp_10176agg, 
+cp_10178agg, 
+cp_10179agg, 
+cp_10180agg, 
+cp_10181agg, 
+cp_10182agg, 
+cp_10183agg, 
+cp_10184agg, 
+cp_10185agg, 
+cp_10186agg, 
+cp_10187agg, 
+cp_10188agg, 
+cp_10190agg, 
+cp_10192agg, 
+cp_10193agg, 
+cp_10194agg, 
+cp_10195agg, 
+cp_10196agg, 
+cp_10197agg, 
+cp_10198agg, 
+cp_10200agg, 
+cp_10201agg, 
+cp_10202agg, 
+cp_10203agg, 
+cp_10205agg, 
+cp_10206agg, 
+cp_10207agg, 
+cp_10208agg, 
+cp_10209agg, 
+cp_10210agg, 
+cp_10211agg, 
+cp_10212agg, 
+cp_10213agg, 
+cp_10214agg, 
+cp_10215agg, 
+cp_10216agg, 
+cp_10217agg, 
+cp_10218agg, 
+cp_10219agg, 
+cp_10220agg, 
+cp_10221agg, 
+cp_10222agg, 
+cp_10223agg, 
+cp_10224agg, 
+cp_10225agg, 
+cp_10226agg, 
+cp_10227agg, 
+cp_10228agg, 
+cp_10229agg, 
+cp_10230agg, 
+cp_10231agg, 
+cp_10232agg, 
+cp_10235agg, 
+cp_10236agg, 
+cp_10237agg), by = 'FF_ID', type = 'full')
+```
+
+## Removing useless variables
+
+```{r}
+cp_full <- data.frame(cp_merged$FF_ID, cp_merged$frame, cp_merged$face_id, cp_merged$timestamp, cp_merged$confidence, cp_merged$success, cp_merged$AU01_r, cp_merged$AU02_r, cp_merged$AU04_r, cp_merged$AU05_r, cp_merged$AU06_r, cp_merged$AU07_r, cp_merged$AU09_r, cp_merged$AU10_r, cp_merged$AU12_r, cp_merged$AU14_r, cp_merged$AU15_r, cp_merged$AU17_r, cp_merged$AU20_r, cp_merged$AU23_r, cp_merged$AU25_r, cp_merged$AU26_r, cp_merged$AU45_r, cp_merged$AU01_c, cp_merged$AU02_c, cp_merged$AU04_c, cp_merged$AU05_c, cp_merged$AU06_c, cp_merged$AU07_c, cp_merged$AU09_c, cp_merged$AU10_c, cp_merged$AU12_c, cp_merged$AU14_c, cp_merged$AU15_c, cp_merged$AU17_c, cp_merged$AU20_c, cp_merged$AU23_c, cp_merged$AU25_c, cp_merged$AU26_c, cp_merged$AU28_c, cp_merged$AU45_c)
+```
+
+## Renaming cp_full variables
+
+```{r}
+names(cp_full)[names(cp_full) == "cp_merged.FF_ID"] <- "FF_ID"
+names(cp_full)[names(cp_full) == "cp_merged.frame"] <- "frame"
+names(cp_full)[names(cp_full) == "cp_merged.face_id"] <- "face_id"
+names(cp_full)[names(cp_full) == "cp_merged.timestamp"] <- "timestamp"
+names(cp_full)[names(cp_full) == "cp_merged.confidence"] <- "confidence"
+names(cp_full)[names(cp_full) == "cp_merged.success"] <- "success"
+names(cp_full)[names(cp_full) == "cp_merged.AU01_r"] <- "AU01_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU02_r"] <- "AU02_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU04_r"] <- "AU04_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU05_r"] <- "AU05_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU06_r"] <- "AU06_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU07_r"] <- "AU07_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU09_r"] <- "AU09_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU10_r"] <- "AU10_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU12_r"] <- "AU12_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU14_r"] <- "AU14_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU15_r"] <- "AU15_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU17_r"] <- "AU17_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU20_r"] <- "AU20_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU23_r"] <- "AU23_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU25_r"] <- "AU25_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU26_r"] <- "AU26_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU45_r"] <- "AU45_r"
+names(cp_full)[names(cp_full) == "cp_merged.AU01_c"] <- "AU01_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU02_c"] <- "AU02_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU04_c"] <- "AU04_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU05_c"] <- "AU05_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU06_c"] <- "AU06_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU07_c"] <- "AU07_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU09_c"] <- "AU09_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU10_c"] <- "AU10_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU12_c"] <- "AU12_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU14_c"] <- "AU14_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU15_c"] <- "AU15_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU17_c"] <- "AU17_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU20_c"] <- "AU20_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU23_c"] <- "AU23_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU25_c"] <- "AU25_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU26_c"] <- "AU26_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU28_c"] <- "AU28_c"
+names(cp_full)[names(cp_full) == "cp_merged.AU45_c"] <- "AU45_c"
+```
+
+## Writing cp_full
+
+```{r}
+write.csv(cp_full, "C:/Users/jrcala/Documents/My Research/RStudio/cp_full.csv")
+```
