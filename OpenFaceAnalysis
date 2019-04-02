@@ -1327,3 +1327,97 @@ title <- c("AU14", "AU14 + Gender")
 
 tab_model(AU14.1, AU14.2, title = "AU14 Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
+
+## Plots
+
+```{r References, include=FALSE}
+#https://quantdev.ssri.psu.edu/tutorials/growth-modeling-chapter-3-linear-growth-models
+#http://dpmartin42.github.io/posts/Piecewise-growth
+
+timeticks <- c(0, 3, 15, 25, 30, 35, 40, 45, 60)
+timeticks2 <- c(-60, -45, -40, -35, -30, -25, -15, -3, 0, 3, 15, 25, 30, 35, 40, 45, 60)
+timeticks3 <- c(4, 5, 6, 7, 8, 9, 10, 11, 12)
+```
+
+```{r Descriptive barplot, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE, error=TRUE}
+cp_long2 <- cp_long
+cp_long2 <- cp_long2[!is.na(cp_long2$peaktime), ]
+
+cp_long2 <- cp_long2 %>% 
+  count(cp_long2$peaktime) %>% 
+  mutate(perc = n / nrow(cp_long2))
+
+ggplot(cp_long2, aes(x=peaktime, y=perc, fill="red")) + 
+  geom_bar(stat = "identity") + ggtitle("When did most people peak?") +
+  theme(legend.position = "none") + 
+  xlab("Peak Time") + ylab("") + 
+  scale_x_discrete(labels=c("0","3","15","25","30","35","40","45","60"))
+
+rm(cp_long2)
+```
+
+```{r Descriptive Density plot, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+ggplot(cp_long, aes(x=peaktimenum, fill="red")) + 
+  geom_density(aes(stat = "identity")) + 
+  ggtitle("When did most people peak?") +
+  theme(legend.position = "none") + 
+  xlab("Peak Time") + ylab("")
+```
+
+```{r All cortisol, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+ggplot(group_by(cp_long), aes(timetopeak, cortvalue, group=id,color=as.factor(sampletimetopeak))) +
+  geom_line(color="#c0c0c0") + 
+  geom_point() +
+  theme(legend.position="none") + 
+  xlab("Sample Time") + ylab("Cortisol") + 
+  ggtitle("Everyone's Cortisol, No Modelling") +
+  scale_x_continuous(breaks=timeticks2) 
+```
+
+```{r Plot mod1 regression line, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+ggplot(cp_long, aes(x = timetopeak, y = cortvalue)) +
+  geom_line(aes(group = id), color = "gray") + 
+  geom_smooth(aes(y=predict(mod1)), size = 2, color = "red", se = TRUE) + 
+  xlab("Time to Peak") + ylab("Cortisol") +
+  ggtitle("nlme Regression Line") +
+  scale_x_continuous(breaks=timeticks2)
+```
+
+```{r Everyone gets a line with regression line, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(cp_long, aes(x = timetopeak, y = cortvalue)) +
+  geom_line(aes(color = as.factor(id))) + 
+  geom_smooth(aes(y=predict(mod1)), size = 2, color = "red", se = TRUE) +
+  xlab("Time to Peak") + ylab("Cortisol") + 
+  scale_x_continuous(breaks=timeticks2) +
+  theme(legend.position = "none") +
+  ggtitle("Everyone's Cortisol with nlme Regression Line")
+```
+
+```{r Cortisol growth curve, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+ggplot(cp_long, aes(timetopeak, cortvalue)) +
+  stat_summary(fun.y=mean, geom="point", size=2) +
+  stat_summary(fun.data=mean_se, geom="errorbar", linetype="solid", width=0.6) +
+  stat_summary(aes(y=predict(mod1)), fun.y=mean, geom="line", lwd=1.5, col="gray") +
+  scale_shape_manual(values=c(16, 17)) +
+  labs(x="Time to Peak", y="Cortisol") + 
+  ggtitle("Cortisol growth curve") + 
+  scale_x_continuous(breaks=timeticks2)
+```
+
+```{r Colored by Responder, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+cp_long2 <- cp_long
+cp_long$Responder2 <- cp_long$Responder
+
+cp_long2$Responder2[cp_long$Responder == "1"] <- "Responder"
+cp_long2$Responder2[cp_long$Responder == "0"] <- "Non-Responder"
+
+ggplot(cp_long2, aes(x = timetopeak, y = cortvalue, color=as.factor(Responder2))) +
+  geom_point() +
+  geom_smooth(aes(y=predict(mod1)), size = 3, color = "red", se = FALSE) + 
+  xlab("Time to Peak ") + ylab("Cortisol") +
+  scale_x_continuous(breaks=timeticks2) +
+  guides(color=guide_legend(title="Cortisol Responsivity")) +
+  ggtitle("nlme Regression Line, Colored by Responsivity")
+
+rm(cp_long2)
+```
