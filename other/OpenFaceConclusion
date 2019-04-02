@@ -1,0 +1,166 @@
+---
+title: "Conclusions on the Facial Expression/Cortisol Project"
+author: "Julianna Calabrese"
+date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    collapse: subsection
+    theme: united
+    highlight: tango
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(mosaic)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(psych)
+library(nlme)
+library(plyr)
+library(Hmisc)
+library(rmarkdown)
+library(yaml)
+library(rapportools)
+library(lavaan)
+library(lme4)
+library(corrr)
+library(corrplot)
+library(reshape2)
+library(lmerTest)
+library(multcomp)
+library(optimx)
+library(MuMIn)
+library(Rmisc)
+library(jsonlite)
+library(knitr)
+library(taRifx)
+library(papeR)
+library(stargazer)
+library(kableExtra)
+library(broom)
+library(xtable)
+library(sjPlot)
+library(sjstats)
+library(sjlabelled)
+library(sjmisc)
+library(ggeffects)
+library(glmmTMB)
+library(bindrcpp)
+library(pbkrtest)
+library(devtools)
+library(psycholing)
+library(pander)
+library(coefplot)
+library(ggiraphExtra)
+library(languageR)
+library(aod)
+```
+
+```{r Load in data, include=FALSE}
+#cp_long <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_long.csv", header=TRUE, sep=",")
+cp_long <- read.csv(file="/Users/Julianna/Desktop/data/cp_long.csv", header=TRUE, sep=",")
+cp_long$X <- NULL
+cp_long$gender <- as.integer(cp_long$gender)
+cp_long$gendercat <- as.character(cp_long$gendercat)
+cp_long$male <- as.integer(cp_long$male)
+cp_long$female <- as.integer(cp_long$female)
+cp_long$baseline <- as.numeric(cp_long$cort_baseline_Win)
+cp_long$baselineC <- as.numeric(cp_long$cort_baseline_WinC)
+cp_long$id <- as.factor(cp_long$id)
+cp_long$timebeforepeak <- as.integer(cp_long$timebeforepeak)
+cp_long$timeafterpeak <- as.integer(cp_long$timeafterpeak)
+cp_long$ThreatCompc <- cp_long$ThreatComp - mean(cp_long$ThreatComp)
+cp_long$DepCompc <- cp_long$DepComp - mean(cp_long$DepComp)
+cp_long$ThreatDepInt <- cp_long$ThreatCompc*cp_long$DepCompc
+```
+
+
+---
+title: "Conclusions on the Facial Expression/Cortisol Project"
+author: "Julianna Calabrese"
+date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    collapse: subsection
+    theme: united
+    highlight: tango
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(mosaic)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(psych)
+library(nlme)
+library(plyr)
+library(Hmisc)
+library(rmarkdown)
+library(yaml)
+library(rapportools)
+library(lavaan)
+library(lme4)
+library(corrr)
+library(corrplot)
+library(reshape2)
+library(lmerTest)
+library(multcomp)
+library(optimx)
+library(MuMIn)
+library(Rmisc)
+library(jsonlite)
+library(knitr)
+library(taRifx)
+library(papeR)
+library(stargazer)
+library(kableExtra)
+library(broom)
+library(xtable)
+library(sjPlot)
+library(sjstats)
+library(sjlabelled)
+library(sjmisc)
+library(ggeffects)
+library(glmmTMB)
+library(bindrcpp)
+library(pbkrtest)
+library(devtools)
+library(psycholing)
+library(pander)
+library(coefplot)
+library(ggiraphExtra)
+library(languageR)
+library(aod)
+```
+
+```{r Load in data, include=FALSE}
+#cp_long <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_long.csv", header=TRUE, sep=",")
+cp_long <- read.csv(file="/Users/Julianna/Desktop/data/cp_long.csv", header=TRUE, sep=",")
+cp_long$X <- NULL
+cp_long$gender <- as.integer(cp_long$gender)
+cp_long$gendercat <- as.character(cp_long$gendercat)
+cp_long$male <- as.integer(cp_long$male)
+cp_long$female <- as.integer(cp_long$female)
+cp_long$baseline <- as.numeric(cp_long$cort_baseline_Win)
+cp_long$baselineC <- as.numeric(cp_long$cort_baseline_WinC)
+cp_long$id <- as.factor(cp_long$id)
+cp_long$timebeforepeak <- as.integer(cp_long$timebeforepeak)
+cp_long$timeafterpeak <- as.integer(cp_long$timeafterpeak)
+cp_long$ThreatCompc <- cp_long$ThreatComp - mean(cp_long$ThreatComp)
+cp_long$DepCompc <- cp_long$DepComp - mean(cp_long$DepComp)
+cp_long$ThreatDepInt <- cp_long$ThreatCompc*cp_long$DepCompc
+```
+
+
