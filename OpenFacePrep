@@ -1849,17 +1849,17 @@ cp_10237agg <- aggregate(cp_10237, by=list(cp_10237$FF_ID), FUN = function(x) me
 ## Getting rid of "Group.1"
 
 ```{r}
-cp_10001agg$Group.1 <- NULL
-cp_10002agg$Group.1 <- NULL
+#cp_10001agg$Group.1 <- NULL
+#cp_10002agg$Group.1 <- NULL
 cp_10003agg$Group.1 <- NULL
 cp_10004agg$Group.1 <- NULL
 cp_10005agg$Group.1 <- NULL
 cp_10006agg$Group.1 <- NULL
-cp_10007agg$Group.1 <- NULL
+#cp_10007agg$Group.1 <- NULL
 cp_10008agg$Group.1 <- NULL
 cp_10009agg$Group.1 <- NULL
 cp_10010agg$Group.1 <- NULL
-cp_10011agg$Group.1 <- NULL
+#cp_10011agg$Group.1 <- NULL
 cp_10012agg$Group.1 <- NULL
 cp_10013agg$Group.1 <- NULL
 cp_10014agg$Group.1 <- NULL
@@ -1870,27 +1870,27 @@ cp_10018agg$Group.1 <- NULL
 cp_10019agg$Group.1 <- NULL
 cp_10020agg$Group.1 <- NULL
 cp_10021agg$Group.1 <- NULL
-cp_10022agg$Group.1 <- NULL
+#cp_10022agg$Group.1 <- NULL
 cp_10023agg$Group.1 <- NULL
 cp_10024agg$Group.1 <- NULL
 cp_10025agg$Group.1 <- NULL
 cp_10026agg$Group.1 <- NULL
 cp_10027agg$Group.1 <- NULL
-cp_10028agg$Group.1 <- NULL
+#cp_10028agg$Group.1 <- NULL
 cp_10029agg$Group.1 <- NULL
-cp_10030agg$Group.1 <- NULL
+#cp_10030agg$Group.1 <- NULL
 cp_10031agg$Group.1 <- NULL
 cp_10032agg$Group.1 <- NULL
 cp_10033agg$Group.1 <- NULL
 cp_10034agg$Group.1 <- NULL
-cp_10035agg$Group.1 <- NULL
-cp_10036agg$Group.1 <- NULL
+#cp_10035agg$Group.1 <- NULL
+#cp_10036agg$Group.1 <- NULL
 cp_10037agg$Group.1 <- NULL
-cp_10038agg$Group.1 <- NULL
-cp_10039agg$Group.1 <- NULL
+#cp_10038agg$Group.1 <- NULL
+#cp_10039agg$Group.1 <- NULL
 cp_10040agg$Group.1 <- NULL
 cp_10041agg$Group.1 <- NULL
-cp_10042agg$Group.1 <- NULL
+#cp_10042agg$Group.1 <- NULL
 cp_10043agg$Group.1 <- NULL
 cp_10044agg$Group.1 <- NULL
 cp_10045agg$Group.1 <- NULL
@@ -1900,9 +1900,9 @@ cp_10048agg$Group.1 <- NULL
 cp_10049agg$Group.1 <- NULL
 cp_10050agg$Group.1 <- NULL
 cp_10051agg$Group.1 <- NULL
-cp_10052agg$Group.1 <- NULL
+#cp_10052agg$Group.1 <- NULL
 cp_10053agg$Group.1 <- NULL
-cp_10054agg$Group.1 <- NULL
+#cp_10054agg$Group.1 <- NULL
 cp_10055agg$Group.1 <- NULL
 cp_10056agg$Group.1 <- NULL
 cp_10057agg$Group.1 <- NULL
@@ -1912,24 +1912,24 @@ cp_10060agg$Group.1 <- NULL
 cp_10061agg$Group.1 <- NULL
 cp_10062agg$Group.1 <- NULL
 cp_10063agg$Group.1 <- NULL
-cp_10064agg$Group.1 <- NULL
+#cp_10064agg$Group.1 <- NULL
 cp_10065agg$Group.1 <- NULL
 cp_10066agg$Group.1 <- NULL
 cp_10067agg$Group.1 <- NULL
 cp_10068agg$Group.1 <- NULL
-cp_10069agg$Group.1 <- NULL
-cp_10070agg$Group.1 <- NULL
+#cp_10069agg$Group.1 <- NULL
+#cp_10070agg$Group.1 <- NULL
 cp_10071agg$Group.1 <- NULL
 cp_10072agg$Group.1 <- NULL
 cp_10073agg$Group.1 <- NULL
-cp_10074agg$Group.1 <- NULL
+#cp_10074agg$Group.1 <- NULL
 cp_10075agg$Group.1 <- NULL
 cp_10076agg$Group.1 <- NULL
 cp_10077agg$Group.1 <- NULL
 cp_10078agg$Group.1 <- NULL
 cp_10079agg$Group.1 <- NULL
 cp_10080agg$Group.1 <- NULL
-cp_10081agg$Group.1 <- NULL
+#cp_10081agg$Group.1 <- NULL
 cp_10082agg$Group.1 <- NULL
 cp_10083agg$Group.1 <- NULL
 cp_10084agg$Group.1 <- NULL
@@ -1939,68 +1939,68 @@ cp_10087agg$Group.1 <- NULL
 cp_10088agg$Group.1 <- NULL
 cp_10089agg$Group.1 <- NULL
 cp_10090agg$Group.1 <- NULL
-cp_10091agg$Group.1 <- NULL
-cp_10092agg$Group.1 <- NULL
+#cp_10091agg$Group.1 <- NULL
+#cp_10092agg$Group.1 <- NULL
 cp_10093agg$Group.1 <- NULL
-cp_10094agg$Group.1 <- NULL
-cp_10095agg$Group.1 <- NULL
+#cp_10094agg$Group.1 <- NULL
+#cp_10095agg$Group.1 <- NULL
 cp_10096agg$Group.1 <- NULL
 cp_10097agg$Group.1 <- NULL
-cp_10098agg$Group.1 <- NULL
+#cp_10098agg$Group.1 <- NULL
 cp_10099agg$Group.1 <- NULL
 cp_10100agg$Group.1 <- NULL
-cp_10101agg$Group.1 <- NULL
+#cp_10101agg$Group.1 <- NULL
 cp_10102agg$Group.1 <- NULL
 cp_10103agg$Group.1 <- NULL
 cp_10104agg$Group.1 <- NULL
 cp_10105agg$Group.1 <- NULL
 cp_10106agg$Group.1 <- NULL
-cp_10107agg$Group.1 <- NULL
+#cp_10107agg$Group.1 <- NULL
 cp_10108agg$Group.1 <- NULL
-cp_10109agg$Group.1 <- NULL
+#cp_10109agg$Group.1 <- NULL
 cp_10110agg$Group.1 <- NULL
 cp_10111agg$Group.1 <- NULL
 cp_10112agg$Group.1 <- NULL
 cp_10113agg$Group.1 <- NULL
 cp_10114agg$Group.1 <- NULL
-cp_10115agg$Group.1 <- NULL
+#cp_10115agg$Group.1 <- NULL
 cp_10116agg$Group.1 <- NULL
 cp_10117agg$Group.1 <- NULL
 cp_10118agg$Group.1 <- NULL
 cp_10119agg$Group.1 <- NULL
-cp_10120agg$Group.1 <- NULL
+#cp_10120agg$Group.1 <- NULL
 cp_10121agg$Group.1 <- NULL
-cp_10122agg$Group.1 <- NULL
+#cp_10122agg$Group.1 <- NULL
 cp_10123agg$Group.1 <- NULL
-cp_10124agg$Group.1 <- NULL
+#cp_10124agg$Group.1 <- NULL
 cp_10125agg$Group.1 <- NULL
-cp_10126agg$Group.1 <- NULL
+#cp_10126agg$Group.1 <- NULL
 cp_10127agg$Group.1 <- NULL
 cp_10128agg$Group.1 <- NULL
-cp_10129agg$Group.1 <- NULL
+#cp_10129agg$Group.1 <- NULL
 cp_10130agg$Group.1 <- NULL
 cp_10131agg$Group.1 <- NULL
 cp_10132agg$Group.1 <- NULL
 cp_10133agg$Group.1 <- NULL
 cp_10134agg$Group.1 <- NULL
 cp_10135agg$Group.1 <- NULL
-cp_10136agg$Group.1 <- NULL
+#cp_10136agg$Group.1 <- NULL
 cp_10137agg$Group.1 <- NULL
 cp_10138agg$Group.1 <- NULL
 cp_10139agg$Group.1 <- NULL
 cp_10140agg$Group.1 <- NULL
 cp_10141agg$Group.1 <- NULL
-cp_10142agg$Group.1 <- NULL
+#cp_10142agg$Group.1 <- NULL
 cp_10143agg$Group.1 <- NULL
 cp_10144agg$Group.1 <- NULL
 cp_10145agg$Group.1 <- NULL
 cp_10146agg$Group.1 <- NULL
-cp_10147agg$Group.1 <- NULL
-cp_10148agg$Group.1 <- NULL
+#cp_10147agg$Group.1 <- NULL
+#cp_10148agg$Group.1 <- NULL
 cp_10149agg$Group.1 <- NULL
 cp_10150agg$Group.1 <- NULL
 cp_10151agg$Group.1 <- NULL
-cp_10152agg$Group.1 <- NULL
+#cp_10152agg$Group.1 <- NULL
 cp_10153agg$Group.1 <- NULL
 cp_10154agg$Group.1 <- NULL
 cp_10155agg$Group.1 <- NULL
@@ -2016,16 +2016,16 @@ cp_10164agg$Group.1 <- NULL
 cp_10165agg$Group.1 <- NULL
 cp_10166agg$Group.1 <- NULL
 cp_10167agg$Group.1 <- NULL
-cp_10168agg$Group.1 <- NULL
+#cp_10168agg$Group.1 <- NULL
 cp_10169agg$Group.1 <- NULL
 cp_10170agg$Group.1 <- NULL
 cp_10171agg$Group.1 <- NULL
 cp_10172agg$Group.1 <- NULL
-cp_10173agg$Group.1 <- NULL
+#cp_10173agg$Group.1 <- NULL
 cp_10174agg$Group.1 <- NULL
-cp_10175agg$Group.1 <- NULL
+#cp_10175agg$Group.1 <- NULL
 cp_10176agg$Group.1 <- NULL
-cp_10177agg$Group.1 <- NULL
+#cp_10177agg$Group.1 <- NULL
 cp_10178agg$Group.1 <- NULL
 cp_10179agg$Group.1 <- NULL
 cp_10180agg$Group.1 <- NULL
@@ -2037,9 +2037,9 @@ cp_10185agg$Group.1 <- NULL
 cp_10186agg$Group.1 <- NULL
 cp_10187agg$Group.1 <- NULL
 cp_10188agg$Group.1 <- NULL
-cp_10189agg$Group.1 <- NULL
+#cp_10189agg$Group.1 <- NULL
 cp_10190agg$Group.1 <- NULL
-cp_10191agg$Group.1 <- NULL
+#cp_10191agg$Group.1 <- NULL
 cp_10192agg$Group.1 <- NULL
 cp_10193agg$Group.1 <- NULL
 cp_10194agg$Group.1 <- NULL
@@ -2047,12 +2047,12 @@ cp_10195agg$Group.1 <- NULL
 cp_10196agg$Group.1 <- NULL
 cp_10197agg$Group.1 <- NULL
 cp_10198agg$Group.1 <- NULL
-cp_10199agg$Group.1 <- NULL
+#cp_10199agg$Group.1 <- NULL
 cp_10200agg$Group.1 <- NULL
 cp_10201agg$Group.1 <- NULL
 cp_10202agg$Group.1 <- NULL
-cp_10203agg$Group.1 <- NULL
-cp_10204agg$Group.1 <- NULL
+#cp_10203agg$Group.1 <- NULL
+#cp_10204agg$Group.1 <- NULL
 cp_10205agg$Group.1 <- NULL
 cp_10206agg$Group.1 <- NULL
 cp_10207agg$Group.1 <- NULL
@@ -2064,10 +2064,10 @@ cp_10212agg$Group.1 <- NULL
 cp_10213agg$Group.1 <- NULL
 cp_10214agg$Group.1 <- NULL
 cp_10215agg$Group.1 <- NULL
-cp_10216agg$Group.1 <- NULL
+#cp_10216agg$Group.1 <- NULL
 cp_10217agg$Group.1 <- NULL
-cp_10218agg$Group.1 <- NULL
-cp_10219agg$Group.1 <- NULL
+#cp_10218agg$Group.1 <- NULL
+#cp_10219agg$Group.1 <- NULL
 cp_10220agg$Group.1 <- NULL
 cp_10221agg$Group.1 <- NULL
 cp_10222agg$Group.1 <- NULL
@@ -2081,10 +2081,11 @@ cp_10229agg$Group.1 <- NULL
 cp_10230agg$Group.1 <- NULL
 cp_10231agg$Group.1 <- NULL
 cp_10232agg$Group.1 <- NULL
-cp_10233agg$Group.1 <- NULL
-cp_10234agg$Group.1 <- NULL
+#cp_10233agg$Group.1 <- NULL
+#cp_10234agg$Group.1 <- NULL
 cp_10235agg$Group.1 <- NULL
 cp_10236agg$Group.1 <- NULL
+cp_10237agg$Group.1 <- NULL
 ```
 
 ## Merging all individual files into cp_merged
@@ -2366,235 +2367,4 @@ names(cp_full)[names(cp_full) == "cp_merged.AU45_c"] <- "AU45_c"
 
 ```{r}
 write.csv(cp_full, "C:/Users/jrcala/Documents/My Research/RStudio/cp_full.csv")
-```
-
-## Merging all individual files into cp_merged
-
-```{r}
-## Merging all individual files into cp_merged
-
-cp_master <- join_all(list(
-#cp_10002, 
-cp_10003, 
-cp_10004, 
-cp_10005, 
-cp_10006,
-cp_10008, 
-cp_10009, 
-cp_10010, 
-#cp_10011, 
-cp_10012, 
-cp_10013, 
-cp_10014, 
-cp_10015, 
-cp_10016, 
-cp_10017, 
-cp_10018, 
-cp_10019, 
-cp_10020, 
-cp_10021, 
-#cp_10022, 
-cp_10023, 
-cp_10024, 
-cp_10025, 
-cp_10026, 
-cp_10027, 
-#cp_10028, 
-cp_10029, 
-#cp_10030, 
-cp_10031, 
-cp_10032, 
-cp_10033, 
-cp_10034, 
-#cp_10035, 
-#cp_10036, 
-cp_10037, 
-#cp_10038, 
-cp_10040, 
-cp_10041, 
-#cp_10042, 
-cp_10043, 
-cp_10044, 
-cp_10045, 
-cp_10046, 
-cp_10047, 
-cp_10048, 
-cp_10049, 
-cp_10050, 
-cp_10051, 
-#cp_10052, 
-cp_10053, 
-#cp_10054, 
-cp_10055, 
-cp_10056, 
-cp_10057, 
-cp_10058, 
-cp_10059, 
-cp_10060, 
-cp_10061, 
-cp_10062, 
-cp_10063, 
-#cp_10064, 
-cp_10065, 
-cp_10066, 
-cp_10067, 
-cp_10068, 
-#cp_10070,
-cp_10071, 
-cp_10072, 
-cp_10073, 
-cp_10075, 
-cp_10076, 
-cp_10077, 
-cp_10078, 
-cp_10079, 
-cp_10080, 
-#cp_10081, 
-cp_10082, 
-cp_10083, 
-cp_10084, 
-cp_10085, 
-cp_10086, 
-cp_10087, 
-cp_10088, 
-cp_10089, 
-cp_10090, 
-#cp_10091, 
-#cp_10092, 
-cp_10093, 
-#cp_10094, 
-#cp_10095, 
-cp_10096, 
-cp_10097, 
-cp_10099, 
-cp_10100, 
-cp_10102, 
-cp_10103, 
-cp_10104, 
-cp_10105, 
-cp_10106, 
-cp_10108, 
-#cp_10109, 
-cp_10110, 
-cp_10111, 
-cp_10112, 
-cp_10113, 
-cp_10114, 
-#cp_10115, 
-cp_10116, 
-cp_10117, 
-cp_10118, 
-cp_10119, 
-#cp_10120, 
-cp_10121, 
-cp_10123, 
-#cp_10124, 
-cp_10125, 
-#cp_10126, 
-cp_10127, 
-cp_10128, 
-cp_10130, 
-cp_10131, 
-cp_10132, 
-cp_10133, 
-cp_10134, 
-cp_10135, 
-#cp_10136, 
-cp_10137, 
-cp_10138, 
-cp_10139, 
-cp_10140, 
-cp_10141, 
-#cp_10142, 
-cp_10143, 
-cp_10144, 
-cp_10145, 
-cp_10146, 
-#cp_10148, 
-cp_10149, 
-cp_10150, 
-cp_10151, 
-#cp_10152, 
-cp_10153, 
-cp_10154, 
-cp_10155, 
-cp_10156, 
-cp_10157, 
-cp_10158, 
-cp_10159, 
-cp_10160, 
-cp_10161, 
-cp_10162, 
-cp_10163, 
-cp_10164, 
-cp_10165, 
-cp_10166, 
-cp_10167, 
-cp_10169, 
-cp_10170, 
-cp_10171, 
-cp_10172, 
-#cp_10173, 
-cp_10174, 
-cp_10176, 
-cp_10178, 
-cp_10179, 
-cp_10180, 
-cp_10181, 
-cp_10182, 
-cp_10183, 
-cp_10184, 
-cp_10185, 
-cp_10186, 
-cp_10187, 
-cp_10188, 
-cp_10190, 
-cp_10192, 
-cp_10193, 
-cp_10194, 
-cp_10195, 
-cp_10196, 
-cp_10197, 
-cp_10198, 
-cp_10200, 
-cp_10201, 
-cp_10202, 
-#cp_10203, 
-cp_10205, 
-cp_10206, 
-cp_10207, 
-cp_10208, 
-cp_10209, 
-cp_10210, 
-cp_10211, 
-cp_10212, 
-cp_10213, 
-cp_10214, 
-cp_10215, 
-#cp_10216, 
-cp_10217, 
-#cp_10218, 
-#cp_10219, 
-cp_10220, 
-cp_10221, 
-cp_10222, 
-cp_10223, 
-cp_10224, 
-cp_10225, 
-cp_10226, 
-cp_10227, 
-cp_10228, 
-cp_10229, 
-cp_10230, 
-cp_10231, 
-cp_10232, 
-cp_10235, 
-cp_10236, 
-cp_10237), by = 'FF_ID', type = 'full')
-```
-
-## Writing the really big dataset
-
-```{r}
-write.csv(cp_master, "C:/Users/jrcala/Documents/My Research/RStudio/cp_master.csv")
 ```
