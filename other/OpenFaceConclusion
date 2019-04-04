@@ -6,7 +6,7 @@ output:
   html_document:
     toc: true
     toc_float: true
-    toc_depth: 4
+    toc_depth: 3
     collapse: subsection
     theme: united
     highlight: tango
@@ -63,8 +63,8 @@ library(aod)
 ```
 
 ```{r Load in data, include=FALSE}
-#cp_long <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_long.csv", header=TRUE, sep=",")
-cp_long <- read.csv(file="/Users/Julianna/Desktop/data/cp_long.csv", header=TRUE, sep=",")
+cp_long <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_long.csv", header=TRUE, sep=",")
+#cp_long <- read.csv(file="/Users/Julianna/Desktop/data/cp_long.csv", header=TRUE, sep=",")
 cp_long$X <- NULL
 cp_long$gender <- as.integer(cp_long$gender)
 cp_long$gendercat <- as.character(cp_long$gendercat)
@@ -80,87 +80,170 @@ cp_long$DepCompc <- cp_long$DepComp - mean(cp_long$DepComp)
 cp_long$ThreatDepInt <- cp_long$ThreatCompc*cp_long$DepCompc
 ```
 
+## 1. Random intercept model is bes
 
----
-title: "Conclusions on the Facial Expression/Cortisol Project"
-author: "Julianna Calabrese"
-date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    toc_depth: 4
-    collapse: subsection
-    theme: united
-    highlight: tango
-  pdf_document: default
-editor_options:
-  chunk_output_type: console
----
+A random intercept model is the closest thing I can get to Melissa's model without hacking R. 
 
-```{r setup, include=FALSE}
-library(mosaic)
-library(ggplot2)
-library(tidyr)
-library(dplyr)
-library(psych)
-library(nlme)
-library(plyr)
-library(Hmisc)
-library(rmarkdown)
-library(yaml)
-library(rapportools)
-library(lavaan)
-library(lme4)
-library(corrr)
-library(corrplot)
-library(reshape2)
-library(lmerTest)
-library(multcomp)
-library(optimx)
-library(MuMIn)
-library(Rmisc)
-library(jsonlite)
-library(knitr)
-library(taRifx)
-library(papeR)
-library(stargazer)
-library(kableExtra)
-library(broom)
-library(xtable)
-library(sjPlot)
-library(sjstats)
-library(sjlabelled)
-library(sjmisc)
-library(ggeffects)
-library(glmmTMB)
-library(bindrcpp)
-library(pbkrtest)
-library(devtools)
-library(psycholing)
-library(pander)
-library(coefplot)
-library(ggiraphExtra)
-library(languageR)
-library(aod)
+```
+base <- lme(cortvalue ~
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline, # Fixed effect
+            random = ~1|id, # Random intercept for Subject
+            corr = corAR1(), # Specifies AR1 structure
+            method = "REML", # Specifies REML fit
+            data = cp_long)
 ```
 
-```{r Load in data, include=FALSE}
-#cp_long <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_long.csv", header=TRUE, sep=",")
-cp_long <- read.csv(file="/Users/Julianna/Desktop/data/cp_long.csv", header=TRUE, sep=",")
-cp_long$X <- NULL
-cp_long$gender <- as.integer(cp_long$gender)
-cp_long$gendercat <- as.character(cp_long$gendercat)
-cp_long$male <- as.integer(cp_long$male)
-cp_long$female <- as.integer(cp_long$female)
-cp_long$baseline <- as.numeric(cp_long$cort_baseline_Win)
-cp_long$baselineC <- as.numeric(cp_long$cort_baseline_WinC)
-cp_long$id <- as.factor(cp_long$id)
-cp_long$timebeforepeak <- as.integer(cp_long$timebeforepeak)
-cp_long$timeafterpeak <- as.integer(cp_long$timeafterpeak)
-cp_long$ThreatCompc <- cp_long$ThreatComp - mean(cp_long$ThreatComp)
-cp_long$DepCompc <- cp_long$DepComp - mean(cp_long$DepComp)
-cp_long$ThreatDepInt <- cp_long$ThreatCompc*cp_long$DepCompc
+## 2. CTQ > ThreatCompc
+
+ThreatCompc goes in the right direction, but it doesn't reach .05. 
+
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+ThreatCompc <- lme(cortvalue ~ 
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ThreatCompc + ThreatCompc*timebeforepeak + ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interactions
+            random = ~1|id, # Random slopes but not intercepts
+            corr = corAR1(), # specifies CAR1 structure
+            #control =  ctrl, # optimizes model
+            method = "REML", # specifies REML fit
+            data = cp_long)
+summary(ThreatCompc)
 ```
 
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak", "ThreatCompc * Baseline")
+
+colorder <- c("est", "se", "p")
+
+tab_model(ThreatCompc, title = "ThreatCompc Model Summary Output", dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3, show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE, show.std = NULL, emph.p = TRUE, show.df = TRUE, string.df="DF", p.val = "wald", show.stat = TRUE, string.stat = "T", show.est = TRUE, show.se = TRUE, string.se="Std Error", show.p = TRUE, string.p="P-value", show.r2 = TRUE, col.order=colorder)
+```
+
+However, CTQ has something to do with participants' activation slope.
+
+```{r echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+ctq <- lme(cortvalue ~ 
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + # Fixed effect
+            ctqsumC + ctqsumC*timebeforepeak + ctqsumC*timeafterpeak + ctqsumC*baseline, # Interactions
+            random = ~1|id, # Random slopes but not intercepts
+            corr = corAR1(), #specifies AR1 structure
+            #control =  ctrl, # optimizes model
+            method = "REML", # specifies REML fit
+            data = cp_long)
+summary(ctq)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "CTQ", "CTQ * TimeBeforePeak", "CTQ * TimeAfterPeak", "CTQ * Baseline")
+
+colorder <- c("est", "se", "p")
+
+tab_model(ctq, title = "CTQ Model Summary Output", dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3, show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE, show.std = NULL, emph.p = TRUE, show.df = TRUE, string.df="DF", p.val = "wald", show.stat = TRUE, string.stat = "T", show.est = TRUE, show.se = TRUE, string.se="Std Error", show.p = TRUE, string.p="P-value", show.r2 = TRUE, col.order=colorder)
+```
+
+## 3. Raw AUs > Emotions
+
+There is a lot of debate about which AUs together form prototypical emotions. Additionally, we didn't use traditional FACS coding and we aren't using the "raw" AU dataset, so I argue that it is better to use raw AUs. For example, people agree that AU5 (upper lid raiser) is part of the emotion surprise, but people disagree which AUs combined form surprise. 
+
+## 4. AU5 and AU20 are important
+
+### AU5 Base Model
+
+```{r include=FALSE, echo=FALSE, results='hide'}
+mod <- lme(cortvalue ~ 
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + AU05_r + # Fixed effects
+            AU05_r*timebeforepeak + AU05_r*timeafterpeak + AU05_r*baseline, # Interactions
+            random = ~1|id, # Random slopes but not intercepts
+            corr = corAR1(), # specifies CAR1 structure
+            #control =  ctrl, # optimizes model
+            method = "REML", # specifies REML fit
+            data = cp_long)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "AU5", "TimeBeforePeak * AU5", "TimeAfterPeak * AU5", "Baseline * AU5")
+
+colorder <- c("est", "se", "p")
+
+tab_model(mod, title = "AU5 Model", dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3, show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE, show.std = NULL, emph.p = TRUE, show.df = TRUE, string.df="DF", p.val = "wald", show.stat = TRUE, string.stat = "T", show.est = TRUE, show.se = TRUE, string.se="Std Error", show.p = TRUE, string.p="P-value", show.r2 = TRUE, col.order=colorder)
+
+rm(mod)
+```
+
+### AU5 Logistic Regression
+
+```{r include=FALSE}
+AU5.1 <- glm(Responder ~ AU05_r, data=cp_long, family = "binomial")
+summary(AU5.1)
+
+AU5.2 <- glm(Responder ~ AU05_r + gender, data=cp_long, family = "binomial")
+summary(AU5.2)
+
+AU5.3 <- glm(Responder ~ AU05_r + ctqsumC, data=cp_long, family = "binomial")
+summary(AU5.3)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "AU5", "Gender", "CTQ")
+
+colorder <- c("est", "se", "p")
+
+title <- c("AU5", "AU5 + Gender", "AU5 + Gender + CTQ")
+
+tab_model(AU5.1, AU5.2, AU5.3, title = "AU5 Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
+
+### AU20 Base Model
+
+```{r include=FALSE, echo=FALSE, results='hide'}
+mod <- lme(cortvalue ~ 
+            timebeforepeak + # Fixed effect
+            timeafterpeak + # Fixed effect
+            baseline + AU20_r + # Fixed effects
+            AU20_r*timebeforepeak + AU20_r*timeafterpeak + AU20_r*baseline, # Interactions
+            random = ~1|id, # Random slopes but not intercepts
+            corr = corAR1(), # specifies CAR1 structure
+            #control =  ctrl, # optimizes model
+            method = "REML", # specifies REML fit
+            data = cp_long)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "AU20", "TimeBeforePeak * AU20", "TimeAfterPeak * AU20", "Baseline * AU20")
+
+colorder <- c("est", "se", "p")
+
+tab_model(mod, title = "AU20 Model", dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3, show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE, show.std = NULL, emph.p = TRUE, show.df = TRUE, string.df="DF", p.val = "wald", show.stat = TRUE, string.stat = "T", show.est = TRUE, show.se = TRUE, string.se="Std Error", show.p = TRUE, string.p="P-value", show.r2 = TRUE, col.order=colorder)
+
+rm(mod)
+```
+
+### AU20 Logistic Regression
+
+```{r include=FALSE}
+AU20.1 <- glm(Responder ~ AU20_r, data=cp_long, family = "binomial")
+summary(AU20.1)
+
+AU20.2 <- glm(Responder ~ AU20_r + gender, data=cp_long, family = "binomial")
+summary(AU20.2)
+
+AU20.3 <- glm(Responder ~ AU20_r + gender + ctqsumC, data=cp_long, family = "binomial")
+summary(AU20.3)
+```
+
+```{r echo=FALSE, results = 'asis'}
+labels <- c("Intercept", "AU20", "Gender", "CTQ total")
+
+colorder <- c("est", "se", "p")
+
+title <- c("AU20", "AU20 + Gender", "AU20 + Gender + CTQ Total")
+
+tab_model(AU20.1, AU20.2, AU20.3, title = "AU20 Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
+```
 
