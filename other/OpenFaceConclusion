@@ -1,10 +1,10 @@
 ---
 title: "Conclusions on the Facial Expression/Cortisol Project"
 author: "Julianna Calabrese"
-date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   html_document:
-    toc: true
+    toc: false
     toc_float: true
     toc_depth: 3
     collapse: subsection
@@ -80,11 +80,11 @@ cp_long$DepCompc <- cp_long$DepComp - mean(cp_long$DepComp)
 cp_long$ThreatDepInt <- cp_long$ThreatCompc*cp_long$DepCompc
 ```
 
-## 1. Random intercept model is bes
+## 1. Random intercept model is best
 
 A random intercept model is the closest thing I can get to Melissa's model without hacking R. 
 
-```
+```{r echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 base <- lme(cortvalue ~
             timebeforepeak + # Fixed effect
             timeafterpeak + # Fixed effect
@@ -95,6 +95,49 @@ base <- lme(cortvalue ~
             data = cp_long)
 ```
 
+```{r echo=FALSE, results = 'asis'}
+colorder <- c("est", "se", "p")
+
+labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline")
+
+tab_model(base, title = "Base Model",
+          dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3,
+          emph.p = TRUE,
+          show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE,
+          show.std=NULL,
+          show.df = TRUE, string.df="DF", p.val = "wald",
+          show.stat = TRUE, string.stat = "T",          
+          show.est = TRUE, # No string.est
+          show.se = TRUE, string.se="Std Error",
+          show.p = TRUE, string.p="P-value",
+          show.r2 = TRUE,
+          col.order=colorder)
+```
+
+```{r Plot base regression line, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+timeticks <- c(0, 3, 15, 25, 30, 35, 40, 45, 60)
+timeticks2 <- c(-60, -45, -40, -35, -30, -25, -15, -3, 0, 3, 15, 25, 30, 35, 40, 45, 60)
+timeticks3 <- c(4, 5, 6, 7, 8, 9, 10, 11, 12)
+
+ggplot(cp_long, aes(x = timetopeak, y = cortvalue)) +
+  geom_line(aes(group = id), color = "gray") + 
+  geom_smooth(aes(y=predict(base)), size = 2, color = "red", se = TRUE) + 
+  xlab("") + ylab("") +
+  ggtitle("Base nlme Regression Line") +
+  scale_x_continuous(breaks=timeticks2)
+```
+
+```{r All cortisol, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+ggplot(group_by(cp_long), aes(timetopeak, cortvalue, group=id,color=as.factor(timetopeak))) +
+  geom_line(color="#c0c0c0") + 
+  geom_point() +
+  theme(legend.position="none") + 
+  xlab("") + ylab("") + 
+  ggtitle("Everyone's Cortisol, No Modelling") +
+  scale_x_continuous(breaks=timeticks2) 
+```
+
+<P style="page-break-before: always">
 ## 2. CTQ > ThreatCompc
 
 ThreatCompc goes in the right direction, but it doesn't reach .05. 
@@ -151,10 +194,10 @@ There is a lot of debate about which AUs together form prototypical emotions. Ad
 
 ## 4. AU5 and AU20 are important
 
-### AU5 Base Model
+### AU5
 
 ```{r include=FALSE, echo=FALSE, results='hide'}
-mod <- lme(cortvalue ~ 
+AU5 <- lme(cortvalue ~ 
             timebeforepeak + # Fixed effect
             timeafterpeak + # Fixed effect
             baseline + AU05_r + # Fixed effects
@@ -171,12 +214,8 @@ labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "AU5", "
 
 colorder <- c("est", "se", "p")
 
-tab_model(mod, title = "AU5 Model", dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3, show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE, show.std = NULL, emph.p = TRUE, show.df = TRUE, string.df="DF", p.val = "wald", show.stat = TRUE, string.stat = "T", show.est = TRUE, show.se = TRUE, string.se="Std Error", show.p = TRUE, string.p="P-value", show.r2 = TRUE, col.order=colorder)
-
-rm(mod)
+tab_model(AU5, title = "AU5 Model", dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3, show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE, show.std = NULL, emph.p = TRUE, show.df = TRUE, string.df="DF", p.val = "wald", show.stat = TRUE, string.stat = "T", show.est = TRUE, show.se = TRUE, string.se="Std Error", show.p = TRUE, string.p="P-value", show.r2 = TRUE, col.order=colorder)
 ```
-
-### AU5 Logistic Regression
 
 ```{r include=FALSE}
 AU5.1 <- glm(Responder ~ AU05_r, data=cp_long, family = "binomial")
@@ -199,10 +238,10 @@ title <- c("AU5", "AU5 + Gender", "AU5 + Gender + CTQ")
 tab_model(AU5.1, AU5.2, AU5.3, title = "AU5 Logistic Summary Output", auto.label = FALSE, pred.labels = labels, dv.labels = title, show.icc=FALSE, show.re.var=FALSE, string.p="P-value", show.ci=FALSE, show.se=TRUE, string.se="Std Error", show.df = TRUE, string.df="DF", p.val="kr", show.r2=TRUE, col.order=colorder)
 ```
 
-### AU20 Base Model
+### AU20
 
 ```{r include=FALSE, echo=FALSE, results='hide'}
-mod <- lme(cortvalue ~ 
+AU20 <- lme(cortvalue ~ 
             timebeforepeak + # Fixed effect
             timeafterpeak + # Fixed effect
             baseline + AU20_r + # Fixed effects
@@ -219,12 +258,8 @@ labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "AU20", 
 
 colorder <- c("est", "se", "p")
 
-tab_model(mod, title = "AU20 Model", dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3, show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE, show.std = NULL, emph.p = TRUE, show.df = TRUE, string.df="DF", p.val = "wald", show.stat = TRUE, string.stat = "T", show.est = TRUE, show.se = TRUE, string.se="Std Error", show.p = TRUE, string.p="P-value", show.r2 = TRUE, col.order=colorder)
-
-rm(mod)
+tab_model(AU20, title = "AU20 Model", dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3, show.ci = FALSE, show.icc=FALSE, show.re.var=FALSE, show.aic=FALSE, show.std = NULL, emph.p = TRUE, show.df = TRUE, string.df="DF", p.val = "wald", show.stat = TRUE, string.stat = "T", show.est = TRUE, show.se = TRUE, string.se="Std Error", show.p = TRUE, string.p="P-value", show.r2 = TRUE, col.order=colorder)
 ```
-
-### AU20 Logistic Regression
 
 ```{r include=FALSE}
 AU20.1 <- glm(Responder ~ AU20_r, data=cp_long, family = "binomial")
