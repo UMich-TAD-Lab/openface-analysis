@@ -1,7 +1,7 @@
 ---
 title: "Another attempt at an explanation"
 author: "Julianna Calabrese"
-date: "March 28, 2019"
+date: "Updated April 24, 2019"
 output:
   html_document:
     toc: true
@@ -34,12 +34,12 @@ library(lmerTest) # Gives you p-values for lmer models
 ```
 
 ```{r Load in and lightly clean data, include=FALSE}
-#data <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
-data <- read.csv(file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv", header=TRUE, sep=",")
+data <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+#data <- read.csv(file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv", header=TRUE, sep=",")
 data$X <- NULL
-data$genderold <- NULL
-data$baseline <- as.numeric(data$cort_baseline_Win_thing)
-data$cort_baseline_Win_thing <- NULL
+#data$genderold <- NULL
+data$baseline <- as.numeric(data$cort_baseline_Win)
+data$cort_baseline_Win <- NULL
 data$ThreatCompc <- data$ThreatComp - mean(data$ThreatComp)
 data$DepCompc <- data$DepComp - mean(data$DepComp)
 data$ThreatDepInt <- data$ThreatCompc*data$DepCompc
@@ -85,7 +85,7 @@ Additionally, Kerby said that I need to choose between having random slopes or h
 
 Out of curiousity, I also tested another model: made in `lme4` that had random intercepts and slopes for TimeBeforePeak and TimeAfterPeak. However, that model was identical to the model that just had random slopes. So there is no point in adding random intercepts to a `lme4` model. 
 
-```{r mod1, echo=TRUE, results = 'hide'}
+```{r, echo=TRUE, results = 'hide'}
 # Random intercept with ar1 structure
 mod1 <- lme(cortvalue ~
             timebeforepeak + # Fixed effect
@@ -131,7 +131,7 @@ colorder <- c("est", "se", "p")
 labels <- c("Intercept", "TimeBeforePeak", "TimeAfterPeak", "Baseline", "ThreatCompc", "ThreatCompc * TimeBeforePeak", "ThreatCompc * TimeAfterPeak", "ThreatCompc * Baseline")
 ```
 
-```{r mod1 table, echo=FALSE, results = 'asis'}
+```{r table, echo=FALSE, results = 'asis'}
 tab_model(mod1, title = "nlme Model with a Random Intercept and a corAR1 structure",
           dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3,
           emph.p = TRUE,
@@ -247,33 +247,12 @@ ggplot(data=data, aes(x=peaktimenum, fill="red")) +
   xlab("Peak Time") + ylab("")
 ```
 
-```{r All cortisol, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
-ggplot(group_by(data), aes(timetopeak, cortvalue, group=id,color=as.factor(sampletimetopeak))) +
-  geom_line(color="#c0c0c0") + 
-  geom_point() +
-  theme(legend.position="none") + 
-  xlab("Sample Time") + ylab("Cortisol") + 
-  ggtitle("Everyone's Cortisol, No Modelling") +
-  scale_x_continuous(breaks=timeticks2) 
-```
-
-```{r Plot mod1 regression line, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+```{r Plot regression line, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
 ggplot(data, aes(x = timetopeak, y = cortvalue)) +
   geom_line(aes(group = id), color = "gray") + 
   geom_smooth(aes(y=predict(mod1)), size = 2, color = "red", se = TRUE) + 
   xlab("Time to Peak") + ylab("Cortisol") +
-  ggtitle("nlme Regression Line") +
-  scale_x_continuous(breaks=timeticks2)
-```
-
-```{r Everyone gets a line with regression line, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
-ggplot(data, aes(x = timetopeak, y = cortvalue)) +
-  geom_line(aes(color = as.factor(id))) + 
-  geom_smooth(aes(y=predict(mod1)), size = 2, color = "red", se = TRUE) +
-  xlab("Time to Peak") + ylab("Cortisol") + 
-  scale_x_continuous(breaks=timeticks2) +
-  theme(legend.position = "none") +
-  ggtitle("Everyone's Cortisol with nlme Regression Line")
+  ggtitle("nlme Regression Line") #+ scale_x_continuous(breaks=timeticks2)
 ```
 
 ```{r Cortisol growth curve, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
@@ -283,24 +262,6 @@ ggplot(data, aes(timetopeak, cortvalue)) +
   stat_summary(aes(y=predict(mod1)), fun.y=mean, geom="line", lwd=1.5, col="gray") +
   scale_shape_manual(values=c(16, 17)) +
   labs(x="Time to Peak", y="Cortisol") + 
-  ggtitle("Cortisol growth curve") + 
-  scale_x_continuous(breaks=timeticks2)
-```
-
-```{r Colored by Responder, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
-data2 <- data
-data$Responder2 <- data$Responder
-
-data2$Responder2[data$Responder == "1"] <- "Responder"
-data2$Responder2[data$Responder == "0"] <- "Non-Responder"
-
-ggplot(data2, aes(x = timetopeak, y = cortvalue, color=as.factor(Responder2))) +
-  geom_point() +
-  geom_smooth(aes(y=predict(mod1)), size = 3, color = "red", se = FALSE) + 
-  xlab("Time to Peak ") + ylab("Cortisol") +
-  scale_x_continuous(breaks=timeticks2) +
-  guides(color=guide_legend(title="Cortisol Responsivity")) +
-  ggtitle("nlme Regression Line, Colored by Responsivity")
-
-rm(data2)
+  ggtitle("Cortisol growth curve")
+  #+ scale_x_continuous(breaks=timeticks2)
 ```
