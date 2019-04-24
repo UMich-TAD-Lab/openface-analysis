@@ -302,6 +302,17 @@ cortisol_new <- completeFun(cortisol_new, "id")
 #cortisol_new$peakname <- NULL
 ```
 
+## Add threatdep because you need that
+
+```{r}
+threatdep <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/threatdep.csv", header=TRUE, sep=",")
+#threatdep <- read.csv(file="/Users/Julianna/Desktop/data/threatdep.csv", header=TRUE, sep=",")
+threatdep$X <- NULL
+names(threatdep)[names(threatdep) == "ff_id"] <- "id"
+df <- threatdep[c("id","ThreatZSum","ThreatComp", "DepZSum", "DepComp", "ThreatCompc", "DepCompc", "ThreatDepInt")]
+cortisol_new <- merge(cortisol_new,df,by="id")
+```
+
 ## Write it out for full cort analyses
 
 ```{r}
@@ -312,6 +323,7 @@ data <- cortisol_new
 #rm(data)
 rm(cortisol_new)
 rm(completeFun)
+rm(threatdep)
 ```
 
 ## Read in cp_full and add the needed variables to data
@@ -323,7 +335,7 @@ cp_joined$X <- NULL
 ```
 
 ```{r}
-df <- cp_joined[c("id","gender","pain","anger","fear","happiness","sadness","CTQ_Total_Sum","CTQ_Total_Mean","CTQ_EmoAbuse_Sum","CTQ_EmoAbuse_Mean","CTQ_PhyAbuse_Sum","CTQ_PhyAbuse_Mean","CTQ_SexAbuse_Sum","CTQ_SexAbuse_Mean", "ThreatZSum", "ThreatComp", "DepZSum", "DepComp", "ThreatCompc", "DepCompc", "ThreatDepInt", "AU01_r", "AU02_r", "AU04_r", "AU05_r", "AU06_r", "AU07_r", "AU09_r", "AU10_r", "AU12_r", "AU14_r", "AU15_r", "AU17_r", "AU20_r", "AU23_r", "AU25_r", "AU26_r", "AU01_c", "AU02_c", "AU04_c", "AU05_c", "AU06_c", "AU07_c", "AU09_c", "AU10_c", "AU12_c", "AU14_c", "AU15_c", "AU17_c", "AU20_c", "AU23_c", "AU25_c", "AU26_c")]
+df <- cp_joined[c("id","gender","pain","anger","fear","happiness","sadness","CTQ_Total_Sum","CTQ_Total_Mean","CTQ_EmoAbuse_Sum","CTQ_EmoAbuse_Mean","CTQ_PhyAbuse_Sum","CTQ_PhyAbuse_Mean","CTQ_SexAbuse_Sum","CTQ_SexAbuse_Mean", "AU01_r", "AU02_r", "AU04_r", "AU05_r", "AU06_r", "AU07_r", "AU09_r", "AU10_r", "AU12_r", "AU14_r", "AU15_r", "AU17_r", "AU20_r", "AU23_r", "AU25_r", "AU26_r", "AU01_c", "AU02_c", "AU04_c", "AU05_c", "AU06_c", "AU07_c", "AU09_c", "AU10_c", "AU12_c", "AU14_c", "AU15_c", "AU17_c", "AU20_c", "AU23_c", "AU25_c", "AU26_c")]
 ```
 
 ```{r}
@@ -352,4 +364,5 @@ data <- data[!(data$cortisol=="Cortisol_Win.3"),]
 ```{r}
 write.csv(data, file="C:/Users/jrcala/Documents/My Research/RStudio/final2.csv")
 #write.csv(data, file="/Users/Julianna/Desktop/data/final2.csv")
+rm(data)
 ```
