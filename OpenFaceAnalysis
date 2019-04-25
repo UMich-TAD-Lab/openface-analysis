@@ -12,7 +12,7 @@ output:
     highlight: tango
   pdf_document: default
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -63,15 +63,15 @@ library(aod)
 ```
 
 ```{r Load in data, include=FALSE}
-cp_long <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_long.csv", header=TRUE, sep=",")
-#cp_long <- read.csv(file="/Users/Julianna/Desktop/data/cp_long.csv", header=TRUE, sep=",")
+cp_long <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/final2.csv", header=TRUE, sep=",")
+#cp_long <- read.csv(file="/Users/Julianna/Desktop/data/final2.csv", header=TRUE, sep=",")
 cp_long$X <- NULL
 cp_long$gender <- as.integer(cp_long$gender)
-cp_long$gendercat <- as.character(cp_long$gendercat)
-cp_long$male <- as.integer(cp_long$male)
-cp_long$female <- as.integer(cp_long$female)
+#cp_long$gendercat <- as.character(cp_long$gendercat)
+#cp_long$male <- as.integer(cp_long$male)
+#cp_long$female <- as.integer(cp_long$female)
 cp_long$baseline <- as.numeric(cp_long$cort_baseline_Win)
-cp_long$baselineC <- as.numeric(cp_long$cort_baseline_WinC)
+#cp_long$baselineC <- as.numeric(cp_long$cort_baseline_WinC)
 cp_long$id <- as.factor(cp_long$id)
 cp_long$timebeforepeak <- as.integer(cp_long$timebeforepeak)
 cp_long$timeafterpeak <- as.integer(cp_long$timeafterpeak)
@@ -1112,10 +1112,10 @@ tab_model(log1, log2, title = "Base Model Logistic Summary Output", auto.label =
 #### Anger
 
 ```{r include=FALSE}
-anger1 <- glm(Responder ~ anger, data=cp_long, family = "binomial")
+anger1 <- glm(Responder ~ angerC, data=cp_long, family = "binomial")
 summary(anger1)
 
-anger2 <- glm(Responder ~ anger + gender, data=cp_long, family = "binomial")
+anger2 <- glm(Responder ~ angerC + gender, data=cp_long, family = "binomial")
 summary(anger2)
 ```
 
@@ -1132,10 +1132,10 @@ tab_model(anger1, anger2, title = "Anger Logistic Summary Output", auto.label = 
 #### Fear
 
 ```{r include=FALSE}
-fear1 <- glm(Responder ~ fear, data=cp_long, family = "binomial")
+fear1 <- glm(Responder ~ fearC, data=cp_long, family = "binomial")
 summary(fear1)
 
-fear2 <- glm(Responder ~ fear + gender, data=cp_long, family = "binomial")
+fear2 <- glm(Responder ~ fearC + gender, data=cp_long, family = "binomial")
 summary(fear2)
 ```
 
@@ -1152,10 +1152,10 @@ tab_model(fear1, fear2, title = "Fear Logistic Summary Output", auto.label = FAL
 #### Happiness
 
 ```{r include=FALSE}
-happiness1 <- glm(Responder ~ happiness, data=cp_long, family = "binomial")
+happiness1 <- glm(Responder ~ happinessC, data=cp_long, family = "binomial")
 summary(happiness1)
 
-happiness2 <- glm(Responder ~ happiness + gender, data=cp_long, family = "binomial")
+happiness2 <- glm(Responder ~ happinessC + gender, data=cp_long, family = "binomial")
 summary(happiness2)
 ```
 
@@ -1172,10 +1172,10 @@ tab_model(happiness1, happiness2, title = "Happiness Logistic Summary Output", a
 #### Sadness
 
 ```{r include=FALSE}
-sadness1 <- glm(Responder ~ sadness, data=cp_long, family = "binomial")
+sadness1 <- glm(Responder ~ sadnessC, data=cp_long, family = "binomial")
 summary(sadness1)
 
-sadness2 <- glm(Responder ~ sadness + gender, data=cp_long, family = "binomial")
+sadness2 <- glm(Responder ~ sadnessC + gender, data=cp_long, family = "binomial")
 summary(sadness2)
 ```
 
@@ -1192,10 +1192,10 @@ tab_model(sadness1, sadness2, title = "Sadness Logistic Summary Output", auto.la
 #### Pain
 
 ```{r include=FALSE}
-pain1 <- glm(Responder ~ pain, data=cp_long, family = "binomial")
+pain1 <- glm(Responder ~ painC, data=cp_long, family = "binomial")
 summary(pain1)
 
-pain2 <- glm(Responder ~ pain + gender, data=cp_long, family = "binomial")
+pain2 <- glm(Responder ~ painC + gender, data=cp_long, family = "binomial")
 summary(pain2)
 ```
 
@@ -1390,16 +1390,6 @@ ggplot(cp_long, aes(x=peaktimenum, fill="red")) +
   ggtitle("When did most people peak?") +
   theme(legend.position = "none") + 
   xlab("Peak Time") + ylab("")
-```
-
-```{r All cortisol, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
-ggplot(group_by(cp_long), aes(timetopeak, cortvalue, group=id,color=as.factor(sampletimetopeak))) +
-  geom_line(color="#c0c0c0") + 
-  geom_point() +
-  theme(legend.position="none") + 
-  xlab("Sample Time") + ylab("Cortisol") + 
-  ggtitle("Everyone's Cortisol, No Modelling") +
-  scale_x_continuous(breaks=timeticks2) 
 ```
 
 ```{r Plot mod1 regression line, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
