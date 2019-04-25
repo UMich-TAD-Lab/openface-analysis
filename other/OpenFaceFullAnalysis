@@ -1,7 +1,7 @@
 ---
 title: "Another attempt at an explanation"
 author: "Julianna Calabrese"
-date: "Updated April 24, 2019"
+date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
 output:
   html_document:
     toc: true
@@ -12,7 +12,7 @@ output:
     highlight: tango
   pdf_document: default
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r library, include=FALSE}
@@ -207,8 +207,6 @@ tab_model(mod1, mod2,
           col.order=colorder)
 ```
 
-## Plots
-
 ```{r References, include=FALSE}
 #https://quantdev.ssri.psu.edu/tutorials/growth-modeling-chapter-3-linear-growth-models
 #http://dpmartin42.github.io/posts/Piecewise-growth
@@ -222,32 +220,15 @@ timeticks2 <- c(-60, -45, -40, -35, -30, -25, -15, -3, 0, 3, 15, 25, 30, 35, 40,
 timeticks3 <- c(4, 5, 6, 7, 8, 9, 10, 11, 12)
 ```
 
-```{r Descriptive barplot, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
-data2 <- data
-data2 <- data2[!is.na(data2$peaktime), ]
-
-data2 %>% 
-  count(peaktime) %>% 
-  mutate(perc = n / nrow(data2)) -> data2
-
-ggplot(data2, aes(x=peaktime, y=perc, fill="red")) + 
-  geom_bar(stat = "identity") + ggtitle("When did most people peak?") +
-  theme(legend.position = "none") + 
-  xlab("Peak Time") + ylab("") + 
-  scale_x_discrete(labels=c("0","3","15","25","30","35","40","45","60"))
-
-rm(data2)
-```
-
 ```{r Descriptive Density plot, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
-ggplot(data=data, aes(x=peaktimenum, fill="red")) + 
+ggplot(data=data, aes(x=Peak_Time, fill="red")) + 
   geom_density(aes(stat = "identity")) + 
   ggtitle("When did most people peak?") +
   theme(legend.position = "none") + 
   xlab("Peak Time") + ylab("")
 ```
 
-```{r Plot regression line, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+```{r Plot regression line, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
 ggplot(data, aes(x = timetopeak, y = cortvalue)) +
   geom_line(aes(group = id), color = "gray") + 
   geom_smooth(aes(y=predict(mod1)), size = 2, color = "red", se = TRUE) + 
@@ -255,7 +236,7 @@ ggplot(data, aes(x = timetopeak, y = cortvalue)) +
   ggtitle("nlme Regression Line") #+ scale_x_continuous(breaks=timeticks2)
 ```
 
-```{r Cortisol growth curve, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+```{r Cortisol growth curve, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
 ggplot(data, aes(timetopeak, cortvalue)) +
   stat_summary(fun.y=mean, geom="point", size=2) +
   stat_summary(fun.data=mean_se, geom="errorbar", linetype="solid", width=0.6) +
