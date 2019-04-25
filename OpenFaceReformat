@@ -1,5 +1,5 @@
 ---
-title: "OpenFaceReformat"
+title: "OpenFace Full Cortisol Prep"
 author: "Julianna Calabrese"
 date: "April 9, 2019"
 output: html_document
@@ -335,7 +335,35 @@ cp_joined$X <- NULL
 ```
 
 ```{r}
-df <- cp_joined[c("id","gender","painC","angerC","fearC","happinessC","sadnessC","CTQ_Total_Sum","CTQ_Total_Mean","CTQ_EmoAbuse_Sum","CTQ_EmoAbuse_Mean","CTQ_PhyAbuse_Sum","CTQ_PhyAbuse_Mean","CTQ_SexAbuse_Sum","CTQ_SexAbuse_Mean", "AU01_r", "AU02_r", "AU04_r", "AU05_r", "AU06_r", "AU07_r", "AU09_r", "AU10_r", "AU12_r", "AU14_r", "AU15_r", "AU17_r", "AU20_r", "AU23_r", "AU25_r", "AU26_r", "AU01_c", "AU02_c", "AU04_c", "AU05_c", "AU06_c", "AU07_c", "AU09_c", "AU10_c", "AU12_c", "AU14_c", "AU15_c", "AU17_c", "AU20_c", "AU23_c", "AU25_c", "AU26_c")]
+names(cp_joined)[names(cp_joined) == "CTQ_Total_Sum"] <- "ctqsum"
+names(cp_joined)[names(cp_joined) == "CTQ_EmoAbuse_Sum"] <- "emosum"
+```
+
+```{r}
+cp_joined$painC <- scale(cp_joined$pain)	#cp_joined$painC <- scale(cp_joined$pain)
+cp_joined$painC <- cp_joined$pain - mean(cp_joined$pain)
+
+cp_joined$angerC <- scale(cp_joined$anger)	#cp_joined$angerC <- scale(cp_joined$anger)
+cp_joined$angerC <- cp_joined$anger - mean(cp_joined$anger)
+
+cp_joined$fearC <- scale(cp_joined$fear)	#cp_joined$fearC <- scale(cp_joined$fear)
+cp_joined$fearC <- cp_joined$fear - mean(cp_joined$fear)
+
+cp_joined$happinessC <- scale(cp_joined$happiness)	#cp_joined$happinessC <- scale(cp_joined$happiness)
+cp_joined$happinessC <- cp_joined$happiness - mean(cp_joined$happiness)
+
+cp_joined$sadnessC <- scale(cp_joined$sadness)	#cp_joined$sadnessC <- scale(cp_joined$sadness)
+cp_joined$sadnessC <- cp_joined$sadness - mean(cp_joined$sadness)
+
+cp_joined$ctqsumC <- scale(cp_joined$ctqsum)	#cp_joined$ctqsumC <- scale(cp_joined$ctqsum)
+cp_joined$ctqsumC <- cp_joined$ctqsum - mean(cp_joined$ctqsum)
+
+cp_joined$emosumC <- scale(cp_joined$emosum)	#cp_joined$emosumC <- scale(cp_joined$emosum)
+cp_joined$emosumC <- cp_joined$emosum - mean(cp_joined$emosum)
+```
+
+```{r}
+df <- cp_joined[c("id","gender","painC","angerC","fearC","happinessC","sadnessC","ctqsumC","emosumC", "AU01_r", "AU02_r", "AU04_r", "AU05_r", "AU06_r", "AU07_r", "AU09_r", "AU10_r", "AU12_r", "AU14_r", "AU15_r", "AU17_r", "AU20_r", "AU23_r", "AU25_r", "AU26_r", "AU01_c", "AU02_c", "AU04_c", "AU05_c", "AU06_c", "AU07_c", "AU09_c", "AU10_c", "AU12_c", "AU14_c", "AU15_c", "AU17_c", "AU20_c", "AU23_c", "AU25_c", "AU26_c")]
 ```
 
 ```{r}
