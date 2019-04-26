@@ -1,0 +1,543 @@
+---
+title: "OpenFace Full Cortisol Prep"
+author: "Julianna Calabrese"
+date: "April 9, 2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(mosaic)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(psych)
+library(nlme)
+library(plyr)
+library(Hmisc)
+library(data.table)
+library(MASS)
+library(car)
+library(rmarkdown)
+library(shiny)
+library(yaml)
+library(mice)
+library(VIM)
+```
+
+## Read in data
+
+```{r}
+cortisol <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cortisol_original.csv", header=TRUE, sep=",")
+#cortisol <- read.csv(file="/Users/Julianna/Desktop/data/cortisol_original.csv", header=TRUE, sep=",")
+cortisol$X <- NULL
+names(cortisol)[names(cortisol) == "ï..ID"] <- "id"
+cortisol <- cortisol[!(cortisol$Usable==0),] #Remove everyone where Usable = 0
+```
+
+## OpenFaceProgress
+
+### Merge datasets
+
+```{r}
+#cortisol <- merge(cortisol, threatdep, by = "id")
+#cortisol <- merge(cortisol, ctq, by = "id")
+#cortisol <- merge(cortisol, gender, by = "id")
+#rm(threatdep)
+#rm(ctq)
+#rm(gender)
+```
+
+## OpenFaceReformat
+
+## Making df
+
+```{r}
+# Add any variables you want in the final datset below
+df <- cortisol[c("id","Cortisol_Win.1", "Cortisol_Win.2", "Cortisol_Win.3", "Cortisol_Win.4","Cortisol_Win.5","Cortisol_Win.6","Cortisol_Win.7","Cortisol_Win.8","Cortisol_Win.9","Cortisol_Win.10","Cortisol_Win.11","Cortisol_Win.12","s1time", "s2time", "s3time", "s4time","s5time","s6time","s7time","s8time","s9time","s10time","s11time","s12time","cort_baseline_Win", "Responder", "Peak_Time", "PeakTime_Time")]
+
+df2 <- cortisol[c("Cortisol_Win.1", "Cortisol_Win.2", "Cortisol_Win.3", "Cortisol_Win.4","Cortisol_Win.5","Cortisol_Win.6","Cortisol_Win.7","Cortisol_Win.8","Cortisol_Win.9","Cortisol_Win.10","Cortisol_Win.11","Cortisol_Win.12")]
+#This just includes (the Box-Cox-transformed) cortisol values
+
+df3 <- cortisol[c("s1time", "s2time", "s3time", "s4time","s5time","s6time","s7time","s8time","s9time","s10time","s11time","s12time")]
+#This just includes the time values associated with the corresponding cortisol values
+
+df$peakname <- colnames(df2)[max.col(df2,ties.method="first")]
+df$peaktime <- colnames(df3)[max.col(df2,ties.method="first")]
+df$peaktimenum <- 0
+df$peaktimenum <- ifelse(df$peaktime == "s1time", df$s1time,
+    ifelse(df$peaktime == "s2time", df$s2time,
+    ifelse(df$peaktime == "s3time", df$s3time,
+    ifelse(df$peaktime == "s4time", df$s4time,
+    ifelse(df$peaktime == "s5time", df$s5time,
+    ifelse(df$peaktime == "s6time", df$s6time,
+    ifelse(df$peaktime == "s7time", df$s7time,
+    ifelse(df$peaktime == "s8time", df$s8time,
+    ifelse(df$peaktime == "s9time", df$s9time,
+    ifelse(df$peaktime == "s10time", df$s10time,
+    ifelse(df$peaktime == "s11time", df$s11time,
+    ifelse(df$peaktime == "s12time", df$s12time,0))))))))))))
+rm(df2)
+rm(df3)
+```
+
+## Making dfgather
+
+```{r warning=FALSE}
+dfgather <- gather(df, cortisol, cortvalue, Cortisol_Win.1:Cortisol_Win.12, factor_key=TRUE)
+
+dfgather$stime <- 0
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.1"] <- dfgather$s1time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.2"] <- dfgather$s2time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.3"] <- dfgather$s3time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.4"] <- dfgather$s4time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.5"] <- dfgather$s5time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.6"] <- dfgather$s6time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.7"] <- dfgather$s7time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.8"] <- dfgather$s8time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.9"] <- dfgather$s9time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.10"] <- dfgather$s10time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.11"] <- dfgather$s11time
+dfgather$stime[dfgather$cortisol == "Cortisol_Win.12"] <- dfgather$s12time
+```
+
+```{r}
+dfgather$timenum <- 0
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.1"] <- 1
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.2"] <- 2
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.3"] <- 3
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.4"] <- 4
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.5"] <- 5
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.6"] <- 6
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.7"] <- 7
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.8"] <- 8
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.9"] <- 9
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.10"] <- 10
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.11"] <- 11
+dfgather$timenum[dfgather$cortisol == "Cortisol_Win.12"] <- 12
+```
+
+```{r}
+dfgather$s1time <- NULL
+dfgather$s2time <- NULL
+dfgather$s3time <- NULL
+dfgather$s4time <- NULL
+dfgather$s5time <- NULL
+dfgather$s6time <- NULL
+dfgather$s7time <- NULL
+dfgather$s8time <- NULL
+dfgather$s9time <- NULL
+dfgather$s10time <- NULL
+dfgather$s11time <- NULL
+dfgather$s12time <- NULL
+```
+
+## Creating cortisol_new
+
+```{r}
+cortisol_new <- dfgather
+rm(dfgather)
+rm(df)
+rm(cortisol)
+```
+
+## Pre-Analysis Cleaning
+
+```{r}
+cortisol_new$id <- as.factor(cortisol_new$id)
+cortisol_new$Responder <- as.factor(cortisol_new$Responder)
+```
+
+## Landmark Registration
+
+### Creating variables: maxtime, timetopeak, timebeforepeak, timeafterpeak
+
+Do NOT use any kind of centered variables when making the below variables!
+
+```{r}
+#cortisol_new$maxtime <- 0
+#cortisol_new$maxtime <- ave(cortisol_new$stime, cortisol_new$id, FUN = max)
+#hist(cortisol_new$maxtime, main = "#histogram of maxtime", col=rainbow(8))
+```
+
+```{r}
+cortisol_new$timetopeak <- 0
+#PeakTime_Time - stime = minutes from peak
+#Multiplied by -1 so that times before peak are negative and times after peak are positive (for next step: creating TimeBeforePeak and TimeAfterPeak)
+cortisol_new$timetopeak <- (cortisol_new$PeakTime_Time - cortisol_new$stime) * -1
+#hist(cortisol_new$timetopeak, main = "#histogram of timetopeak", col=rainbow(8))
+```
+
+From Melissa's code:
+
+* Creating TimeBeforePeak and TimeAfterPeak (reactivity and recovery times, respectively):
+    + When Time2Pk is negative, TimeBeforePeak = minutes from peak at each sampling time
+    + When Time2Pk is positive, TimeBeforePeak = 0
+    + When Time2Pk is positive, TimeAfterPeak = minutes from peak at each sampling time
+    + When Time2Pk is negative, TimeAfterPeak = 0
+
+```{r}
+#timebeforepeak aka the reactivity slope
+cortisol_new$timebeforepeak <- 0
+cortisol_new$timebeforepeak <- ifelse(cortisol_new$timetopeak < 0, cortisol_new$timetopeak, 0)
+#If timetopeak < 0 (aka negative), then timebeforepeak = timetopeak
+#If timetopeak > 0 (aka positive), then timebeforepeak = 0
+#hist(cortisol_new$timebeforepeak, main = "#histogram of timebeforepeak",col=rainbow(8))
+
+#timeafterpeak aka the recovery slope
+cortisol_new$timeafterpeak <- 0
+cortisol_new$timeafterpeak <- ifelse(cortisol_new$timetopeak > 0, cortisol_new$timetopeak, 0)
+#If timetopeak > 0 (aka positive), then timeafterpeak = timetopeak
+#If timetopeak < 0 (aka negative), then timeafterpeak = 0
+#hist(cortisol_new$timeafterpeak, main = "#histogram of timeafterpeak",col=rainbow(8))
+```
+
+### Creating variables: maxgrouptime, timebeforegrouppeak, timeaftergrouppeak
+
+```{r}
+#Uhhhh... I'll do that later. I'm not 100% sure what I should use as the "group" anyway. 
+#Maybe I don't even need to do this step. 
+```
+
+## Creating variables: sampletime, which corresponds directly to minutes post-SECPT
+
+Sample 4: 0
+Sample 5: 3
+Sample 6: 15
+Sample 7: 25
+Sample 8: 30
+Sample 9: 35
+Sample 10: 40
+Sample 11: 45
+Sample 12: 60
+
+```{r Creating sampletime}
+#cortisol_new$sampletime <- 0
+#cortisol_new$sampletime[cortisol_new$cortisol=='Cortisol_Win.4'] <- 0
+#cortisol_new$sampletime[cortisol_new$cortisol=='Cortisol_Win.5'] <- 3
+#cortisol_new$sampletime[cortisol_new$cortisol=='Cortisol_Win.6'] <- 15
+#cortisol_new$sampletime[cortisol_new$cortisol=='Cortisol_Win.7'] <- 25
+#cortisol_new$sampletime[cortisol_new$cortisol=='Cortisol_Win.8'] <- 30
+#cortisol_new$sampletime[cortisol_new$cortisol=='Cortisol_Win.9'] <- 35
+#cortisol_new$sampletime[cortisol_new$cortisol=='Cortisol_Win.10'] <- 40
+#cortisol_new$sampletime[cortisol_new$cortisol=='Cortisol_Win.11'] <- 45
+#cortisol_new$sampletime[cortisol_new$cortisol=='Cortisol_Win.12'] <- 60
+```
+
+```{r Creating samplepeaknamenum}
+#cortisol_new$samplepeaknamenum <- 0
+#cortisol_new$samplepeaknamenum[cortisol_new$peakname=='Cortisol_Win.4'] <- 0
+#cortisol_new$samplepeaknamenum[cortisol_new$peakname=='Cortisol_Win.5'] <- 3
+#cortisol_new$samplepeaknamenum[cortisol_new$peakname=='Cortisol_Win.6'] <- 15
+#cortisol_new$samplepeaknamenum[cortisol_new$peakname=='Cortisol_Win.7'] <- 25
+#cortisol_new$samplepeaknamenum[cortisol_new$peakname=='Cortisol_Win.8'] <- 30
+#cortisol_new$samplepeaknamenum[cortisol_new$peakname=='Cortisol_Win.9'] <- 35
+#cortisol_new$samplepeaknamenum[cortisol_new$peakname=='Cortisol_Win.10'] <- 40
+#cortisol_new$samplepeaknamenum[cortisol_new$peakname=='Cortisol_Win.11'] <- 45
+#cortisol_new$samplepeaknamenum[cortisol_new$peakname=='Cortisol_Win.12'] <- 60
+```
+
+```{r Creating samplemaxtime}
+#cortisol_new$samplemaxtime <- 0
+#cortisol_new$samplemaxtime <- ave(cortisol_new$sampletime, cortisol_new$id, FUN = max)
+##hist(cortisol_new$samplemaxtime, main = "#histogram of maxtime", col=rainbow(8))
+```
+
+```{r Creating sampletimetopeak}
+#cortisol_new$sampletimetopeak <- 0
+#PeakTime_Time - stime = minutes from peak
+#Multiplied by -1 so that times before peak are negative and times after peak are positive (for next step: creating TimeBeforePeak and TimeAfterPeak)
+#cortisol_new$sampletimetopeak <- (cortisol_new$samplepeaknamenum - cortisol_new$sampletime) * -1
+#hist(cortisol_new$sampletimetopeak, main = "#histogram of sampletimetopeak", col=rainbow(8))
+```
+
+From Melissa's code:
+
+* Creating TimeBeforePeak and TimeAfterPeak (reactivity and recovery times, respectively):
+    + When Time2Pk is negative, TimeBeforePeak = minutes from peak at each sampling time
+    + When Time2Pk is positive, TimeBeforePeak = 0
+    + When Time2Pk is positive, TimeAfterPeak = minutes from peak at each sampling time
+    + When Time2Pk is negative, TimeAfterPeak = 0
+
+```{r Creating sampletimebeforepeak and sampletimeafterpeak}
+#sampletimebeforepeak aka the reactivity slope
+#cortisol_new$sampletimebeforepeak <- 0
+#cortisol_new$sampletimebeforepeak <- ifelse(cortisol_new$sampletimetopeak < 0, #cortisol_new$sampletimetopeak, 0)
+#If sampletimetopeak < 0 (aka negative), then sampletimebeforepeak = sampletimetopeak
+#If sampletimetopeak > 0 (aka positive), then sampletimebeforepeak = 0
+#hist(cortisol_new$sampletimebeforepeak, main = "#histogram of sampletimebeforepeak",col=rainbow(8))
+
+#sampletimeafterpeak aka the recovery slope
+#cortisol_new$sampletimeafterpeak <- 0
+#cortisol_new$sampletimeafterpeak <- ifelse(cortisol_new$sampletimetopeak > 0, #cortisol_new$sampletimetopeak, 0)
+#If sampletimetopeak > 0 (aka positive), then sampletimeafterpeak = sampletimetopeak
+#If sampletimetopeak < 0 (aka negative), then sampletimeafterpeak = 0
+#hist(cortisol_new$sampletimeafterpeak, main = "#histogram of sampletimeafterpeak",col=rainbow(8))
+```
+
+## Box-Cox transform cortvalue and cort_baseline_Win
+
+```{r}
+cortisol_new$cortvalue <- ((((cortisol_new$cortvalue)^.26)- 1)/0.26) 
+cortisol_new$cort_baseline_Win <- ((((cortisol_new$cort_baseline_Win)^.26)- 1)/0.26) 
+```
+
+## Why are there so many NA values?
+
+```{r}
+#cortisol_new <- cortisol_new[!is.na(cortisol_new$id), ]
+
+completeFun <- function(data, desiredCols) {
+  completeVec <- complete.cases(data[, desiredCols])
+  return(data[completeVec, ])}
+
+cortisol_new <- completeFun(cortisol_new, "id")
+```
+
+## Remove not-needed stuff
+
+```{r}
+#cortisol_new$timenum <- NULL
+#cortisol_new$cortisol <- NULL
+#cortisol_new$peaktime <- NULL
+#cortisol_new$peakname <- NULL
+```
+
+## Add threatdep because you need that
+
+```{r}
+threatdep <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/threatdep.csv", header=TRUE, sep=",")
+#threatdep <- read.csv(file="/Users/Julianna/Desktop/data/threatdep.csv", header=TRUE, sep=",")
+threatdep$X <- NULL
+names(threatdep)[names(threatdep) == "ff_id"] <- "id"
+df <- threatdep[c("id","ThreatZSum","ThreatComp", "DepZSum", "DepComp", "ThreatCompc", "DepCompc", "ThreatDepInt")]
+cortisol_new <- merge(cortisol_new,df,by="id")
+```
+
+## Write it out for full cort analyses
+
+```{r}
+write.csv(cortisol_new, file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv")
+#write.csv(cortisol_new, file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv")
+#rm(cortisol_new)
+data <- cortisol_new
+backup <- cortisol_new
+#rm(data)
+rm(cortisol_new)
+rm(completeFun)
+rm(threatdep)
+```
+
+## Read in cp_full and add the needed variables to data
+
+```{r}
+cp_joined <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_joined.csv", header=TRUE, sep=",")
+#cp_joined <- read.csv(file="/Users/Julianna/Desktop/data/cp_joined.csv", header=TRUE, sep=",")
+cp_joined$X <- NULL
+```
+
+```{r}
+names(cp_joined)[names(cp_joined) == "CTQ_Total_Sum"] <- "ctqsum"
+names(cp_joined)[names(cp_joined) == "CTQ_EmoAbuse_Sum"] <- "emosum"
+```
+
+```{r}
+cp_joined$painC <- scale(cp_joined$pain)	#cp_joined$painC <- scale(cp_joined$pain)
+cp_joined$painC <- cp_joined$pain - mean(cp_joined$pain)
+
+cp_joined$angerC <- scale(cp_joined$anger)	#cp_joined$angerC <- scale(cp_joined$anger)
+cp_joined$angerC <- cp_joined$anger - mean(cp_joined$anger)
+
+cp_joined$fearC <- scale(cp_joined$fear)	#cp_joined$fearC <- scale(cp_joined$fear)
+cp_joined$fearC <- cp_joined$fear - mean(cp_joined$fear)
+
+cp_joined$happinessC <- scale(cp_joined$happiness)	#cp_joined$happinessC <- scale(cp_joined$happiness)
+cp_joined$happinessC <- cp_joined$happiness - mean(cp_joined$happiness)
+
+cp_joined$sadnessC <- scale(cp_joined$sadness)	#cp_joined$sadnessC <- scale(cp_joined$sadness)
+cp_joined$sadnessC <- cp_joined$sadness - mean(cp_joined$sadness)
+
+cp_joined$ctqsumC <- scale(cp_joined$ctqsum)	#cp_joined$ctqsumC <- scale(cp_joined$ctqsum)
+cp_joined$ctqsumC <- cp_joined$ctqsum - mean(cp_joined$ctqsum)
+
+cp_joined$emosumC <- scale(cp_joined$emosum)	#cp_joined$emosumC <- scale(cp_joined$emosum)
+cp_joined$emosumC <- cp_joined$emosum - mean(cp_joined$emosum)
+```
+
+```{r}
+df <- cp_joined[c("id","gender","painC","angerC","fearC","happinessC","sadnessC","ctqsumC","emosumC", "AU01_r", "AU02_r", "AU04_r", "AU05_r", "AU06_r", "AU07_r", "AU09_r", "AU10_r", "AU12_r", "AU14_r", "AU15_r", "AU17_r", "AU20_r", "AU23_r", "AU25_r", "AU26_r", "AU01_c", "AU02_c", "AU04_c", "AU05_c", "AU06_c", "AU07_c", "AU09_c", "AU10_c", "AU12_c", "AU14_c", "AU15_c", "AU17_c", "AU20_c", "AU23_c", "AU25_c", "AU26_c")]
+```
+
+```{r}
+data <- merge(data, df, by="id")
+rm(cp_joined)
+rm(df)
+```
+
+## Write it out in full
+
+```{r}
+write.csv(data, file="C:/Users/jrcala/Documents/My Research/RStudio/final.csv")
+#write.csv(data, file="/Users/Julianna/Desktop/data/final.csv")
+```
+
+## OPTIONAL: only need samples 4 through 12
+
+```{r}
+data <- data[!(data$cortisol=="Cortisol_Win.1"),]
+data <- data[!(data$cortisol=="Cortisol_Win.2"),]
+data <- data[!(data$cortisol=="Cortisol_Win.3"),]
+```
+
+## Write it out in full2
+
+```{r}
+write.csv(data, file="C:/Users/jrcala/Documents/My Research/RStudio/final2.csv")
+#write.csv(data, file="/Users/Julianna/Desktop/data/final2.csv")
+rm(data)
+```
+
+## Make final3, which has everyone in Melissa's dataset, merges it with cp_joined, but doesn't remove rows if they have NA values; instead we learn to coexist with the NA values
+
+```{r}
+cp_joined <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_joined.csv", header=TRUE, sep=",")
+#cp_joined <- read.csv(file="/Users/Julianna/Desktop/data/cp_joined.csv", header=TRUE, sep=",")
+cp_joined$X <- NULL
+
+#cp_full <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_full.csv", header=TRUE, sep=",")
+#cp_full <- read.csv(file="/Users/Julianna/Desktop/data/cp_full.csv", header=TRUE, sep=",")
+#cp_full$X <- NULL
+#names(cp_full)[names(cp_full) == "FF_ID"] <- "id"
+
+ctq <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/ctq.csv", header=TRUE, sep=",")
+#ctq <- read.csv(file="/Users/Julianna/Desktop/data/ctq.csv", header=TRUE, sep=",")
+ctq$X <- NULL
+names(ctq)[names(ctq) == "ï..id"] <- "id"
+
+gender <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/gender.csv", header=TRUE, sep=",")
+#gender <- read.csv(file="/Users/Julianna/Desktop/data/gender.csv", header=TRUE, sep=",")
+gender$X <- NULL
+gender$gender_cat <- NULL
+```
+
+```{r}
+backup <- backup[!(backup$cortisol=="Cortisol_Win.1"),]
+backup <- backup[!(backup$cortisol=="Cortisol_Win.2"),]
+backup <- backup[!(backup$cortisol=="Cortisol_Win.3"),]
+```
+
+```{r Clean ctq}
+which( colnames(ctq)=="ctq1_2") #3
+ctq <- ctq[ -c(3)]
+
+which( colnames(ctq)=="ctq1_5") #5
+ctq <- ctq[ -c(5)]
+
+which( colnames(ctq)=="ctq1_7") #6
+ctq <- ctq[ -c(6)]
+
+which( colnames(ctq)=="ctq2_13") #11
+ctq <- ctq[ -c(11)]
+
+which( colnames(ctq)=="ctq3_19") #16
+ctq <- ctq[ -c(16)]
+
+which( colnames(ctq)=="ctq4_26") #22
+ctq <- ctq[ -c(22)]
+
+which( colnames(ctq)=="ctq4_28") #23
+ctq <- ctq[ -c(23)]
+
+which( colnames(ctq)=="ctq_complete") #24
+ctq <- ctq[ -c(24)]
+
+which(ctq == -99, arr.ind=TRUE) #None.
+#ctq[ctq == -99] <- NA
+
+which(ctq == 88, arr.ind=TRUE) #Some.
+ctq[ctq == 88] <- NA
+
+which(ctq == 77, arr.ind=TRUE) #None.
+#ctq[ctq == 77] <- NA
+
+names(ctq)[names(ctq) == "CTQ_Total_Sum"] <- "ctqsum"
+names(ctq)[names(ctq) == "CTQ_EmoAbuse_Sum"] <- "emosum"
+
+ctq$ctqsumC <- scale(ctq$ctqsum)	#ctq$ctqsumC <- scale(ctq$ctqsum)
+ctq$ctqsumC <- ctq$ctqsum - mean(ctq$ctqsum)
+
+ctq$emosumC <- scale(ctq$emosum)	#ctq$emosumC <- scale(ctq$emosum)
+ctq$emosumC <- ctq$emosum - mean(ctq$emosum)
+
+ctq <- ctq[c("id", "ctqsumC", "emosumC")]
+```
+
+```{r}
+cp_joined$painC <- scale(cp_joined$pain)	#cp_joined$painC <- scale(cp_joined$pain)
+cp_joined$painC <- cp_joined$pain - mean(cp_joined$pain)
+
+cp_joined$angerC <- scale(cp_joined$anger)	#cp_joined$angerC <- scale(cp_joined$anger)
+cp_joined$angerC <- cp_joined$anger - mean(cp_joined$anger)
+
+cp_joined$fearC <- scale(cp_joined$fear)	#cp_joined$fearC <- scale(cp_joined$fear)
+cp_joined$fearC <- cp_joined$fear - mean(cp_joined$fear)
+
+cp_joined$happinessC <- scale(cp_joined$happiness)	#cp_joined$happinessC <- scale(cp_joined$happiness)
+cp_joined$happinessC <- cp_joined$happiness - mean(cp_joined$happiness)
+
+cp_joined$sadnessC <- scale(cp_joined$sadness)	#cp_joined$sadnessC <- scale(cp_joined$sadness)
+cp_joined$sadnessC <- cp_joined$sadness - mean(cp_joined$sadness)
+```
+
+```{r}
+list <- c("id","painC","angerC","fearC","happinessC","sadnessC","AU01_r", "AU02_r", "AU04_r", "AU05_r", "AU06_r", "AU07_r", "AU09_r", "AU10_r", "AU12_r", "AU14_r", "AU15_r", "AU17_r", "AU20_r", "AU23_r", "AU25_r", "AU26_r", "AU01_c", "AU02_c", "AU04_c", "AU05_c", "AU06_c", "AU07_c", "AU09_c", "AU10_c", "AU12_c", "AU14_c", "AU15_c", "AU17_c", "AU20_c", "AU23_c", "AU25_c", "AU26_c")
+
+cp_joined <- cp_joined[list]
+```
+
+```{r}
+df1 <- join(backup, cp_joined, type="left")
+df2 <- join(df1, gender, type="left")
+df3 <- join(df2, ctq, type="left")
+backup <- df3
+rm(cp_joined)
+rm(gender)
+rm(ctq)
+rm(list)
+rm(df1)
+rm(df2)
+rm(df3)
+```
+
+```{r}
+write.csv(backup, file="C:/Users/jrcala/Documents/My Research/RStudio/final3.csv")
+#write.csv(backup, file="/Users/Julianna/Desktop/data/final3.csv")
+final3 <- backup
+final3$id <- as.factor(final3$id)
+#ok we got 222 ids
+data <- final3
+rm(final3)
+rm(backup)
+```
+
+## impute missing AU data with final3 into final4
+
+4 26 2019
+
+https://stats.idre.ucla.edu/r/faq/how-do-i-perform-multiple-imputation-using-predictive-mean-matching-in-r/
+
+```{r}
+md.pattern(data)
+p <- md.pairs(data)
+marginplot(data[c(31,46)])
+pbox(data, pos=2)
+imp1 <- mice(data,m=5)
+imp1$imp$AU01_r
+imp_tot2 <- complete(imp1)
+col <- rep(c("blue", "red")[1 + as.numeric(is.na(imp1$data$AU01_r))], 6)
+stripplot(AU01_r ~ AU02_r, data = imp_tot2, jit = TRUE, col = col, xlab = "imputation Number")
+write.csv(data, file="C:/Users/jrcala/Documents/My Research/RStudio/final4.csv")
+#write.csv(data, file="/Users/Julianna/Desktop/data/final4.csv")
+```
+
