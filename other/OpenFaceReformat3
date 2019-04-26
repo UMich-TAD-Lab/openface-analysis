@@ -1,5 +1,5 @@
 ---
-title: "OpenFace Full Cortisol Prep"
+title: "OpenFaceReformat EXTRA"
 author: "Julianna Calabrese"
 date: "April 9, 2019"
 output: html_document
@@ -537,7 +537,7 @@ imp1$imp$AU01_r
 imp_tot2 <- complete(imp1)
 col <- rep(c("blue", "red")[1 + as.numeric(is.na(imp1$data$AU01_r))], 6)
 stripplot(AU01_r ~ AU02_r, data = imp_tot2, jit = TRUE, col = col, xlab = "imputation Number")
-write.csv(data, file="C:/Users/jrcala/Documents/My Research/RStudio/final4.csv")
-#write.csv(data, file="/Users/Julianna/Desktop/data/final4.csv")
+write.csv(imp_tot2, file="C:/Users/jrcala/Documents/My Research/RStudio/final4.csv")
+#write.csv(imp_tot2, file="/Users/Julianna/Desktop/data/final4.csv")
 ```
 
