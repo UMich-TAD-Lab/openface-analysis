@@ -313,6 +313,18 @@ df <- threatdep[c("id","ThreatZSum","ThreatComp", "DepZSum", "DepComp", "ThreatC
 cortisol_new <- merge(cortisol_new,df,by="id")
 ```
 
+```{r}
+data2 <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/longdata2.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+names(data2)[names(data2) == "ï..ID"] <- "id"
+cortisol_new <- cbind(cortisol_new, data2, by="id")
+```
+
+```{r}
+cortisol_new <- cortisol_new[!(cortisol_new$cortisol=="Cortisol_Win.1"),]
+cortisol_new <- cortisol_new[!(cortisol_new$cortisol=="Cortisol_Win.2"),]
+cortisol_new <- cortisol_new[!(cortisol_new$cortisol=="Cortisol_Win.3"),]
+```
+
 ## Write it out for full cort analyses
 
 ```{r}
@@ -324,6 +336,7 @@ data <- cortisol_new
 rm(cortisol_new)
 rm(completeFun)
 rm(threatdep)
+rm(data2)
 ```
 
 ## Read in cp_full and add the needed variables to data
