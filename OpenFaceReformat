@@ -316,7 +316,7 @@ cortisol_new <- merge(cortisol_new,df,by="id")
 ```{r}
 data2 <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/longdata2.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
 names(data2)[names(data2) == "ï..ID"] <- "id"
-cortisol_new <- cbind(cortisol_new, data2, by="id")
+cortisol_new <- cbind(cortisol_new, data2)
 ```
 
 ```{r}
@@ -325,7 +325,7 @@ cortisol_new <- cortisol_new[!(cortisol_new$cortisol=="Cortisol_Win.2"),]
 cortisol_new <- cortisol_new[!(cortisol_new$cortisol=="Cortisol_Win.3"),]
 ```
 
-## Write it out for full cort analyses
+## Write it out for full cort analyses only samples 4-12
 
 ```{r}
 write.csv(cortisol_new, file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv")
@@ -339,7 +339,7 @@ rm(threatdep)
 rm(data2)
 ```
 
-## Read in cp_full and add the needed variables to data
+## Read in cp_joined and add the needed variables to data
 
 ```{r}
 cp_joined <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/cp_joined.csv", header=TRUE, sep=",")
@@ -380,7 +380,7 @@ df <- cp_joined[c("id","gender","painC","angerC","fearC","happinessC","sadnessC"
 ```
 
 ```{r}
-data <- merge(data, df, by="id")
+data <- join(data, df, type="left")
 rm(cp_joined)
 rm(df)
 ```
