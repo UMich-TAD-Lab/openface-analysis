@@ -1,5 +1,5 @@
 ---
-title: "Another attempt at an explanation"
+title: "Cortisol data analysis with N = 222"
 author: "Julianna Calabrese"
 date: "Last knitted: `r format(Sys.time(), '%B %d, %Y')`"
 output:
@@ -34,15 +34,16 @@ library(lmerTest) # Gives you p-values for lmer models
 ```
 
 ```{r Load in and lightly clean data, include=FALSE}
-data <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+mergedata <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/for_full_cort_analysis.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
 #data <- read.csv(file="/Users/Julianna/Desktop/data/for_full_cort_analysis.csv", header=TRUE, sep=",")
-data$X <- NULL
+mergedata$X <- NULL
 #data$genderold <- NULL
-data$baseline <- as.numeric(data$cort_baseline_Win)
-data$cort_baseline_Win <- NULL
-data$ThreatCompc <- data$ThreatComp - mean(data$ThreatComp)
-data$DepCompc <- data$DepComp - mean(data$DepComp)
-data$ThreatDepInt <- data$ThreatCompc*data$DepCompc
+#data$baseline <- as.numeric(data$cort_baseline_Win)
+#data$cort_baseline_Win <- NULL
+mergedata$ThreatCompc <- mergedata$ThreatComp - mean(mergedata$ThreatComp)
+mergedata$DepCompc <- mergedata$DepComp - mean(mergedata$DepComp)
+mergedata$ThreatDepInt <- mergedata$ThreatCompc*mergedata$DepCompc
+mergedata$id <- as.factor(mergedata$id)
 ```
 
 ## Cheatsheets
@@ -53,7 +54,19 @@ data$ThreatDepInt <- data$ThreatCompc*data$DepCompc
 * [Mixed model reference](https://www.cscu.cornell.edu/news/Handouts/R_Model_Specification.pdf)
 * [Random intercept model](https://www.bristol.ac.uk/media-library/sites/cmm/migrated/documents/random-ints.pdf)
 
-## Melissa's syntax for reference
+## R packages
+
+While there are many R packages that can conduct mixed modeling, the two most popular choices are the [lme4 package](https://cran.r-project.org/web/packages/lme4/lme4.pdf) with the lmer command and the [nlme package](https://cran.r-project.org/web/packages/nlme/nlme.pdf) with the lme command. Both are suitable alternatives to SAS' PROC MIXED command: [lme4 here](https://cran.r-project.org/web/packages/SASmixed/vignettes/Usinglmer.pdf), [nlme here](http://www.solutionmetrics.com.au/support/splus82win/lmeSAS.pdf). 
+
+The biggest difference between nlme and lme is that nlme allows you to specify a correlation structure (e.g. AR1), while lme4 automatically [defaults to unstructured and is unable to be changed.](https://stats.stackexchange.com/questions/86958/variance-covariance-structure-for-random-effects-in-lme4) However, it's 100x easier to specify non-nested random effects in lme4 than nlme, so if I used nlme, I could only have one random effect or I would have to nest one random effect within the other.
+
+Other packages include [glmmTMB](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf) and [brms](https://cran.r-project.org/web/packages/brms/brms.pdf). However, glmmTMB seems to offer nothing more than what nlme can offer and brms is used for Bayesian regression modelling, which wasn't used in Lopez-Duran 2014.
+
+## Models
+
+Below are two R models that are as close as possible to the original SAS model. The first model is a random intercept model with an ar1 structure with the `nlme` package. The second model is a random slopes model with a default, unconstrained structure with the `lme4` package. The analyses were done with Melissa's long form dataset. 
+
+### Original SAS model
 
 ```
 PROC MIXED DATA=longdata COVTEST METHOD=REML;
@@ -67,56 +80,28 @@ PROC MIXED DATA=longdata COVTEST METHOD=REML;
 	RUN; QUIT;
 ```
 
-## R packages
+![](C:/Users/jrcala/Documents/My Research/RStudio/melissa_results.png)
 
-While there are many R packages that can conduct mixed modeling, the two most popular choices are the [lme4 package](https://cran.r-project.org/web/packages/lme4/lme4.pdf) with the lmer command and the [nlme package](https://cran.r-project.org/web/packages/nlme/nlme.pdf) with the lme command. Both are suitable alternatives to SAS' PROC MIXED command: [lme4 here](https://cran.r-project.org/web/packages/SASmixed/vignettes/Usinglmer.pdf), [nlme here](http://www.solutionmetrics.com.au/support/splus82win/lmeSAS.pdf). 
+### Random intercept model
 
-The biggest difference between nlme and lme is that nlme allows you to specify a correlation structure (e.g. AR1), while lme4 automatically [defaults to unstructured and is unable to be changed.](https://stats.stackexchange.com/questions/86958/variance-covariance-structure-for-random-effects-in-lme4) However, it's 100x easier to specify non-nested random effects in lme4 than nlme, so if I used nlme, I could only have one random effect or I would have to nest one random effect within the other.
-
-Other packages include [glmmTMB](https://cran.r-project.org/web/packages/glmmTMB/glmmTMB.pdf) and [brms](https://cran.r-project.org/web/packages/brms/brms.pdf). However, glmmTMB seems to offer nothing more than what nlme can offer and brms is used for Bayesian regression modelling, which wasn't used in Lopez-Duran 2014.
-
-## Models
-
-Below are two models that are as close as possible to Melissa's models in R. The first model is a random intercept model with an ar1 structure with the `nlme` package. The second model is a random slopes model with a default, unconstrained structure with the `lme4` package;
-
-```{r, echo=TRUE, results = 'hide'}
+```{r echo=TRUE, results = 'hide'}
 # Random intercept with ar1 structure
-mod1 <- lme(cortvalue ~
-            timebeforepeak + # Fixed effect
-            timeafterpeak + # Fixed effect
-            baseline + # Fixed effect
+mod1 <- lme(Cortwinbox ~
+            TimeBeforePeak2 + # Fixed effect
+            TimeAfterPeak2 + # Fixed effect
+            cort_baseline_winbox + # Fixed effect
             ThreatCompc + # Fixed effect
-            ThreatCompc*timebeforepeak + # Interaction
-            ThreatCompc*timeafterpeak + ThreatCompc*baseline, # Interaction
+            ThreatCompc*TimeBeforePeak2 + # Interaction
+            ThreatCompc*TimeAfterPeak2 + ThreatCompc*cort_baseline_winbox, # Interaction
             random = ~1|id, # Random intercept for Subject
             corr = corAR1(), # Specifies AR1 structure
             method = "REML", # Specifies REML fit
             na.action = na.exclude, # removes NA values
-            data = data)
+            data = mergedata)
 ```
 
-```{summary mod1, include=FALSE, echo=FALSE}
+```{r summary mod1, include=FALSE, echo=FALSE}
 summary(mod1)
-```
-
-```{r mod2, echo=TRUE, results = 'hide', warning=FALSE, message=FALSE}
-# Random slopes with unconstrained structure
-mod2 <- lmer(cortvalue ~ 
-            timebeforepeak + # Fixed effect
-            timeafterpeak + # Fixed effect
-            baseline + # Fixed effect
-            ThreatCompc + # Fixed effect
-            ThreatCompc*timebeforepeak + # Interaction
-            ThreatCompc*timeafterpeak + # Interaction
-            ThreatCompc*baseline + # Interaction
-            (timebeforepeak|id) + (timeafterpeak|id), # Random slopes
-            # Default unconstrained cor structure
-            data = data)
-```
-
-```{r summary mod2, include=FALSE}
-options(scipen=99)
-summary(mod2)
 ```
 
 ```{r Cleaning for tab_model, include=FALSE}
@@ -153,6 +138,28 @@ Cortisol = \beta_0
 & + \epsilon \\
 \end{aligned}$
 
+### Random slopes model
+
+```{r mod2, echo=TRUE, results = 'hide', warning=FALSE, message=FALSE}
+# Random slopes with unconstrained structure
+mod2 <- lmer(Cortwinbox ~ 
+            TimeBeforePeak2 + # Fixed effect
+            TimeAfterPeak2 + # Fixed effect
+            cort_baseline_winbox + # Fixed effect
+            ThreatCompc + # Fixed effect
+            ThreatCompc*TimeBeforePeak2 + # Interaction
+            ThreatCompc*TimeAfterPeak2 + # Interaction
+            ThreatCompc*cort_baseline_winbox + # Interaction
+            (TimeBeforePeak2|id) + (TimeAfterPeak2|id), # Random slopes
+            # Default unconstrained cor structure
+            data = mergedata)
+```
+
+```{r summary mod2, include=FALSE}
+options(scipen=99)
+summary(mod2)
+```
+
 ```{r mod2 table, echo=FALSE, results = 'asis'}
 tab_model(mod2, title = "lme4 Model with Random Slopes and a UN structure",
           dv.labels = "Cortisol", pred.labels = labels, digits = 3, digits.p = 3,
@@ -182,7 +189,12 @@ Cortisol = \beta_0
 & + \epsilon \\
 \end{aligned}$
 
-I would say that there are no big differences between the models. The only difference is that the Intercept is not significant in mod2, which makes because mod2 doesn't allow the intercept to vary. I like mod1 better because I think having the ar1 structure is more important than having TimeBeforePeak and TimeAfterPeak as random effects.
+
+## Conclusions and comparison
+
+I would say that there are no big differences between the R models. Both R models have very similiar estimates and both find that Intercept, TimeAfterPeak, and Baseline are significant. However, the nlme model also finds that ThreatCompc * TimeAfterPeak is significant at p = .044. 
+
+Both R models and the SAS model have fairly similiar estimates, although it seems like the nlme model is a closer estimate to the SAS model. The main difference is that the SAS model has significant p-values for ThreatCompc and ThreatCompc * TimeBeforePeak which are not found in the nlme model.
 
 ```{r mod1 and mod2 table, include=FALSE, echo=FALSE, results = 'asis'}
 tab_model(mod1, mod2, 
@@ -199,4 +211,23 @@ tab_model(mod1, mod2,
           show.p = TRUE, string.p="P-value",
           show.r2 = TRUE,
           col.order=colorder)
+```
+
+```{r include=FALSE}
+readin <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/readin2.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+names(readin)[names(readin) == "Estimates.1"] <- "Estimates"
+names(readin)[names(readin) == "Estimates.2"] <- "Estimates"
+names(readin)[names(readin) == "Std.Error.1"] <- "Std.Error"
+names(readin)[names(readin) == "Std.Error.2"] <- "Std.Error"
+names(readin)[names(readin) == "P.value.1"] <- "P.value"
+names(readin)[names(readin) == "P.value.2"] <- "P.value"
+```
+
+```{r echo=FALSE, results='asis'}
+kable(readin, align="l") %>%
+  kable_styling("striped", "bordered") %>%
+  add_header_above(c(" " = 1, "nlme" = 3, "lme4" = 3, "SAS" = 3)) %>%
+  column_spec(2,border_left=T) %>%
+  column_spec(5,border_left=T) %>%
+  column_spec(8,border_left=T)
 ```
