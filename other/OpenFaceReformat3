@@ -1,5 +1,5 @@
 ---
-title: "OpenFaceReformat EXTRA"
+title: "OpenFace Full Cortisol Prep"
 author: "Julianna Calabrese"
 date: "April 9, 2019"
 output: html_document
@@ -497,6 +497,13 @@ cp_joined <- cp_joined[list]
 ```
 
 ```{r}
+data2 <- read.csv(file="C:/Users/jrcala/Documents/My Research/RStudio/longdata2.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+names(data2)[names(data2) == "ï..ID"] <- "id"
+data2 <- data2[!(data2$Sample=="1"),]
+data2 <- data2[!(data2$Sample=="2"),]
+data2 <- data2[!(data2$Sample=="3"),]
+
+
 df1 <- join(backup, cp_joined, type="left")
 df2 <- join(df1, gender, type="left")
 df3 <- join(df2, ctq, type="left")
@@ -511,6 +518,8 @@ rm(df3)
 ```
 
 ```{r}
+backup <- cbind(data2,backup)
+rm(data2)
 write.csv(backup, file="C:/Users/jrcala/Documents/My Research/RStudio/final3.csv")
 #write.csv(backup, file="/Users/Julianna/Desktop/data/final3.csv")
 final3 <- backup
@@ -519,6 +528,14 @@ final3$id <- as.factor(final3$id)
 data <- final3
 rm(final3)
 rm(backup)
+```
+
+```{r}
+df <- data[c(1, 2, 12, 17, 18, 8, 9, 4, 5, 6, 34:80)] 
+data <- df
+rm(df)
+
+which( colnames(data)=="cort_baseline_winbox" )
 ```
 
 ## impute missing AU data with final3 into final4
