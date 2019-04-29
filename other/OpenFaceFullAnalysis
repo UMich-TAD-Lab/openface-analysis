@@ -77,13 +77,7 @@ Other packages include [glmmTMB](https://cran.r-project.org/web/packages/glmmTMB
 
 ## Models
 
-On March 27th, I went to CSCAR and had an appointment with Kerby where we discussed how to replicate Melissa's model in R. He told me that the two models below are the closest models I'm going to get to Melissa's model. However, it is not an exact replica of Melissa's model because what Melissa did is not replicable in R. 
-
-In Melissa's analyses, she put the AR1 on the random effects, although she likely should've put it on the error. This can be fixed by putting the random effect on different lines (aka as different statements) in SAS syntax, or by removing TimeBeforePeak and TimeAfterPeak as random effects entirely; you could just have TBP and TAP as fixed effects. The only random effect would be id. 
-
-Additionally, Kerby said that I need to choose between having random slopes or having a AR1 correlation structure. I cannot have both at the same time. `mod1` was made in `nlme` and has the random effect of subject and an autoregressive correlation structure. `mod2` was made in `lme4` and has two random effects: random slopes for TimeBeforePeak and TimeAfterPeak. He also questioned that ThreatCompc was significant as a main effect and as an interaction with the many time variables. He says it makes more sense for ThreatCompc just to be significant as part of an interaction.
-
-Out of curiousity, I also tested another model: made in `lme4` that had random intercepts and slopes for TimeBeforePeak and TimeAfterPeak. However, that model was identical to the model that just had random slopes. So there is no point in adding random intercepts to a `lme4` model. 
+Below are two models that are as close as possible to Melissa's models in R. The first model is a random intercept model with an ar1 structure with the `nlme` package. The second model is a random slopes model with a default, unconstrained structure with the `lme4` package;
 
 ```{r, echo=TRUE, results = 'hide'}
 # Random intercept with ar1 structure
@@ -205,44 +199,4 @@ tab_model(mod1, mod2,
           show.p = TRUE, string.p="P-value",
           show.r2 = TRUE,
           col.order=colorder)
-```
-
-```{r References, include=FALSE}
-#https://quantdev.ssri.psu.edu/tutorials/growth-modeling-chapter-3-linear-growth-models
-#http://dpmartin42.github.io/posts/Piecewise-growth
-
-#data$peaktime <- factor(data$peaktime, levels = c("s4time", "s5time", "s6time", "s7time", "s8time", "s9time", "s10time", "s11time", "s12time"))
-
-#data$peaktime <- as.numeric(data$peaktime)
-
-timeticks <- c(0, 3, 15, 25, 30, 35, 40, 45, 60)
-timeticks2 <- c(-60, -45, -40, -35, -30, -25, -15, -3, 0, 3, 15, 25, 30, 35, 40, 45, 60)
-timeticks3 <- c(4, 5, 6, 7, 8, 9, 10, 11, 12)
-```
-
-```{r Descriptive Density plot, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
-ggplot(data=data, aes(x=Peak_Time, fill="red")) + 
-  geom_density(aes(stat = "identity")) + 
-  ggtitle("When did most people peak?") +
-  theme(legend.position = "none") + 
-  xlab("Peak Time") + ylab("")
-```
-
-```{r Plot regression line, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
-ggplot(data, aes(x = timetopeak, y = cortvalue)) +
-  geom_line(aes(group = id), color = "gray") + 
-  geom_smooth(aes(y=predict(mod1)), size = 2, color = "red", se = TRUE) + 
-  xlab("Time to Peak") + ylab("Cortisol") +
-  ggtitle("nlme Regression Line") #+ scale_x_continuous(breaks=timeticks2)
-```
-
-```{r Cortisol growth curve, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
-ggplot(data, aes(timetopeak, cortvalue)) +
-  stat_summary(fun.y=mean, geom="point", size=2) +
-  stat_summary(fun.data=mean_se, geom="errorbar", linetype="solid", width=0.6) +
-  stat_summary(aes(y=predict(mod1)), fun.y=mean, geom="line", lwd=1.5, col="gray") +
-  scale_shape_manual(values=c(16, 17)) +
-  labs(x="Time to Peak", y="Cortisol") + 
-  ggtitle("Cortisol growth curve")
-  #+ scale_x_continuous(breaks=timeticks2)
 ```
